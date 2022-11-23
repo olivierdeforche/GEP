@@ -15,9 +15,8 @@ using DataFrames
 using YAML
 
 data = YAML.load_file(joinpath(@__DIR__, "data_gep.yaml"))
-repr_days = CSV.read(joinpath(@__DIR__, "Weights_12_reprdays.csv"), DataFrame)
 ts = CSV.read(joinpath(@__DIR__, "Profiles_12_reprdays.csv"), DataFrame)
-
+repr_days = CSV.read(joinpath(@__DIR__, "Weights_12_reprdays.csv"), DataFrame)
 
 ## Step 2: create model & pass data to model
 using JuMP
@@ -43,18 +42,14 @@ end
 # Step 2b: add time series
 function process_time_series_data!(m::Model, data::Dict, ts::DataFrame)
     # extract the relevant sets
-    IV = m.ext[:sets][:IV] # Variable generators
     JH = m.ext[:sets][:JH] # Time steps
     JD = m.ext[:sets][:JD] # Days
 
     # create dictionary to store time series
     m.ext[:timeseries] = Dict()
-    m.ext[:timeseries][:AF] = Dict()
 
     # example: add time series to dictionary
     m.ext[:timeseries][:D] = [ts.Load[jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD]
-    m.ext[:timeseries][:AF][IV[1]] = [ts.LFW[jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD]
-    m.ext[:timeseries][:AF][IV[2]] = [ts.LFS[jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD] 
 
     # return model
     return m
@@ -64,32 +59,14 @@ end
 function process_parameters!(m::Model, data::Dict, repr_days::DataFrame)
     # extract the sets you need
     I = m.ext[:sets][:I]
-    ID = m.ext[:sets][:ID]
-    IV = m.ext[:sets][:IV]
 
     # generate a dictonary "parameters"
     m.ext[:parameters] = Dict()
 
-    # input parameters
-    alphaCO2 = m.ext[:parameters][:alphaCO2] = data["CO2Price"] #euro/ton
-    m.ext[:parameters][:VOLL] = data["VOLL"] #VOLL
-    r = m.ext[:parameters][:discountrate] = data["discountrate"] #discountrate
-    m.ext[:parameters][:W] = repr_days.Weights # wieghts of each representative date
-
-   
+    # example: legacy capacity
     d = merge(data["dispatchableGenerators"],data["variableGenerators"])
-    # variable costs
-    beta = m.ext[:parameters][:beta] = Dict(i => d[i]["fuelCosts"] for i in ID) #EUR/MWh
-    delta = m.ext[:parameters][:delta] = Dict(i => d[i]["emissions"] for i in ID) #ton/MWh
-    m.ext[:parameters][:VC] = Dict(i => beta[i]+alphaCO2*delta[i] for i in ID) # variable costs - EUR/MWh
-    
-    # Investment costs
-    OC = m.ext[:parameters][:OC] = Dict(i => d[i]["OC"] for i in I) # EUR/MW
-    LifeTime = m.ext[:parameters][:LT] = Dict(i => d[i]["lifetime"] for i in I) # years
-    m.ext[:parameters][:IC] = Dict(i => r*OC[i]/(1-(1+r).^(-LifeTime[i])) for i in I) # EUR/MW/y
-
-    # legacy capacity
     LC = m.ext[:parameters][:LC] = Dict(i => d[i]["legcap"] for i in I) # MW
+    VC = m.ext[:parameters][:VC] = Dict(id => d[id]["fuelCosts"] for id in ID) # MW
 
     # return model
     return m
@@ -102,81 +79,55 @@ process_parameters!(m, data, repr_days)
 
 ## Step 3: construct your model
 # Greenfield GEP - single year (Lecture 3 - slide 25, but based on representative days instead of full year)
-function build_greenfield_1Y_GEP_model!(m::Model)
+function build_GEP_model!(m::Model)
     # Clear m.ext entries "variables", "expressions" and "constraints"
     m.ext[:variables] = Dict()
     m.ext[:expressions] = Dict()
     m.ext[:constraints] = Dict()
 
     # Extract sets
-    I = m.ext[:sets][:I]
-    ID = m.ext[:sets][:ID]
-    IV = m.ext[:sets][:IV]
     JH = m.ext[:sets][:JH]
     JD = m.ext[:sets][:JD]
+    ID = m.ext[:sets][:ID]
+    I = m.ext[:sets][:I]
+    IV = m.ext[:sets][:IV]
 
     # Extract time series data
     D = m.ext[:timeseries][:D] # demand
-    AF = m.ext[:timeseries][:AF] # availabilim.ty factors
 
     # Extract parameters
-    VOLL = m.ext[:parameters][:VOLL] # VOLL
-    VC = m.ext[:parameters][:VC] # variable cost
-    IC = m.ext[:parameters][:IC] # investment cost
-    W = m.ext[:parameters][:W] # weights
-
+    LC = m.ext[:parameters][:LC]
+    VC = m.ext[:parameters][:VC]
 
     # Create variables
     cap = m.ext[:variables][:cap] = @variable(m, [i=I], lower_bound=0, base_name="capacity")
     g = m.ext[:variables][:g] = @variable(m, [i=I,jh=JH,jd=JD], lower_bound=0, base_name="generation")
-    ens = m.ext[:variables][:ens] = @variable(m, [jh=JH,jd=JD], lower_bound=0, base_name="load_shedding")
 
     # Create affine expressions (= linear combinations of variables)
-    curt = m.ext[:expressions][:curt] = @expression(m, [i=IV,jh=JH,jd=JD],
-        AF[i][jh,jd]*cap[i] - g[i,jh,jd] # NOTE: to check, this was AF[i][jh,jd] * cap[i] - g[i,jh,jd]
+    # dummy example
+    dummy = m.ext[:expressions][:dummy] = @expression(m, [i=IV,jh=JH,jd=JD],
+        cap[i] - g[i,jh,jd]
     )
 
     # Formulate objective 1a
     m.ext[:objective] = @objective(m, Min,
-        + sum(IC[i]*cap[i] for i in I)
-        + sum(W[jd]*VC[i]*g[i,jh,jd] for i in ID, jh in JH, jd in JD)
-        + sum(W[jd]*ens[jh,jd]*VOLL for jh in JH, jd in JD)
+        sum(VC[i]*g[i,jh,jd] for i in ID, jh in JH, jd in JD)
     )
 
-    # 2a - power balance
-    m.ext[:constraints][:con2a] = @constraint(m, [jh=JH,jd=JD],
-        sum(g[i,jh,jd] for i in I) == D[jh,jd] -ens[jh,jd]
-    )
-
-    # 2c2 - load shedding
-    m.ext[:constraints][:con2a] = @constraint(m, [jh=JH,jd=JD],
-        ens[jh,jd] <= D[jh,jd]
-    )
-    
-    # 3a1 - renewables 
-    m.ext[:constraints][:con2c] = @constraint(m, [i=IV,jh=JH,jd=JD],
-    g[i,jh,jd] <= AF[i][jh,jd]*cap[i]
-    )
-
+    # constraints
     # 3a1 - conventional
     m.ext[:constraints][:con3a1conv] = @constraint(m, [i=ID,jh=JH,jd=JD],
-        g[i,jh,jd] <= cap[i]
+        g[i,jh,jd] <= (cap[i]+LC[i])
     )
 
     return m
 end
 
-
-# Brownfield GEP - single year
-# function build_brownfield_1Y_GEP_model(m::Model)
-
-
 # recall that you can, once you've built a model, delete and overwrite constraints using the appropriate reference:
 # example:   delete(m,m.ext[:constraints][:con3a1conv][id,jh,jd]) (needs to be done in for-loop over id, jh, jd)
 
 # Build your model
-build_greenfield_1Y_GEP_model!(m)
-# build_brownfield_1Y_GEP_model!(m)
+build_GEP_model!(m)
 
 ## Step 4: solve
 # current model is incomplete, so all variables and objective will be zero
@@ -218,4 +169,4 @@ g = value.(m.ext[:variables][:g])
 
 # create arrays for plotting
 # λvec = [λ[jh,jd] for jh in JH, jd in JD]
-# capvec = [cap[i] for  i in I]
+capvec = [cap[i] for  i in I]
