@@ -20,6 +20,7 @@ ts = CSV.read(joinpath(@__DIR__, "Profiles_12_reprdays.csv"), DataFrame)
 
 
 
+
 ## Step 2: create model & pass data to model
 using JuMP
 using Gurobi
@@ -262,7 +263,8 @@ curt = value.(m.ext[:expressions][:curt])
 gvec = [g[i,jh,jd] for i in I, jh in JH, jd in JD]
 capvec = [cap[i] for  i in I]
 
-# # Select day for which you'd like to plotting
+
+# Select day for which you'd like to plotting
 
 # [:,jd], xlabel="Timesteps [-]", ylabel="λ [EUR/MWh]", label="λ [EUR/MWh]"
 
