@@ -102,6 +102,7 @@ define_sets!(m, data)
 process_time_series_data!(m, data, ts)
 process_parameters!(m, data, repr_days)
 
+
 ## Step 3: construct your model
 # Greenfield GEP - single year (Lecture 3 - slide 25, but based on representative days instead of full year)
 function build_greenfield_1Y_GEP_model!(m::Model)
