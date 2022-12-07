@@ -18,8 +18,8 @@ data = YAML.load_file(joinpath(@__DIR__, "data_gep.yaml"))
 repr_days = CSV.read(joinpath(@__DIR__, "Weights_12_reprdays.csv"), DataFrame)
 ts = CSV.read(joinpath(@__DIR__, "Profiles_12_reprdays.csv"), DataFrame)
 
-
-
+print(repr_days)
+print(ts)
 
 ## Step 2: create model & pass data to model
 using JuMP
@@ -148,7 +148,7 @@ function build_greenfield_1Y_GEP_model!(m::Model)
 
     # 2a - power balance
     m.ext[:constraints][:con2a] = @constraint(m, [jh=JH,jd=JD],
-        sum(g[i,jh,jd] for i in I) == D[jh,jd] -ens[jh,jd]
+        sum(g[i,jh,jd] for i in I) == D[jh,jd] - ens[jh,jd]
     )
 
     # 2c2 - load shedding
@@ -266,12 +266,18 @@ capvec = [cap[i] for  i in I]
 
 
 # Select day for which you'd like to plotting
+jd = 1
 
-# [:,jd], xlabel="Timesteps [-]", ylabel="λ [EUR/MWh]", label="λ [EUR/MWh]"
+# Electricity price 
+p1 = plot(JH,λvec[:,jd], xlabel="Timesteps [-]", ylabel="λ [EUR/MWh]", label="λ [EUR/MWh]", legend=:outertopright );
 
-# transpose(gvec[:,:,jd]), labe=["Mid" "Base" "Peak" "Wind" "Solar"], b
-# label ="Demand", xlabel="Timesteps [-]", ylabel="Generation [MWh]", l
+# Dispatch
+p2 = groupedbar(transpose(gvec[:,:,jd]), label=["Mid" "Base" "Peak" "Wind" "Solar"], bar_position = :stack,legend=:outertopright,ylims=(0,13_000));
+plot!(p2, JH, D[:,jd], label ="Demand", xlabel="Timesteps [-]", ylabel="Generation [MWh]", legend=:outertopright, lindewidth=3, lc=:black);
 
-# transpose(capvec), labe=["Mid" "Base" "Peak" "Wind" "Solar"], xlabel
-# layout = (3,1))
-# 00))
+# Capacity
+p3 = bar(capvec, label="", xticks=(1:length(capvec), ["Mid" "Base" "Peak" "Wind" "Solar"]), xlabel="Technology [-]", ylabel="New capacity [MW]", legend=:outertopright);
+
+# combine
+plot(p1, p2, p3, layout = (3,1))
+plot!(size=(1000,800))
