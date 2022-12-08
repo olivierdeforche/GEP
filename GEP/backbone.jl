@@ -171,7 +171,7 @@ end
 
 
 # Brownfield GEP - single year
-function build_brownfield_1Y_GEP_model(m::Model)
+function build_brownfield_1Y_GEP_model!(m::Model)
     # start from Greenfield
     m = build_greenfield_1Y_GEP_model!(m::Model)
 
@@ -196,17 +196,17 @@ function build_brownfield_1Y_GEP_model(m::Model)
         delete(m,m.ext[:constraints][:con3a1res][iv,jh,jd])
     end
     for id in ID, jh in JH, jd in JD
-        delete(m,m.ext[:constraints][:con3a1conv])
+        delete(m,m.ext[:constraints][:con3a1conv][id,jh,jd])
     end
 
     # define new constraints
     # 3a1 - renewables
-    m.ext[:constraints][:con3a1res] = @constraints(m, [i=IV, jh=JH, jd =JD],
+    m.ext[:constraints][:con3a1res] = @constraint(m, [i=IV, jh=JH, jd =JD],
         g(i,jh,jd) <= AF[i][jh,jd]*(cap[i]+LC[i])
     )
 
     # 3a1 - conventional
-    m.ext[:constraints][:con3a1conv] = @constraints(m, [i=ID, jh=JH, jd=JD],
+    m.ext[:constraints][:con3a1conv] = @constraint(m, [i=ID, jh=JH, jd=JD],
         g[i,jh,jd] <= (cap[i]+LC[i])
     )
 
@@ -214,8 +214,8 @@ function build_brownfield_1Y_GEP_model(m::Model)
 end
 
 # Build your model
-build_greenfield_1Y_GEP_model!(m)
-# build_brownfield_1Y_GEP_model!(m)
+# build_greenfield_1Y_GEP_model!(m)
+build_brownfield_1Y_GEP_model!(m)
 
 ## Step 4: solve
 # current model is incomplete, so all variables and objective will be zero
