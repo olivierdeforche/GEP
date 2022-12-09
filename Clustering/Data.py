@@ -92,6 +92,7 @@ wm = list(np.concatenate(wm).flat)
 
 id = np.average(id,axis=0)
 id = id[:-92,:-141]
+print(id.shape)
 id = list(np.concatenate(id).flat)
 
 
