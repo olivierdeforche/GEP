@@ -5,8 +5,10 @@ from spopt.region import RegionKMeansHeuristic
 
 import geopandas as gdp
 import libpysal as lp
+import warnings
 
-
+# Skip warnings
+warnings.filterwarnings("ignore")
 
 fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
 fn_sara = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-sarah.nc'

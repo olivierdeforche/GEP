@@ -1,10 +1,16 @@
-from spopt.region import RegionKMeansHeuristic
-
 import netCDF4 as nc
+from spopt.region import MaxPHeuristic as MaxP
+import matplotlib.pyplot as plt
+
 import geopandas
 import libpysal
+import matplotlib
 import numpy as np
-import matplotlib.pyplot as plt
+import spopt
+import warnings
+
+# Skip warnings
+warnings.filterwarnings("ignore")
 
 fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
 
@@ -19,7 +25,8 @@ wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first 50 values of each
-res = 10
+res = 100
+clusters = 50
 lenlon = len(lon)
 lenlat = len(lat)
 lon = lon[:-(lenlon-res)]
@@ -29,17 +36,11 @@ lat = lat[:-(lenlat-res)]
 lon = np.tile(lon, res)
 lat = np.repeat(lat, res)
 
-## flatten
+### Wind
 wm = np.average(wm,axis=0)
 wm = wm[:-(lenlat-res),:-(lenlon-res)]
-print(wm)
 wm = list(np.concatenate(wm).flat)
-print(wm)
-
-# id = np.average(id,axis=0)
-# id = id[:-(lenlat-res),:-(lenlon-res)]
-# print(id.shape)
-# id = list(np.concatenate(id).flat)
+wm = [[i] for i in wm]
 
 
 fig = plt.figure(figsize=(6, 6))
@@ -47,21 +48,14 @@ plt.scatter(lon, lat,
            c=wm)
 plt.show()
 
-# fig = plt.figure(figsize=(6, 6))
-# plt.scatter(lon, lat,
-#            c=id)
-# plt.show()
+### Sun
+id = np.average(id,axis=0)
+id = id[:-(lenlat-res),:-(lenlon-res)]
+id = list(np.concatenate(id).flat)
+id = [[i] for i in id]
 
 
-w = libpysal.weights.lat2W(res, res)
-
-
-
-# model = RegionKMeansHeuristic(wm, 20, w)
-# model.solve()
-# model.labels_
-#
-# gdf["region"] = model.labels_
-# gdf.plot(column="region")
-# plt.show()
-# print("done")
+fig = plt.figure(figsize=(6, 6))
+plt.scatter(lon, lat,
+           c=id)
+plt.show()
