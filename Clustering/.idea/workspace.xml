@@ -2,23 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e3cdde02-3389-42de-b56d-af05242fb4f8" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Test-maxp.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Wind_res=100_clu=50.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/regional_kmeans.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sun_clusters_res=100_clu=50.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sun_res=100.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sun_res=100_clu=50.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wind_clusters_res=100_clu=50.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wind_res=100.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Test-regional_kmeans.py" beforeDir="false" afterPath="$PROJECT_DIR$/maxp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Test-regional_kmeans1.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Test-regional_kmeans3.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lattice.dbf" beforeDir="false" afterPath="$PROJECT_DIR$/lattice.dbf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lattice.shp" beforeDir="false" afterPath="$PROJECT_DIR$/lattice.shp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lattice.shx" beforeDir="false" afterPath="$PROJECT_DIR$/lattice.shx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test-regional_kmaens2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Test-maxp.py" beforeDir="false" afterPath="$PROJECT_DIR$/Test-maxp.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -184,7 +169,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1670518973614</updated>
-      <workItem from="1670519013207" duration="30371000" />
+      <workItem from="1670519013207" duration="32966000" />
     </task>
     <servers />
   </component>
