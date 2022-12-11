@@ -22,9 +22,10 @@ lat = ds["w"]["lat"][:]
 wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
-## Only select first 50 values of each
+## Only select first res values of each with nr of clusters
 res = 100
 clusters = 50
+
 lenlon = len(lon)
 lenlat = len(lat)
 lon = lon[:-(lenlon-res)]
@@ -36,12 +37,6 @@ lat = np.repeat(lat, res)
 
 ### Wind
 wm = np.average(wm,axis=0)
-
-fig = plt.figure(figsize=(6, 6))
-plt.scatter(lon, lat,
-           c=wm)
-plt.show()
-
 
 wm = wm[:-(lenlat-res),:-(lenlon-res)]
 wm = list(np.concatenate(wm).flat)
@@ -85,11 +80,6 @@ plt.show()
 
 ### Sun
 id = np.average(id,axis=0)
-
-fig = plt.figure(figsize=(6, 6))
-plt.scatter(lon, lat,
-           c=id)
-plt.show()
 
 id = id[:-(lenlat-res),:-(lenlon-res)]
 id = list(np.concatenate(id).flat)
