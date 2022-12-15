@@ -42,7 +42,6 @@ wm = wm[:-(lenlat-res),:-(lenlon-res)]
 wm = list(np.concatenate(wm).flat)
 wm = [[i] for i in wm]
 
-
 fig = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=wm)
@@ -51,31 +50,32 @@ plt.show()
 
 w = libpysal.weights.lat2W(res, res)
 
-wm = np.array(wm)
-
-model = RegionKMeansHeuristic(wm, clusters, w)
-model.solve()
-
-
-areas = np.arange(res * res)
-regions = [areas[model.labels_ == region] for region in range(clusters)]
-
-wm = np.array(wm)
-wm = list(np.concatenate(wm).flat)
-
-for i in range(clusters):
-    for j in range(len(regions[i])):
-        wm[regions[i][j]] = model.centroids_[i]
-
-fig = plt.figure(figsize=(6, 6))
-plt.scatter(lon, lat,
-           c=model.labels_)
-plt.show()
-
-fig = plt.figure(figsize=(6, 6))
-plt.scatter(lon, lat,
-           c=wm)
-plt.show()
+# wm = np.array(wm)
+#
+# model = RegionKMeansHeuristic(wm, clusters, w)
+# model.solve()
+#
+#
+# areas = np.arange(res * res)
+# regions = [areas[model.labels_ == region] for region in range(clusters)]
+#
+# wm = np.array(wm)
+# wm = list(np.concatenate(wm).flat)
+#
+# for i in range(clusters):
+#     for j in range(len(regions[i])):
+#         wm[regions[i][j]] = model.centroids_[i]
+#
+#
+# fig = plt.figure(figsize=(6, 6))
+# plt.scatter(lon, lat,
+#            c=model.labels_)
+# plt.show()
+#
+# fig = plt.figure(figsize=(6, 6))
+# plt.scatter(lon, lat,
+#            c=wm)
+# plt.show()
 
 
 ### Sun
@@ -93,7 +93,7 @@ plt.show()
 
 id = np.array(id)
 
-model = RegionKMeansHeuristic(id, 100, w)
+model = RegionKMeansHeuristic(id, clusters, w)
 model.solve()
 
 areas = np.arange(res * res)

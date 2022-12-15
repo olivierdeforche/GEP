@@ -18,8 +18,9 @@ data = YAML.load_file(joinpath(@__DIR__, "data_gep.yaml"))
 repr_days = CSV.read(joinpath(@__DIR__, "Weights_12_reprdays.csv"), DataFrame)
 ts = CSV.read(joinpath(@__DIR__, "Profiles_12_reprdays.csv"), DataFrame)
 
-print(repr_days)
-print(ts)
+
+
+
 
 ## Step 2: create model & pass data to model
 using JuMP
@@ -91,7 +92,7 @@ function process_parameters!(m::Model, data::Dict, repr_days::DataFrame)
     m.ext[:parameters][:IC] = Dict(i => r*OC[i]/(1-(1+r).^(-LifeTime[i])) for i in I) # EUR/MW/y
 
     # legacy capacity
-    LC = m.ext[:parameters][:LC] = Dict(i => d[i]["legcap"] for i in I) # MW
+    m.ext[:parameters][:LC] = Dict(i => d[i]["legcap"] for i in I) # MW
 
     # return model
     return m
@@ -101,7 +102,6 @@ end
 define_sets!(m, data)
 process_time_series_data!(m, data, ts)
 process_parameters!(m, data, repr_days)
-
 
 ## Step 3: construct your model
 # Greenfield GEP - single year (Lecture 3 - slide 25, but based on representative days instead of full year)
@@ -148,7 +148,7 @@ function build_greenfield_1Y_GEP_model!(m::Model)
 
     # 2a - power balance
     m.ext[:constraints][:con2a] = @constraint(m, [jh=JH,jd=JD],
-        sum(g[i,jh,jd] for i in I) == D[jh,jd] - ens[jh,jd]
+        sum(g[i,jh,jd] for i in I) == D[jh,jd] -ens[jh,jd]
     )
 
     # 2c2 - load shedding
@@ -196,13 +196,13 @@ function build_brownfield_1Y_GEP_model!(m::Model)
         delete(m,m.ext[:constraints][:con3a1res][iv,jh,jd])
     end
     for id in ID, jh in JH, jd in JD
-        delete(m,m.ext[:constraints][:con3a1conv][id,jh,jd])
+        delete(m,m.ext[:constraints][:con3a1conv][id,jh,jd]) #If there is an error, check here, not 100% sure
     end
 
     # define new constraints
     # 3a1 - renewables
     m.ext[:constraints][:con3a1res] = @constraint(m, [i=IV, jh=JH, jd =JD],
-        g(i,jh,jd) <= AF[i][jh,jd]*(cap[i]+LC[i])
+        g[i,jh,jd] <= AF[i][jh,jd]*(cap[i]+LC[i])
     )
 
     # 3a1 - conventional
@@ -214,8 +214,8 @@ function build_brownfield_1Y_GEP_model!(m::Model)
 end
 
 # Build your model
-# build_greenfield_1Y_GEP_model!(m)
-build_brownfield_1Y_GEP_model!(m)
+build_greenfield_1Y_GEP_model!(m)
+# build_brownfield_1Y_GEP_model!(m)
 
 ## Step 4: solve
 # current model is incomplete, so all variables and objective will be zero
