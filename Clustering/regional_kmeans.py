@@ -5,6 +5,7 @@ import libpysal
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
+import time
 
 # Skip warnings
 warnings.filterwarnings("ignore")
@@ -36,6 +37,8 @@ lon = np.tile(lon, res)
 lat = np.repeat(lat, res)
 
 ### Wind
+start_wind = time.time()
+
 wm = np.average(wm,axis=0)
 
 wm = wm[:-(lenlat-res),:-(lenlon-res)]
@@ -76,9 +79,14 @@ w = libpysal.weights.lat2W(res, res)
 # plt.scatter(lon, lat,
 #            c=wm)
 # plt.show()
-
+#
+# end_wind = time.time()
+# print("Computation time (h):")
+# print((end_wind-start_wind)/3600)
 
 ### Sun
+start_sun = time.time()
+
 id = np.average(id,axis=0)
 
 id = id[:-(lenlat-res),:-(lenlon-res)]
@@ -115,3 +123,7 @@ fig = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=id)
 plt.show()
+
+end_sun = time.time()
+print("Computation time sun (h)")
+print((start_sun-end_sun)/3600)
