@@ -25,7 +25,7 @@ id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each with nr of clusters
 res = 100
-clusters = 50
+clusters = 30
 
 lenlon = len(lon)
 lenlat = len(lat)
@@ -53,36 +53,36 @@ plt.show()
 
 w = libpysal.weights.lat2W(res, res)
 
-# wm = np.array(wm)
-#
-# model = RegionKMeansHeuristic(wm, clusters, w)
-# model.solve()
-#
-#
-# areas = np.arange(res * res)
-# regions = [areas[model.labels_ == region] for region in range(clusters)]
-#
-# wm = np.array(wm)
-# wm = list(np.concatenate(wm).flat)
-#
-# for i in range(clusters):
-#     for j in range(len(regions[i])):
-#         wm[regions[i][j]] = model.centroids_[i]
-#
-#
-# fig = plt.figure(figsize=(6, 6))
-# plt.scatter(lon, lat,
-#            c=model.labels_)
-# plt.show()
-#
-# fig = plt.figure(figsize=(6, 6))
-# plt.scatter(lon, lat,
-#            c=wm)
-# plt.show()
-#
-# end_wind = time.time()
-# print("Computation time (h):")
-# print((end_wind-start_wind)/3600)
+wm = np.array(wm)
+
+model = RegionKMeansHeuristic(wm, clusters, w)
+model.solve()
+
+
+areas = np.arange(res * res)
+regions = [areas[model.labels_ == region] for region in range(clusters)]
+
+wm = np.array(wm)
+wm = list(np.concatenate(wm).flat)
+
+for i in range(clusters):
+    for j in range(len(regions[i])):
+        wm[regions[i][j]] = model.centroids_[i]
+
+
+fig = plt.figure(figsize=(6, 6))
+plt.scatter(lon, lat,
+           c=model.labels_)
+plt.show()
+
+fig = plt.figure(figsize=(6, 6))
+plt.scatter(lon, lat,
+           c=wm)
+plt.show()
+
+end_wind = time.time()
+print("Computation time (h):")
+print((end_wind-start_wind)/3600)
 
 ### Sun
 start_sun = time.time()

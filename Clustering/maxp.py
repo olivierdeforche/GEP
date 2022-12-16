@@ -27,7 +27,7 @@ id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each for threshold=number of points you should take together
 res = 100
-threshold = 200
+threshold = 333
 lenlon = len(lon)
 lenlat = len(lat)
 lon = lon[:-(lenlon-res)]
@@ -41,71 +41,71 @@ lat = np.repeat(lat, res)
 geo = gpd.GeoSeries.from_xy(lon, lat)
 w = libpysal.weights.lat2W(res, res)
 
-# start_wind = time.time()
+start_wind = time.time()
 
-# ### Wind
-# wm = np.average(wm,axis=0)
-# wm = wm[:-(lenlat-res),:-(lenlon-res)]
-# wm = list(np.concatenate(wm).flat)
-# wm_copy = wm
-# wm = [[i] for i in wm]
-#
-#
-# fig = plt.figure(figsize=(6, 6))
-# plt.scatter(lon, lat,
-#            c=wm)
-# plt.show()
-#
-# ## transform to GeoDataFrame
-# frame = gpd.GeoDataFrame(wm, geometry=geo)
-# frame["count"] = 1
-# frame.rename(columns={0:'Data'}, inplace=True )
-#
-# ## Name data used by MaxP method
-# attrs_name = "Data"
-# threshold_name = "count"
-#
-# print("starting model")
-# model = MaxP(frame, w, attrs_name, threshold_name, threshold)
-# model.solve()
-#
-# print("Model Solved, starting calculations of cluster values")
-#
-# fig = plt.figure(figsize=(6, 6))
-# plt.scatter(lon, lat,
-#            c=model.labels_)
-# plt.show()
-#
-# nr_of_clusters = np.ceil(res*res/threshold)
-# nr_of_clusters = int(nr_of_clusters)
-# clusters = dict.fromkeys(range(1,nr_of_clusters))
-# clusters_values = dict.fromkeys(range(1,nr_of_clusters))
-#
-# for i in range(len(clusters)+1):
-#     clusters[i+1] = list()
-#     clusters_values[i+1] = list()
-#
-# for i in range(len(model.labels_)):
-#     clusters[model.labels_[i]].insert(i,i)
-#     clusters_values[model.labels_[i]].insert(i,wm_copy[i])
-#
-# for key in clusters:
-#     average = np.average(clusters_values[key])
-#     print(average)
-#     for i in range(len(clusters[key])):
-#         wm_copy[clusters[key][i]] = average
-#
-#
-# print("values relating to specific clusters calculated and ready")
-#
-# fig = plt.figure(figsize=(6, 6))
-# plt.scatter(lon, lat,
-#            c=wm_copy)
-# plt.show()
-#
-# end_wind = time.time()
-# print("Computation time (h):")
-# print((end_wind-start_wind)/3600)
+### Wind
+wm = np.average(wm,axis=0)
+wm = wm[:-(lenlat-res),:-(lenlon-res)]
+wm = list(np.concatenate(wm).flat)
+wm_copy = wm
+wm = [[i] for i in wm]
+
+
+fig = plt.figure(figsize=(6, 6))
+plt.scatter(lon, lat,
+           c=wm)
+plt.show()
+
+## transform to GeoDataFrame
+frame = gpd.GeoDataFrame(wm, geometry=geo)
+frame["count"] = 1
+frame.rename(columns={0:'Data'}, inplace=True )
+
+## Name data used by MaxP method
+attrs_name = "Data"
+threshold_name = "count"
+
+print("starting model")
+model = MaxP(frame, w, attrs_name, threshold_name, threshold)
+model.solve()
+
+print("Model Solved, starting calculations of cluster values")
+
+fig = plt.figure(figsize=(6, 6))
+plt.scatter(lon, lat,
+           c=model.labels_)
+plt.show()
+
+nr_of_clusters = np.ceil(res*res/threshold)
+nr_of_clusters = int(nr_of_clusters)
+clusters = dict.fromkeys(range(1,nr_of_clusters))
+clusters_values = dict.fromkeys(range(1,nr_of_clusters))
+
+for i in range(len(clusters)+1):
+    clusters[i+1] = list()
+    clusters_values[i+1] = list()
+
+for i in range(len(model.labels_)):
+    clusters[model.labels_[i]].insert(i,i)
+    clusters_values[model.labels_[i]].insert(i,wm_copy[i])
+
+for key in clusters:
+    average = np.average(clusters_values[key])
+    print(average)
+    for i in range(len(clusters[key])):
+        wm_copy[clusters[key][i]] = average
+
+
+print("values relating to specific clusters calculated and ready")
+
+fig = plt.figure(figsize=(6, 6))
+plt.scatter(lon, lat,
+           c=wm_copy)
+plt.show()
+
+end_wind = time.time()
+print("Computation time (h):")
+print((end_wind-start_wind)/3600)
 
 ### Sun
 start_sun = time.time()

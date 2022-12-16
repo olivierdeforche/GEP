@@ -2,9 +2,39 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e3cdde02-3389-42de-b56d-af05242fb4f8" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Output/MaxP/sun_maxp_clusters_res=100_thr=200.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/MaxP/sun_maxp_clusters_res=100_thr=200_v2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/MaxP/sun_maxp_res=100_thr=200.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/MaxP/wind_maxp_clusters_res=100_thr=200.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/MaxP/wind_maxp_clusters_res=100_thr=200_v2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/MaxP/wind_maxp_res=100_thr=200.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/RegionalKMeans/Wind_regionalkmeans_res=100_clu=30.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/RegionalKMeans/Wind_regionalkmeans_res=100_clu=50.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/RegionalKMeans/sun_regionalkmeans_clusters_res=100_clu=100.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/RegionalKMeans/sun_regionalkmeans_clusters_res=100_clu=30.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/RegionalKMeans/sun_regionalkmeans_clusters_res=100_clu=50.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/RegionalKMeans/sun_regionalkmeans_res=100_clu=100.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/RegionalKMeans/sun_regionalkmeans_res=100_clu=30.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/RegionalKMeans/sun_regionalkmeans_res=100_clu=50.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/RegionalKMeans/wind_regionalkmeans_clusters_res=100_clu=30.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/RegionalKMeans/wind_regionalkmeans_clusters_res=100_clu=50.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/sun_res=100.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Output/wind_res=100.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Wind_regionalkmeans_res=100_clu=50.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/maxp.py" beforeDir="false" afterPath="$PROJECT_DIR$/maxp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/regional_kmeans.py" beforeDir="false" afterPath="$PROJECT_DIR$/regional_kmeans.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sun_maxp_clusters_res=100_thr=200.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sun_regionalkmeans_clusters_res=100_clu=100.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sun_regionalkmeans_clusters_res=100_clu=50.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sun_regionalkmeans_res=100_clu=100.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sun_regionalkmeans_res=100_clu=50.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sun_res=100.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/wind_maxp_clusters_res=100_thr=200.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/wind_maxp_clusters_res=100_thr=200_v2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/wind_maxp_res=100_thr=200.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/wind_regionalkmeans_clusters_res=100_clu=50.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/wind_res=100.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +64,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Output/RegionalKMeans" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -194,7 +224,7 @@
       <workItem from="1670519013207" duration="44950000" />
       <workItem from="1671032518246" duration="9516000" />
       <workItem from="1671065045765" duration="617000" />
-      <workItem from="1671092340255" duration="19543000" />
+      <workItem from="1671092340255" duration="26381000" />
     </task>
     <servers />
   </component>
@@ -205,12 +235,12 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/maxp_py$maxp__1_.coverage" NAME="maxp (1) Coverage Results" MODIFIED="1671120982237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/maxp_py$maxp__1_.coverage" NAME="maxp (1) Coverage Results" MODIFIED="1671201730100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Clustering$maxp__1_.coverage" NAME="maxp (1) Coverage Results" MODIFIED="1670706755538" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Clustering$test_regional_kmaens2.coverage" NAME="test-regional_kmaens2 Coverage Results" MODIFIED="1670535503059" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Clustering$Test_regional_kmeans.coverage" NAME="Test-regional_kmeans Coverage Results" MODIFIED="1670618505457" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Clustering$Data.coverage" NAME="Data Coverage Results" MODIFIED="1670532936853" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/maxp_py$regional_kmeans__1_.coverage" NAME="regional_kmeans (1) Coverage Results" MODIFIED="1671037353693" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/maxp_py$regional_kmeans__1_.coverage" NAME="regional_kmeans (1) Coverage Results" MODIFIED="1671181085420" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Clustering$regional_kmeans__1_.coverage" NAME="regional_kmeans (1) Coverage Results" MODIFIED="1670706341670" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Clustering$Test_regional_kmeans3.coverage" NAME="Test-regional_kmeans3 Coverage Results" MODIFIED="1670535818068" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Clustering$Test_regional_kmeans1.coverage" NAME="Test-regional_kmeans1 Coverage Results" MODIFIED="1670598962604" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

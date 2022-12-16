@@ -281,3 +281,14 @@ p3 = bar(capvec, label="", xticks=(1:length(capvec), ["Mid" "Base" "Peak" "Wind"
 # combine
 plot(p1, p2, p3, layout = (3,1))
 plot!(size=(1000,800))
+
+
+
+# Oli: Model afmaken
+# Ipopt instead of gurobi
+
+# Bekend worden met Jump    
+# which solver and what type of problem and why --> jump decides it for us right now (kunnen we uit jump halen?)
+# see difference between both model and then check what type of problem and which solver jump uses.
+# is het convex of ni
+# Lagrangian ne keer checken!
