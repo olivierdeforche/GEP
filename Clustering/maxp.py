@@ -25,6 +25,7 @@ lat = ds["w"]["lat"][:]
 wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
+
 ## Only select first res values of each for threshold=number of points you should take together
 res = 100
 threshold = 333
@@ -66,7 +67,7 @@ attrs_name = "Data"
 threshold_name = "count"
 
 print("starting model")
-model = MaxP(frame, w, attrs_name, threshold_name, threshold)
+model = MaxP(frame, w, attrs_name, threshold_name, threshold, verbose=True)
 model.solve()
 
 print("Model Solved, starting calculations of cluster values")
@@ -91,7 +92,6 @@ for i in range(len(model.labels_)):
 
 for key in clusters:
     average = np.average(clusters_values[key])
-    print(average)
     for i in range(len(clusters[key])):
         wm_copy[clusters[key][i]] = average
 
@@ -135,7 +135,7 @@ threshold_name = "count"
 
 print("starting model")
 
-model = MaxP(frame, w, attrs_name, threshold_name, threshold)
+model = MaxP(frame, w, attrs_name, threshold_name, threshold, verbose=True)
 model.solve()
 
 print("Model Solved, starting calculations of cluster values")
@@ -160,7 +160,6 @@ for i in range(len(model.labels_)):
 
 for key in clusters:
     average = np.average(clusters_values[key])
-    print(average)
     for i in range(len(clusters[key])):
         id_copy[clusters[key][i]] = average
 
