@@ -17,6 +17,7 @@ fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_cl
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
+RANDOM_SEED = 123456
 
 
 ### Select smaller range of both datapoints
@@ -29,6 +30,8 @@ id = ds["w"]["influx_direct"][:,:,:]
 ## Only select first res values of each for threshold=number of points you should take together
 res = 100
 threshold = 333
+np.random.seed(RANDOM_SEED)
+
 lenlon = len(lon)
 lenlat = len(lat)
 lon = lon[:-(lenlon-res)]

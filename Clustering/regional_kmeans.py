@@ -15,7 +15,7 @@ fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_cl
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
-
+RANDOM_SEED = 123456
 
 ### Select smaller range of both datapoints
 lon = ds["w"]["lon"][:]
@@ -26,6 +26,7 @@ id = ds["w"]["influx_direct"][:,:,:]
 ## Only select first res values of each with nr of clusters
 res = 100
 clusters = 30
+np.random.seed(RANDOM_SEED)
 
 lenlon = len(lon)
 lenlat = len(lat)
