@@ -25,8 +25,8 @@ wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each with nr of clusters
-res = 10
-clusters = 30
+res = 30  #orig 100
+clusters = 10 # orig 30
 np.random.seed(RANDOM_SEED)
 
 lenlon = len(lon)
@@ -47,10 +47,10 @@ wm = wm[:-(lenlat-res),:-(lenlon-res)]
 wm = list(np.concatenate(wm).flat)
 wm = [[i] for i in wm]
 
-fig = plt.figure(figsize=(6, 6))
+fig1 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=wm)
-plt.show()
+plt.title("Raw wind data")
 
 
 w = libpysal.weights.lat2W(res, res)
@@ -72,18 +72,20 @@ for i in range(clusters):
         wm[regions[i][j]] = model.centroids_[i]
 
 
-fig = plt.figure(figsize=(6, 6))
+fig2 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.show()
+plt.title("Wind clusters, random colors")
 
-fig = plt.figure(figsize=(6, 6))
+
+fig3 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=wm)
-plt.show()
+plt.title("Wind clusters, ranked with color")
+
 
 end_wind = time.time()
-print("Computation time (h):")
+print("Computation time wind (h):")
 print((end_wind-start_wind)/3600)
 
 ### Sun
@@ -96,10 +98,11 @@ id = list(np.concatenate(id).flat)
 id = [[i] for i in id]
 
 
-fig = plt.figure(figsize=(6, 6))
+fig4 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=id)
-plt.show()
+plt.title("Raw sun data")
+
 
 id = np.array(id)
 
@@ -116,14 +119,16 @@ for i in range(clusters):
     for j in range(len(regions[i])):
         id[regions[i][j]] = model.centroids_[i]
 
-fig = plt.figure(figsize=(6, 6))
+fig5 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.show()
+plt.title("Sun clusters, random colors")
 
-fig = plt.figure(figsize=(6, 6))
+
+fig6 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=id)
+plt.title("Sun clusters, ranked with color")
 plt.show()
 
 end_sun = time.time()
