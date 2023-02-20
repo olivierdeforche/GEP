@@ -13,7 +13,8 @@ import time
 # Skip warnings
 warnings.filterwarnings("ignore")
 
-fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
+# fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
+fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
@@ -28,8 +29,8 @@ id = ds["w"]["influx_direct"][:,:,:]
 
 
 ## Only select first res values of each for threshold=number of points you should take together
-res = 100
-threshold = 333
+res = 10 #orig 100
+threshold = 23 #orig 333
 np.random.seed(RANDOM_SEED)
 
 lenlon = len(lon)
@@ -55,10 +56,10 @@ wm_copy = wm
 wm = [[i] for i in wm]
 
 
-fig = plt.figure(figsize=(6, 6))
+fig1 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=wm)
-plt.show()
+plt.title("Raw wind data")
 
 ## transform to GeoDataFrame
 frame = gpd.GeoDataFrame(wm, geometry=geo)
@@ -75,10 +76,10 @@ model.solve()
 
 print("Model Solved, starting calculations of cluster values")
 
-fig = plt.figure(figsize=(6, 6))
+fig22 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.show()
+plt.title("Wind clusters, random colors, max-p")
 
 nr_of_clusters = np.ceil(res*res/threshold)
 nr_of_clusters = int(nr_of_clusters)
@@ -101,10 +102,10 @@ for key in clusters:
 
 print("values relating to specific clusters calculated and ready")
 
-fig = plt.figure(figsize=(6, 6))
+fig3 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=wm_copy)
-plt.show()
+plt.title("Wind clusters, ranked with color")
 
 end_wind = time.time()
 print("Computation time (h):")
@@ -121,10 +122,10 @@ id_copy = id
 id = [[i] for i in id]
 
 
-fig = plt.figure(figsize=(6, 6))
+fig4 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=id)
-plt.show()
+plt.title("Raw sun data")
 
 ## transform to GeoDataFrame
 frame = gpd.GeoDataFrame(id, geometry=geo)
@@ -143,10 +144,10 @@ model.solve()
 
 print("Model Solved, starting calculations of cluster values")
 
-fig = plt.figure(figsize=(6, 6))
+fig5 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.show()
+plt.title("Sun clusters, random colors, max-p")
 
 nr_of_clusters = np.ceil(res*res/threshold)
 nr_of_clusters = int(nr_of_clusters)
@@ -169,11 +170,13 @@ for key in clusters:
 
 print("values relating to specific clusters calculated and ready")
 
-fig = plt.figure(figsize=(6, 6))
+fig6 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=id_copy)
-plt.show()
+plt.title("Sun clusters, ranked with color, max-p")
 
 end_sun = time.time()
 print("Computation time sun (h)")
 print((start_sun-end_sun)/3600)
+
+plt.show()

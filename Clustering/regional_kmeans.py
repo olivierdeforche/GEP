@@ -25,8 +25,8 @@ wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each with nr of clusters
-res = 30  #orig 100
-clusters = 10 # orig 30
+res = 100  #orig 100
+clusters = 30 #orig 30
 np.random.seed(RANDOM_SEED)
 
 lenlon = len(lon)
@@ -75,13 +75,13 @@ for i in range(clusters):
 fig2 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.title("Wind clusters, random colors")
+plt.title("Wind clusters, random colors, kmeans")
 
 
 fig3 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=wm)
-plt.title("Wind clusters, ranked with color")
+plt.title("Wind clusters, ranked with color, kmeans")
 
 
 end_wind = time.time()
@@ -122,15 +122,16 @@ for i in range(clusters):
 fig5 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.title("Sun clusters, random colors")
+plt.title("Sun clusters, random colors, kmeans")
 
 
 fig6 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=id)
-plt.title("Sun clusters, ranked with color")
-plt.show()
+plt.title("Sun clusters, ranked with color, kmeans")
 
 end_sun = time.time()
 print("Computation time sun (h)")
 print((start_sun-end_sun)/3600)
+
+plt.show()
