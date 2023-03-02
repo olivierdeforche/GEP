@@ -29,8 +29,8 @@ id = ds["w"]["influx_direct"][:,:,:]
 
 
 ## Only select first res values of each for threshold=number of points you should take together
-res = 10 #orig 100
-threshold = 23 #orig 333
+res = 100 #orig 100
+threshold = 333 #orig 333
 np.random.seed(RANDOM_SEED)
 
 lenlon = len(lon)
@@ -46,6 +46,8 @@ lat = np.repeat(lat, res)
 geo = gpd.GeoSeries.from_xy(lon, lat)
 w = libpysal.weights.lat2W(res, res)
 
+print(w)
+
 start_wind = time.time()
 
 ### Wind
@@ -54,7 +56,6 @@ wm = wm[:-(lenlat-res),:-(lenlon-res)]
 wm = list(np.concatenate(wm).flat)
 wm_copy = wm
 wm = [[i] for i in wm]
-
 
 fig1 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
@@ -105,7 +106,7 @@ print("values relating to specific clusters calculated and ready")
 fig3 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=wm_copy)
-plt.title("Wind clusters, ranked with color")
+plt.title("Wind clusters, ranked with color, max-p")
 
 end_wind = time.time()
 print("Computation time (h):")
