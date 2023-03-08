@@ -1,5 +1,8 @@
+from sklearn.cluster import AgglomerativeClustering
+
+#from ..BaseClass import BaseSpOptHeuristicSolver
 import netCDF4 as nc
-from spopt.region import MaxPHeuristic as MaxP
+from spopt.region import WardSpatial
 import matplotlib.pyplot as plt
 
 import libpysal
@@ -10,11 +13,14 @@ import warnings
 import geopandas as gpd
 import time
 
+import pytest
+
 # Skip warnings
 warnings.filterwarnings("ignore")
 
 # fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
 fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
+
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
@@ -29,9 +35,8 @@ id = ds["w"]["influx_direct"][:,:,:]
 
 
 ## Only select first res values of each for threshold=number of points you should take together
-res = 100 #orig 100
-threshold = 333 #orig 333
-np.random.seed(RANDOM_SEED)
+res = 100
+n_clusters = 30
 
 lenlon = len(lon)
 lenlat = len(lat)
@@ -46,11 +51,9 @@ lat = np.repeat(lat, res)
 geo = gpd.GeoSeries.from_xy(lon, lat)
 w = libpysal.weights.lat2W(res, res)
 
-print(w)
-
+### Wind
 start_wind = time.time()
 
-### Wind
 wm = np.average(wm,axis=0)
 wm = wm[:-(lenlat-res),:-(lenlon-res)]
 wm = list(np.concatenate(wm).flat)
@@ -59,69 +62,67 @@ wm = [[i] for i in wm]
 
 fig1 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
-           c=wm)
+            c=wm)
 plt.title("Raw wind data")
 
 ## transform to GeoDataFrame
 frame = gpd.GeoDataFrame(wm, geometry=geo)
-frame["count"] = 1
+
+#frame["count"] = 1
 frame.rename(columns={0:'Data'}, inplace=True )
 
-## Name data used by MaxP method
-attrs_name = "Data"
-threshold_name = "count"
+## Name data used by Ward method
+attrs_name = ["Data"]
+attrs_name = np.array(attrs_name)
+
+#spatial weights
+w = libpysal.weights.lat2W(res, res)
 
 print("starting model")
-model = MaxP(frame, w, attrs_name, threshold_name, threshold, verbose=True)
+model = WardSpatial(frame, w, attrs_name, n_clusters)
 model.solve()
-
 print("Model Solved, starting calculations of cluster values")
 
-fig22 = plt.figure(figsize=(6, 6))
+fig2 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.title("Wind clusters, random colors, max-p")
+plt.title("Wind clusters, random colors, Ward HAC")
 
-nr_of_clusters = np.ceil(res*res/threshold)
-nr_of_clusters = int(nr_of_clusters)
-clusters = dict.fromkeys(range(1,nr_of_clusters))
-clusters_values = dict.fromkeys(range(1,nr_of_clusters))
+clusters = dict.fromkeys(range(1, n_clusters))
+clusters_values = dict.fromkeys(range(1, n_clusters))
 
-for i in range(len(clusters)+1):
-    clusters[i+1] = list()
-    clusters_values[i+1] = list()
+for i in range(len(clusters) + 1):
+    clusters[i + 1] = list()
+    clusters_values[i + 1] = list()
+
 
 for i in range(len(model.labels_)):
-    clusters[model.labels_[i]].insert(i,i)
-    clusters_values[model.labels_[i]].insert(i,wm_copy[i])
+    clusters[model.labels_[i]+1].insert(i, i)
+    clusters_values[model.labels_[i]+1].insert(i, wm_copy[i])
 
 for key in clusters:
     average = np.average(clusters_values[key])
     for i in range(len(clusters[key])):
         wm_copy[clusters[key][i]] = average
 
-
-print("values relating to specific clusters calculated and ready")
-
 fig3 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=wm_copy)
-plt.title("Wind clusters, ranked with color, max-p")
+plt.title("Wind clusters, ranked with color, Ward HAC")
 
 end_wind = time.time()
 print("Computation time (h):")
 print((end_wind-start_wind)/3600)
 
+
 ### Sun
 start_sun = time.time()
-
 
 id = np.average(id,axis=0)
 id = id[:-(lenlat-res),:-(lenlon-res)]
 id = list(np.concatenate(id).flat)
 id_copy = id
 id = [[i] for i in id]
-
 
 fig4 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
@@ -130,54 +131,44 @@ plt.title("Raw sun data")
 
 ## transform to GeoDataFrame
 frame = gpd.GeoDataFrame(id, geometry=geo)
-frame["count"] = 1
 frame.rename(columns={0:'Data'}, inplace=True )
 
-## Name data used by MaxP method
-attrs_name = "Data"
-threshold_name = "count"
-
+## Name data used by Ward method
+attrs_name = ["Data"]
+attrs_name = np.array(attrs_name)
 
 print("starting model")
-
-model = MaxP(frame, w, attrs_name, threshold_name, threshold, verbose=True)
+model = WardSpatial(frame, w, attrs_name, n_clusters)
 model.solve()
-
 print("Model Solved, starting calculations of cluster values")
 
 fig5 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.title("Sun clusters, random colors, max-p")
+plt.title("Sun clusters, random colors, Ward HAC")
 
-nr_of_clusters = np.ceil(res*res/threshold)
-nr_of_clusters = int(nr_of_clusters)
-clusters = dict.fromkeys(range(1,nr_of_clusters))
-clusters_values = dict.fromkeys(range(1,nr_of_clusters))
+clusters = dict.fromkeys(range(1, n_clusters))
+clusters_values = dict.fromkeys(range(1, n_clusters))
 
-for i in range(len(clusters)+1):
-    clusters[i+1] = list()
-    clusters_values[i+1] = list()
+for i in range(len(clusters) + 1):
+    clusters[i + 1] = list()
+    clusters_values[i + 1] = list()
 
 for i in range(len(model.labels_)):
-    clusters[model.labels_[i]].insert(i,i)
-    clusters_values[model.labels_[i]].insert(i,id_copy[i])
+    clusters[model.labels_[i]+1].insert(i, i)
+    clusters_values[model.labels_[i]+1].insert(i, id_copy[i])
 
 for key in clusters:
     average = np.average(clusters_values[key])
     for i in range(len(clusters[key])):
         id_copy[clusters[key][i]] = average
 
-
-print("values relating to specific clusters calculated and ready")
-
 fig6 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=id_copy)
-plt.title("Sun clusters, ranked with color, max-p")
-
-end_sun = time.time()
-print("Computation time sun (h)")
-print((start_sun-end_sun)/3600)
-
+plt.title("Sun clusters, ranked with color, Ward HAC")
 plt.show()
+
+end_wind = time.time()
+print("Computation time (h):")
+print((end_wind-start_wind)/3600)
