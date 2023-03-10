@@ -10,6 +10,7 @@ import matplotlib
 import numpy as np
 import spopt
 import warnings
+import csv
 import geopandas as gpd
 import time
 
@@ -21,11 +22,11 @@ warnings.filterwarnings("ignore")
 # fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
 fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
 
+AF = "C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/cap_factors_wind.csv"
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
 RANDOM_SEED = 123456
-
 
 ### Select smaller range of both datapoints
 lon = ds["w"]["lon"][:]
@@ -60,10 +61,22 @@ wm = list(np.concatenate(wm).flat)
 wm_copy = wm
 wm = [[i] for i in wm]
 
+af = np.loadtxt(AF, delimiter=',')
+af = af[:-(lenlat-res),:-(lenlon-res)]
+af = np. reshape(af,-1)
+af_copy = af
+af = [[i] for i in af]
+
+
 fig1 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
             c=wm)
 plt.title("Raw wind data")
+
+fig11 = plt.figure(figsize=(6, 6))
+plt.scatter(lon, lat,
+            c=af)
+plt.title("Availability factors wind")
 
 ## transform to GeoDataFrame
 frame = gpd.GeoDataFrame(wm, geometry=geo)

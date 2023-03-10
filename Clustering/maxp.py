@@ -30,7 +30,7 @@ id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each for threshold=number of points you should take together
 res = 100 #orig 100
-threshold = 333 #orig 333
+threshold = 2500 #orig 333
 np.random.seed(RANDOM_SEED)
 
 lenlon = len(lon)
@@ -64,7 +64,7 @@ plt.title("Raw wind data")
 
 ## transform to GeoDataFrame
 frame = gpd.GeoDataFrame(wm, geometry=geo)
-frame["count"] = 1
+frame["count"] = wm_copy
 frame.rename(columns={0:'Data'}, inplace=True )
 
 ## Name data used by MaxP method

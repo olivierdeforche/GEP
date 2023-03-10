@@ -43,6 +43,7 @@ lat = np.repeat(lat, res)
 
 ### Wind
 start_wind = time.time()
+print(start_wind)
 
 wm = np.average(wm,axis=0)
 wm = wm[:-(lenlat-res),:-(lenlon-res)]

@@ -1,18 +1,21 @@
 import atlite
 import geopandas as gpd
-from atlite.gis import ExclusionContainer
+import numpy as np
+# from atlite.gis import ExclusionContainer
 
 
-# Read countires in
-url = "https://tubcloud.tu-berlin.de/s/7bpHrAkjMT3ADSr/download/country_shapes.geojson"
-countries = gpd.read_file(url).set_index('name')
-print("done")
-excluder = ExclusionContainer(crs=3035)
+# # Read countires in
+# url = "https://tubcloud.tu-berlin.de/s/7bpHrAkjMT3ADSr/download/country_shapes.geojson"
+# countries = gpd.read_file(url).set_index('name')
+# print("done")
+# excluder = ExclusionContainer(crs=3035)
 
-shape = countries.to_crs(excluder.crs).loc[["PT"]].geometry
-shape[0]
+# shape = countries.to_crs(excluder.crs).loc[["PT"]].geometry
+# shape[0]
 
 # cutout = atlite.Cutout("C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc")
+cutout = atlite.Cutout("C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc")
+
 # print(type(cutout))
 # print(cutout.data)
 
@@ -21,10 +24,11 @@ shape[0]
 
 # print(cutout.available_features)
 
-# # Turbines: Vestas-112-3MW 
-# cap_factors_wind = cutout.wind(turbine="Vestas_V112_3MW", capacity_factor=True)
-# print(type(cap_factors_wind))
-# print(cap_factors_wind)
+# Turbines: Vestas-112-3MW 
+cap_factors_wind = cutout.wind(turbine="Vestas_V112_3MW", capacity_factor=True)
+print(type(cap_factors_wind))
+print(cap_factors_wind)
+np.savetxt('cap_factors_wind.csv', cap_factors_wind, delimiter=',') #saved in C:\Users\Louis\Documents\Master\Thesis\GEP\Clustering
 
 # # Panels: CdTe, CSI, KANENA
 # cap_factors_sun = cutout.pv(panel='CdTe', orientation='latitude_optimal', capacity_factor=True) 
