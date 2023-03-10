@@ -13,6 +13,7 @@ warnings.filterwarnings("ignore")
 
 # fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
 fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
+AF = "C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/cap_factors_wind.csv"
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
@@ -21,7 +22,7 @@ RANDOM_SEED = 123456
 ### Select smaller range of both datapoints
 lon = ds["w"]["lon"][:]
 lat = ds["w"]["lat"][:]
-wm = ds["w"]["wnd100m"][:,:,:]
+# wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each with nr of clusters
@@ -41,50 +42,48 @@ lat = np.repeat(lat, res)
 ### Wind
 start_wind = time.time()
 
-wm = np.average(wm,axis=0)
-
-wm = wm[:-(lenlat-res),:-(lenlon-res)]
-wm = list(np.concatenate(wm).flat)
-wm = [[i] for i in wm]
+af = np.loadtxt(AF, delimiter=',')
+af = af[:-(lenlat-res),:-(lenlon-res)]
+af = np. reshape(af,-1)
+af_copy = af
+af = [[i] for i in af]
 
 fig1 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
-           c=wm)
-plt.title("Raw wind data")
-
+           c=af)
+plt.title("Availability factors wind")
 
 w = libpysal.weights.lat2W(res, res)
 
-wm = np.array(wm)
-print(wm)
+af = np.array(af)
+print(af)
 
 print("starting model")
-model = RegionKMeansHeuristic(wm, clusters, w)
+model = RegionKMeansHeuristic(af, clusters, w)
 model.solve()
 print("Model Solved, starting calculations of cluster values")
-
 
 areas = np.arange(res * res)
 regions = [areas[model.labels_ == region] for region in range(clusters)]
 
-wm = np.array(wm)
-wm = list(np.concatenate(wm).flat)
+af = np.array(af)
+af = list(np.concatenate(af).flat)
 
 for i in range(clusters):
     for j in range(len(regions[i])):
-        wm[regions[i][j]] = model.centroids_[i]
+        af[regions[i][j]] = model.centroids_[i]
 
 
 fig2 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.title("Wind clusters, random colors, kmeans")
+plt.title("AF wind clusters, random colors, kmeans")
 
 
 fig3 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
-           c=wm)
-plt.title("Wind clusters, ranked with color, kmeans")
+           c=af)
+plt.title("AF wind clusters, ranked with color, kmeans")
 
 
 end_wind = time.time()

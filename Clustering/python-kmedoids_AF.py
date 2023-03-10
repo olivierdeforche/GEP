@@ -1,26 +1,21 @@
-from sklearn.cluster import AgglomerativeClustering
+import kmedoids
 
-#from ..BaseClass import BaseSpOptHeuristicSolver
 import netCDF4 as nc
-from spopt.region import WardSpatial
-import matplotlib.pyplot as plt
-
 import libpysal
-import matplotlib
 import numpy as np
-import spopt
+import matplotlib.pyplot as plt
 import warnings
-import csv
-import geopandas as gpd
 import time
+import unittest
 
-import pytest
+from sklearn.metrics.pairwise import euclidean_distances
 
 # Skip warnings
 warnings.filterwarnings("ignore")
 
 # fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
 fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
+AF = "C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/cap_factors_wind.csv"
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
@@ -29,13 +24,14 @@ RANDOM_SEED = 123456
 ### Select smaller range of both datapoints
 lon = ds["w"]["lon"][:]
 lat = ds["w"]["lat"][:]
-wm = ds["w"]["wnd100m"][:,:,:]
+# wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
-
-## Only select first res values of each for threshold=number of points you should take together
-res = 100
-n_clusters = 29
+## Only select first res values of each with nr of clusters
+res = 100  #orig 100
+medoids = 29
+n_clusters = medoids
+np.random.seed(RANDOM_SEED)
 
 lenlon = len(lon)
 lenlat = len(lat)
@@ -46,46 +42,31 @@ lat = lat[:-(lenlat-res)]
 lon = np.tile(lon, res)
 lat = np.repeat(lat, res)
 
-## Preperation for GeoDataFrame
-geo = gpd.GeoSeries.from_xy(lon, lat)
-w = libpysal.weights.lat2W(res, res)
-
 ### Wind
 start_wind = time.time()
 
-wm = np.average(wm,axis=0)
-wm = wm[:-(lenlat-res),:-(lenlon-res)]
-wm = list(np.concatenate(wm).flat)
-wm_copy = wm
-wm = [[i] for i in wm]
+af = np.loadtxt(AF, delimiter=',')
+af = af[:-(lenlat-res),:-(lenlon-res)]
+af = np. reshape(af,-1)
+af_copy = af
+af = [[i] for i in af]
 
 fig1 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
-            c=wm)
-plt.title("Raw wind data")
+           c=af)
+plt.title("Availability factors wind")
 
-## transform to GeoDataFrame
-frame = gpd.GeoDataFrame(wm, geometry=geo)
-
-#frame["count"] = 1
-frame.rename(columns={0:'Data'}, inplace=True )
-
-## Name data used by Ward method
-attrs_name = ["Data"]
-attrs_name = np.array(attrs_name)
-
-#spatial weights
-w = libpysal.weights.lat2W(res, res)
+af = np.array(af)
+diss = euclidean_distances(af)
 
 print("starting model")
-model = WardSpatial(frame, w, attrs_name, n_clusters)
-model.solve()
+model = kmedoids.fasterpam(diss, medoids, max_iter=100, init='random', random_state=None, n_cpu=-1)
 print("Model Solved, starting calculations of cluster values")
 
-fig2 = plt.figure(figsize=(6, 6))
+fig22 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
-           c=model.labels_)
-plt.title("Wind clusters, random colors, Ward HAC")
+           c=model.labels)
+plt.title("AF wind clusters, random colors, k-medoids")
 
 clusters = dict.fromkeys(range(1, n_clusters))
 clusters_values = dict.fromkeys(range(1, n_clusters))
@@ -94,57 +75,50 @@ for i in range(len(clusters) + 1):
     clusters[i + 1] = list()
     clusters_values[i + 1] = list()
 
-
-for i in range(len(model.labels_)):
-    clusters[model.labels_[i]+1].insert(i, i)
-    clusters_values[model.labels_[i]+1].insert(i, wm_copy[i])
+for i in range(len(model.labels)):
+    clusters[model.labels[i]+1].insert(i, i)
+    clusters_values[model.labels[i]+1].insert(i, af_copy[i])
 
 for key in clusters:
     average = np.average(clusters_values[key])
     for i in range(len(clusters[key])):
-        wm_copy[clusters[key][i]] = average
+        af_copy[clusters[key][i]] = average
 
 fig3 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
-           c=wm_copy)
-plt.title("Wind clusters, ranked with color, Ward HAC")
+           c=af_copy)
+plt.title("AF wind clusters, ranked with color, k-medoids")
 
 end_wind = time.time()
 print("Computation time (h):")
 print((end_wind-start_wind)/3600)
 
-
 ### Sun
 start_sun = time.time()
 
 id = np.average(id,axis=0)
+
 id = id[:-(lenlat-res),:-(lenlon-res)]
 id = list(np.concatenate(id).flat)
 id_copy = id
 id = [[i] for i in id]
+
 
 fig4 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=id)
 plt.title("Raw sun data")
 
-## transform to GeoDataFrame
-frame = gpd.GeoDataFrame(id, geometry=geo)
-frame.rename(columns={0:'Data'}, inplace=True )
-
-## Name data used by Ward method
-attrs_name = ["Data"]
-attrs_name = np.array(attrs_name)
+diss = euclidean_distances(id)
 
 print("starting model")
-model = WardSpatial(frame, w, attrs_name, n_clusters)
-model.solve()
+model = kmedoids.fasterpam(diss, medoids, max_iter=100, init='random', random_state=None, n_cpu=-1)
 print("Model Solved, starting calculations of cluster values")
 
 fig5 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
-           c=model.labels_)
-plt.title("Sun clusters, random colors, Ward HAC")
+           c=model.labels)
+plt.title("Sun clusters, random colors, k-medoids")
 
 clusters = dict.fromkeys(range(1, n_clusters))
 clusters_values = dict.fromkeys(range(1, n_clusters))
@@ -153,9 +127,9 @@ for i in range(len(clusters) + 1):
     clusters[i + 1] = list()
     clusters_values[i + 1] = list()
 
-for i in range(len(model.labels_)):
-    clusters[model.labels_[i]+1].insert(i, i)
-    clusters_values[model.labels_[i]+1].insert(i, id_copy[i])
+for i in range(len(model.labels)):
+    clusters[model.labels[i]+1].insert(i, i)
+    clusters_values[model.labels[i]+1].insert(i, id_copy[i])
 
 for key in clusters:
     average = np.average(clusters_values[key])
@@ -165,7 +139,7 @@ for key in clusters:
 fig6 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=id_copy)
-plt.title("Sun clusters, ranked with color, Ward HAC")
+plt.title("Sun clusters, ranked with color, k-medoids")
 
 end_sun = time.time()
 print("Computation time (h):")

@@ -46,11 +46,9 @@ lat = np.repeat(lat, res)
 geo = gpd.GeoSeries.from_xy(lon, lat)
 w = libpysal.weights.lat2W(res, res)
 
-print(w)
-
+### Wind
 start_wind = time.time()
 
-### Wind
 wm = np.average(wm,axis=0)
 wm = wm[:-(lenlat-res),:-(lenlon-res)]
 wm = list(np.concatenate(wm).flat)
@@ -178,6 +176,6 @@ plt.title("Sun clusters, ranked with color, max-p")
 
 end_sun = time.time()
 print("Computation time sun (h)")
-print((start_sun-end_sun)/3600)
+print((end_sun-start_sun)/3600)
 
 plt.show()

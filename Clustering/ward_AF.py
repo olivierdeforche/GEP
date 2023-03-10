@@ -21,6 +21,7 @@ warnings.filterwarnings("ignore")
 
 # fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
 fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
+AF = "C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/cap_factors_wind.csv"
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
@@ -29,7 +30,7 @@ RANDOM_SEED = 123456
 ### Select smaller range of both datapoints
 lon = ds["w"]["lon"][:]
 lat = ds["w"]["lat"][:]
-wm = ds["w"]["wnd100m"][:,:,:]
+# wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 
@@ -53,19 +54,20 @@ w = libpysal.weights.lat2W(res, res)
 ### Wind
 start_wind = time.time()
 
-wm = np.average(wm,axis=0)
-wm = wm[:-(lenlat-res),:-(lenlon-res)]
-wm = list(np.concatenate(wm).flat)
-wm_copy = wm
-wm = [[i] for i in wm]
+af = np.loadtxt(AF, delimiter=',')
+af = af[:-(lenlat-res),:-(lenlon-res)]
+af = np. reshape(af,-1)
+af_copy = af
+af = [[i] for i in af]
 
 fig1 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
-            c=wm)
-plt.title("Raw wind data")
+            c=af)
+plt.title("Availability factors wind")
 
 ## transform to GeoDataFrame
-frame = gpd.GeoDataFrame(wm, geometry=geo)
+# frame = gpd.GeoDataFrame(wm, geometry=geo)
+frame = gpd.GeoDataFrame(af, geometry=geo)
 
 #frame["count"] = 1
 frame.rename(columns={0:'Data'}, inplace=True )
@@ -85,7 +87,7 @@ print("Model Solved, starting calculations of cluster values")
 fig2 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.title("Wind clusters, random colors, Ward HAC")
+plt.title("Wind AF clusters, random colors, Ward HAC")
 
 clusters = dict.fromkeys(range(1, n_clusters))
 clusters_values = dict.fromkeys(range(1, n_clusters))
@@ -94,20 +96,19 @@ for i in range(len(clusters) + 1):
     clusters[i + 1] = list()
     clusters_values[i + 1] = list()
 
-
 for i in range(len(model.labels_)):
     clusters[model.labels_[i]+1].insert(i, i)
-    clusters_values[model.labels_[i]+1].insert(i, wm_copy[i])
+    clusters_values[model.labels_[i]+1].insert(i, af_copy[i])
 
 for key in clusters:
     average = np.average(clusters_values[key])
     for i in range(len(clusters[key])):
-        wm_copy[clusters[key][i]] = average
+        af_copy[clusters[key][i]] = average
 
 fig3 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
-           c=wm_copy)
-plt.title("Wind clusters, ranked with color, Ward HAC")
+           c=af_copy)
+plt.title("Wind AF clusters, ranked with color, Ward HAC")
 
 end_wind = time.time()
 print("Computation time (h):")
