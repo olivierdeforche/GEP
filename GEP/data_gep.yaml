@@ -3,12 +3,12 @@ VOLL: 1000 # EUR / MWh
 CO2Price: 25 # EUR / ton
 nTimesteps: 24 # number of timesteps per representative day
 nReprDays: 12 # days
-discountrate: 0.05 # -
+discountrate: 0.07 # -
 
 # Generator parameters
 dispatchableGenerators:
  Base:
-  OC: 5000000 # EUR/MW
+  OC: 5000000 # EUR/MW oc = overnightcost
   fuelCosts: 10 # EUR/MWh
   emissions: 0.8 # ton/MWh
   lifetime: 40 # years

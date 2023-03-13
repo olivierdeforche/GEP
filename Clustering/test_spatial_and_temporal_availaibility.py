@@ -19,6 +19,15 @@ cutout = atlite.Cutout("C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/
 # print(type(cutout))
 # print(cutout.data)
 
+cutout = atlite.Cutout("C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc")
+print(type(cutout))
+print(cutout.data)
+
+# A = cutout.availabilitymatrix(shape, excluder)
+
+# cutout.prepare()
+# cap_factors_wind = cutout.wind(turbine="Vestas_V112_3MW", capacity_factor=True)
+
 # ax = shape.to_crs(4326).plot()
 # cutout.grid.plot(ax=ax, edgecolor='grey', color='None')
 
