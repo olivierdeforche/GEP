@@ -28,7 +28,7 @@ id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each with nr of clusters
 res = 100  #orig 100
-medoids = 29
+medoids = 30
 n_clusters = medoids
 np.random.seed(RANDOM_SEED)
 
@@ -91,6 +91,7 @@ plt.title("Wind clusters, ranked with color, k-medoids")
 end_wind = time.time()
 print("Computation time (h):")
 print((end_wind-start_wind)/3600)
+
 
 ### Sun
 start_sun = time.time()

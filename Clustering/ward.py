@@ -35,7 +35,7 @@ id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each for threshold=number of points you should take together
 res = 100
-n_clusters = 29
+n_clusters = 30
 
 lenlon = len(lon)
 lenlat = len(lat)

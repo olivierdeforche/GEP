@@ -10,7 +10,6 @@ import time
 # Skip warnings
 warnings.filterwarnings("ignore")
 
-
 # fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
 fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
 
@@ -63,7 +62,6 @@ model = RegionKMeansHeuristic(wm, clusters, w)
 model.solve()
 print("Model Solved, starting calculations of cluster values")
 
-
 areas = np.arange(res * res)
 regions = [areas[model.labels_ == region] for region in range(clusters)]
 
@@ -74,22 +72,20 @@ for i in range(clusters):
     for j in range(len(regions[i])):
         wm[regions[i][j]] = model.centroids_[i]
 
-
 fig2 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.title("Wind clusters, random colors, kmeans")
-
+plt.title("Wind clusters, random colors, regional kmeans")
 
 fig3 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=wm)
-plt.title("Wind clusters, ranked with color, kmeans")
-
+plt.title("Wind clusters, ranked with color, regional kmeans")
 
 end_wind = time.time()
 print("Computation time wind (h):")
 print((end_wind-start_wind)/3600)
+plt.show()
 
 ### Sun
 start_sun = time.time()
@@ -100,12 +96,10 @@ id = id[:-(lenlat-res),:-(lenlon-res)]
 id = list(np.concatenate(id).flat)
 id = [[i] for i in id]
 
-
 fig4 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=id)
 plt.title("Raw sun data")
-
 
 id = np.array(id)
 
@@ -125,13 +119,12 @@ for i in range(clusters):
 fig5 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=model.labels_)
-plt.title("Sun clusters, random colors, kmeans")
-
+plt.title("Sun clusters, random colors, regional kmeans")
 
 fig6 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
            c=id)
-plt.title("Sun clusters, ranked with color, kmeans")
+plt.title("Sun clusters, ranked with color, regional kmeans")
 
 end_sun = time.time()
 print("Computation time sun (h)")

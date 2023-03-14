@@ -39,7 +39,8 @@ print(type(cap_factors_wind))
 print(cap_factors_wind)
 np.savetxt('cap_factors_wind.csv', cap_factors_wind, delimiter=',')
 
-# # Panels: CdTe, CSI, KANENA
-# cap_factors_sun = cutout.pv(panel='CdTe', orientation='latitude_optimal', capacity_factor=True) 
-# print(cap_factors_sun)
+# Panels: CdTe, CSI, KANENA
+cap_factors_sun = cutout.pv(panel='CdTe', orientation='latitude_optimal', capacity_factor=True)
+print(cap_factors_sun)
+np.savetxt('cap_factors_sun.csv', cap_factors_sun, delimiter=',')
 # cap_factors_sun.to_csv("AF_sun.csv")
