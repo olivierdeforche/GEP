@@ -1,7 +1,7 @@
 import atlite
 import geopandas as gpd
 import numpy as np
-# from atlite.gis import ExclusionContainer
+from atlite.gis import ExclusionContainer
 
 
 # # Read countires in
@@ -19,7 +19,7 @@ cutout = atlite.Cutout("C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/
 # print(type(cutout))
 # print(cutout.data)
 
-cutout = atlite.Cutout("C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc")
+# cutout = atlite.Cutout("C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc")
 print(type(cutout))
 print(cutout.data)
 
