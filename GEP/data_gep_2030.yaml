@@ -1,0 +1,63 @@
+# general parameters
+VOLL: 8700 # EUR / MWh (before 1000 €/MWh)
+CO2Price: 128 # EUR / ton (by 2030)
+nTimesteps: 24 # number of timesteps per representative day
+nReprDays: 12 # days
+discountrate: 0.07 # -
+
+# Generator parameters
+dispatchableGenerators:
+  Nuclear:
+    OC: 5250000 # EUR/MW
+    fuelCosts: 29 # EUR/MWh
+    emissions: 0.013 # ton/MWh
+    lifetime: 60 # years
+    legcap:  # MW
+
+  Gas-fired PP:
+    OC: 825000 # EUR/MW
+    fuelCosts: 62  # EUR/MWh (8 USD/MBtu)
+    emissions: 0.49 # ton/MWh
+    lifetime: 30 # years
+    legcap:  # MW
+
+  Hydro:
+    OC: 3000000 # EUR/MW
+    fuelCosts: 0 # EUR/MWh
+    emissions: 0.021 # ton/MWh
+    lifetime: 80 # years
+    legcap:  # MW
+
+  Coal:
+    OC: 3000000 # EUR/MW
+    fuelCosts: 62.5 # EUR/MWh (75 USD/ton)
+    emissions: 1.00 # ton/MWh
+    lifetime: 40 # years
+    legcap:  # MW 
+
+variableGenerators:
+  On-Wind:
+    OC: 1600000 # EUR/MW
+    fuelCosts: 11  # EUR/MWh (operations & maintenance)
+    lifetime: 25 # years (before 20)
+    emissions: 0.013 # ton/MWh
+    legcap:  # MW
+
+  Off-Wind:
+    OC: 3300000 # EUR/MW
+    fuelCosts: 16  # EUR/MWh (operations & maintenance)
+    lifetime: 25 # years (before 20)
+    emissions: 0.013 # ton/MWh
+    legcap:  # MW
+
+  Solar:
+    OC: 940000 # EUR/MW 
+    fuelCosts: 6  # EUR/MWh (operations & maintenance)
+    lifetime: 25 # years (before 20)
+    emissions: 0.043 # ton/MWh
+    legcap:  # MW
+
+Storage:
+  Battery:
+    OC: 1300000 #EUR/MW
+    lifetime: 10 #years

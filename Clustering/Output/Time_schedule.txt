@@ -1,0 +1,1 @@
+AF_maxp_wind_k=30_pt=1	1.4h
