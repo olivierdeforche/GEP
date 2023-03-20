@@ -1,20 +1,13 @@
 import atlite
 import geopandas as gpd
 import numpy as np
+<<<<<<< Updated upstream
 from atlite.gis import ExclusionContainer
+=======
+>>>>>>> Stashed changes
 
-
-# # Read countires in
-# url = "https://tubcloud.tu-berlin.de/s/7bpHrAkjMT3ADSr/download/country_shapes.geojson"
-# countries = gpd.read_file(url).set_index('name')
-# print("done")
-# excluder = ExclusionContainer(crs=3035)
-
-# shape = countries.to_crs(excluder.crs).loc[["PT"]].geometry
-# shape[0]
-
-# cutout = atlite.Cutout("C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc")
-cutout = atlite.Cutout("C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc")
+cutout = atlite.Cutout("C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc")
+# cutout = atlite.Cutout("C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc")
 
 # print(type(cutout))
 # print(cutout.data)
