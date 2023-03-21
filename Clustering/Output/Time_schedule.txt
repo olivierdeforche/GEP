@@ -19,8 +19,8 @@ kmedoids_sun_k=30		0.0012h
 AF_kmedoids_wind_k=30	0.00058h
 AF_kmedoids_sun_k=30	0.00086h
 
-regkmeans_wind_k=30
-regkmeans_sun_k=30
+regkmeans_wind_k=30	0.78h
+regkmeans_sun_k=30	0.71h
 AF_regkmeans_wind_k=30
 AF_regkmeans_sun_k=30
 
