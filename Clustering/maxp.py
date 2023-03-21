@@ -44,70 +44,70 @@ lat = np.repeat(lat, res)
 geo = gpd.GeoSeries.from_xy(lon, lat)
 w = libpysal.weights.lat2W(res, res)
 
-### Wind
-start_wind = time.time()
-
-wm = np.average(wm,axis=0)
-wm = wm[:-(lenlat-res),:-(lenlon-res)]
-wm = list(np.concatenate(wm).flat)
-wm_copy = wm
-wm = [[i] for i in wm]
-
-fig1 = plt.figure(figsize=(6, 6))
-plt.scatter(lon, lat,
-           c=wm)
-plt.title("Raw wind data")
-
-## transform to GeoDataFrame
-frame = gpd.GeoDataFrame(wm, geometry=geo)
-frame["count"] = wm_copy
-threshold_wind = threshold*np.average(wm_copy)
-threshold_wind = int(threshold_wind)
-frame.rename(columns={0:'Data'}, inplace=True )
-
-## Name data used by MaxP method
-attrs_name = "Data"
-threshold_name = "count"
-
-print("starting model")
-model = MaxP(frame, w, attrs_name, threshold_name, threshold_wind, verbose=True)
-model.solve()
-print("Model Solved, starting calculations of cluster values")
-
-fig22 = plt.figure(figsize=(6, 6))
-plt.scatter(lon, lat,
-           c=model.labels_)
-plt.title("Wind clusters, random colors, max-p")
-plt.plot()
-
-nr_of_clusters = np.ceil(res*res/threshold)
-nr_of_clusters = int(nr_of_clusters)
-clusters = dict.fromkeys(range(1,nr_of_clusters))
-clusters_values = dict.fromkeys(range(1,nr_of_clusters))
-
-for i in range(len(clusters) + 1):
-    clusters[i + 1] = list()
-    clusters_values[i + 1] = list()
-
-for i in range(len(model.labels_)):
-    clusters[model.labels_[i]].insert(i, i)
-    clusters_values[model.labels_[i]].insert(i, wm_copy[i])
-
-for key in clusters:
-    average = np.average(clusters_values[key])
-    for i in range(len(clusters[key])):
-        wm_copy[clusters[key][i]] = average
-
-print("values relating to specific clusters calculated and ready")
-
-fig3 = plt.figure(figsize=(6, 6))
-plt.scatter(lon, lat,
-           c=wm_copy)
-plt.title("Wind clusters, ranked with color, max-p")
-
-end_wind = time.time()
-print("Computation time (h):")
-print((end_wind-start_wind)/3600)
+# ### Wind
+# start_wind = time.time()
+#
+# wm = np.average(wm,axis=0)
+# wm = wm[:-(lenlat-res),:-(lenlon-res)]
+# wm = list(np.concatenate(wm).flat)
+# wm_copy = wm
+# wm = [[i] for i in wm]
+#
+# fig1 = plt.figure(figsize=(6, 6))
+# plt.scatter(lon, lat,
+#            c=wm)
+# plt.title("Raw wind data")
+#
+# ## transform to GeoDataFrame
+# frame = gpd.GeoDataFrame(wm, geometry=geo)
+# frame["count"] = wm_copy
+# threshold_wind = threshold*np.average(wm_copy)
+# threshold_wind = int(threshold_wind)
+# frame.rename(columns={0:'Data'}, inplace=True )
+#
+# ## Name data used by MaxP method
+# attrs_name = "Data"
+# threshold_name = "count"
+#
+# print("starting model")
+# model = MaxP(frame, w, attrs_name, threshold_name, threshold_wind, verbose=True)
+# model.solve()
+# print("Model Solved, starting calculations of cluster values")
+#
+# fig22 = plt.figure(figsize=(6, 6))
+# plt.scatter(lon, lat,
+#            c=model.labels_)
+# plt.title("Wind clusters, random colors, max-p")
+# plt.plot()
+#
+# nr_of_clusters = np.ceil(res*res/threshold)
+# nr_of_clusters = int(nr_of_clusters)
+# clusters = dict.fromkeys(range(1,nr_of_clusters))
+# clusters_values = dict.fromkeys(range(1,nr_of_clusters))
+#
+# for i in range(len(clusters) + 1):
+#     clusters[i + 1] = list()
+#     clusters_values[i + 1] = list()
+#
+# for i in range(len(model.labels_)):
+#     clusters[model.labels_[i]].insert(i, i)
+#     clusters_values[model.labels_[i]].insert(i, wm_copy[i])
+#
+# for key in clusters:
+#     average = np.average(clusters_values[key])
+#     for i in range(len(clusters[key])):
+#         wm_copy[clusters[key][i]] = average
+#
+# print("values relating to specific clusters calculated and ready")
+#
+# fig3 = plt.figure(figsize=(6, 6))
+# plt.scatter(lon, lat,
+#            c=wm_copy)
+# plt.title("Wind clusters, ranked with color, max-p")
+#
+# end_wind = time.time()
+# print("Computation time (h):")
+# print((end_wind-start_wind)/3600)
 
 ### Sun
 start_sun = time.time()

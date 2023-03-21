@@ -110,7 +110,7 @@ plt.scatter(lon, lat,
 plt.title("Wind clusters, ranked with color, Ward HAC")
 
 end_wind = time.time()
-print("Computation time (h):")
+print("Computation time wind (h):")
 print((end_wind-start_wind)/3600)
 
 
@@ -168,6 +168,6 @@ plt.scatter(lon, lat,
 plt.title("Sun clusters, ranked with color, Ward HAC")
 
 end_sun = time.time()
-print("Computation time (h):")
+print("Computation time sun (h):")
 print((end_sun-start_sun)/3600)
 plt.show()

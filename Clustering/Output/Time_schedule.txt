@@ -1,1 +1,30 @@
+ALL WITH RESOLUTION 100 K=30
+
 AF_maxp_wind_k=30_pt=1	1.4h
+AF_maxp_sun_k=30_pt=1	2.2h
+maxp_wind_k=30_pt=1	0.9h
+
+ward_wind_k=30		0.00049h
+ward_sun_k=30		0.00026h
+AF_ward_wind_k=30		0.00018h
+AF_sun_wind_k=30		0.00014h
+
+kmeans++_wind_k=30	0.00022h
+kmeans++_sun_k=30		0.00016h
+AF_kmeans++_wind_k=30	0.000h
+AF_kmeans++_sun_k=30	0.000h
+
+kmedoids_wind_k=30	0.0024h
+kmedoids_sun_k=30		0.0012h
+AF_kmedoids_wind_k=30	0.00058h
+AF_kmedoids_sun_k=30	0.00086h
+
+regkmeans_wind_k=30
+regkmeans_sun_k=30
+AF_regkmeans_wind_k=30
+AF_regkmeans_sun_k=30
+
+
+Computational time maxp depends heavily on 
+- other computer activities
+- amount of partitions
