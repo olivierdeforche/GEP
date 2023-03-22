@@ -148,7 +148,7 @@ print(clusters_one_time)
 #                 average = np.average(average)
 #                 clusters_one_time[key].insert(j, average)
 
-clusters_one_time = dict.fromkeys(range(1, n_clusters))
+# clusters_one_time = dict.fromkeys(range(1, n_clusters))
 #
 # for i in range(len(clusters)):
 #     clusters_one_time[i + 1] = list()

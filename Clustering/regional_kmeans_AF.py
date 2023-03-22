@@ -38,53 +38,53 @@ lat = lat[:-(lenlat-res)]
 lon = np.tile(lon, res)
 lat = np.repeat(lat, res)
 
-### Wind
-start_wind = time.time()
-
-afw = np.loadtxt(AF_wind, delimiter=',')
-afw = afw[:-(lenlat-res),:-(lenlon-res)]
-afw = np. reshape(afw,-1)
-afw_copy = afw
-afw = [[i] for i in afw]
-
-fig1 = plt.figure(figsize=(6, 6))
-plt.scatter(lon, lat,
-            c=afw)
-plt.title("Availability factors wind")
-
-w = libpysal.weights.lat2W(res, res)
-
-afw = np.array(afw)
-
-print("starting model")
-model = RegionKMeansHeuristic(afw, clusters, w)
-model.solve()
-print("Model Solved, starting calculations of cluster values")
-
-areas = np.arange(res * res)
-regions = [areas[model.labels_ == region] for region in range(clusters)]
-
-afw = np.array(afw)
-afw = list(np.concatenate(afw).flat)
-
-for i in range(clusters):
-    for j in range(len(regions[i])):
-        afw[regions[i][j]] = model.centroids_[i]
-
-fig2 = plt.figure(figsize=(6, 6))
-plt.scatter(lon, lat,
-           c=model.labels_)
-plt.title("AF wind clusters, random colors, regional kmeans")
-
-fig3 = plt.figure(figsize=(6, 6))
-plt.scatter(lon, lat,
-           c=afw)
-plt.title("AF wind clusters, ranked with color, regional kmeans")
-
-end_wind = time.time()
-print("Computation time wind (h):")
-print((end_wind-start_wind)/3600)
-plt.show()
+# ### Wind
+# start_wind = time.time()
+#
+# afw = np.loadtxt(AF_wind, delimiter=',')
+# afw = afw[:-(lenlat-res),:-(lenlon-res)]
+# afw = np. reshape(afw,-1)
+# afw_copy = afw
+# afw = [[i] for i in afw]
+#
+# fig1 = plt.figure(figsize=(6, 6))
+# plt.scatter(lon, lat,
+#             c=afw)
+# plt.title("Availability factors wind")
+#
+# w = libpysal.weights.lat2W(res, res)
+#
+# afw = np.array(afw)
+#
+# print("starting model")
+# model = RegionKMeansHeuristic(afw, clusters, w)
+# model.solve()
+# print("Model Solved, starting calculations of cluster values")
+#
+# areas = np.arange(res * res)
+# regions = [areas[model.labels_ == region] for region in range(clusters)]
+#
+# afw = np.array(afw)
+# afw = list(np.concatenate(afw).flat)
+#
+# for i in range(clusters):
+#     for j in range(len(regions[i])):
+#         afw[regions[i][j]] = model.centroids_[i]
+#
+# fig2 = plt.figure(figsize=(6, 6))
+# plt.scatter(lon, lat,
+#            c=model.labels_)
+# plt.title("AF wind clusters, random colors, regional kmeans")
+#
+# fig3 = plt.figure(figsize=(6, 6))
+# plt.scatter(lon, lat,
+#            c=afw)
+# plt.title("AF wind clusters, ranked with color, regional kmeans")
+#
+# end_wind = time.time()
+# print("Computation time wind (h):")
+# print((end_wind-start_wind)/3600)
+# # plt.show()
 
 ### Sun
 start_sun = time.time()
