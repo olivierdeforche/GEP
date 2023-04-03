@@ -1,0 +1,86 @@
+import atlite
+from atlite.gis import ExclusionContainer
+from atlite.gis import shape_availability
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import cartopy
+import cartopy.crs as ccrs
+import rasterio
+from rasterio.plot import show
+import numpy as np
+import pandas as pd
+import xarray as xr
+from pathlib import Path
+
+filepath_solar = Path('Data/Capacity_factor_solar.csv')
+filepath_wind = Path('Data/Capacity_factor_wind.csv')
+
+#### PRODUCE 8760 HOURLY TIMESERIES FOR EVERY GRID SQUARE IN THE CUTOUT
+
+### First we create a xarray duplicating that of the cutout. We will assign a capacity value of 1 MW to each grid square.
+### When we feed this into the cutout, it will know to produce an hourly timeseries for each gridsquare
+
+cutout = atlite.Cutout("C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc")
+
+# Get the x and y coordinates from the cutout object as numpy arrays
+x = cutout.coords['x'].values
+y = cutout.coords['y'].values
+
+# Use np.meshgrid to create a grid of x and y coordinates
+xx, yy = np.meshgrid(x, y)
+
+# Use np.ravel to flatten the grid arrays into one-dimensional arrays
+xx = xx.ravel()
+yy = yy.ravel()
+
+# Use pd.DataFrame to create a pandas dataframe with columns for x, y and capacity
+df = pd.DataFrame({'x': xx, 'y': yy, 'capacity': 1})
+
+# Create a column with the combined xy coordinate to be the future column name for the results
+df['XY'] = df['x'].astype(str).str.cat(df['y'].astype(str), sep=',')
+
+# Turn this into a GeoDataFrame, like a pandas dataframe but with a geography attribute
+sites = gpd.GeoDataFrame(df)
+
+# Set the XY column as the index
+sites = gpd.GeoDataFrame(sites).set_index('XY')
+
+# Creates the xarray to feed into the cutout function. Basically creating an x y grid with capacity as the value.
+layout = xr.DataArray(sites.set_index(['y', 'x']).capacity.unstack())
+
+# the cutout.grid() function here returns the underlying grid the cutout uses, as a GeoDataFrame object. We're pulling this out just so we can get the right geography
+# it is needed to feed in the capacity of each grid as seperate sites it seems
+cells = cutout.grid
+
+# here the cells grid is merged here. This ensures the column name will be preserved as the XY value
+cells_generation = sites.merge(cells, how='inner').rename(pd.Series(sites.index))
+
+
+## Exclude in-eligable land
+excluder = ExclusionContainer(crs=3035)
+print("yes containter")
+excluder.add_geometry("C:/Users/defor/Desktop/Thesis/Natura2000_end2021.gpkg")
+print("yes excluder")
+
+
+
+# This is the cutout.wind() function which otherwise just returns annual average capacity factors. By feeding in the layour and shape attribute, it produces the timeseries
+cutout.prepare()
+capacity_factor_wind = cutout.wind(turbine="Vestas_V90_3MW", layout=layout, shapes=cells_generation.geometry)
+capacity_factor_solar = cutout.pv(panel="CdTe", orientation="latitude_optimal", layout=layout, shapes=cells_generation.geometry)
+
+# Here I convert it to a pandas data frame so the data is easier to work with
+capacity_factor_wind = capacity_factor_wind.to_pandas()
+capacity_factor_solar = capacity_factor_solar.to_pandas()
+
+
+print(capacity_factor_wind.head())
+print(capacity_factor_solar.head())
+print(capacity_factor_wind)
+print(capacity_factor_solar)
+
+filepath_wind.parent.mkdir(parents=True, exist_ok=True)  
+capacity_factor_wind.to_csv(filepath_wind)  
+
+filepath_solar.parent.mkdir(parents=True, exist_ok=True)  
+capacity_factor_solar.to_csv(filepath_solar)  

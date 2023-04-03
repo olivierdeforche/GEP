@@ -15,7 +15,6 @@ import xarray as xr
 cutout = atlite.Cutout("C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc")
 countries = gpd.read_file("C:/Users/defor/Desktop/Thesis/country_shapes.geojson")
 countries.plot(edgecolor='k', facecolor='lightgrey')
-print(countries)
 crs = ccrs.EqualEarth()
 fig = plt.figure(figsize=(10,5))
 ax = plt.axes(projection=crs)
@@ -61,16 +60,18 @@ cutout.grid.plot(ax=ax, color='none', edgecolor='grey', ls=':')
 cap_per_sqkm = 2
 area = cutout.grid.set_index(['y', 'x']).to_crs(3035).area / 1e6
 area = xr.DataArray(area, dims=('spatial'))
-
 capacity_matrix = A.stack(spatial=['y', 'x']) * area * cap_per_sqkm
 
 print("preparation for conversion done")
 
 ## Conversion to capacity factors
+print(capacity_matrix)
+print(shape.index)
+print(shape)
 cutout.prepare()
-wind = cutout.wind(matrix=capacity_matrix, turbine="Vestas_V90_3MW", index=shape.index)
-pv = cutout.pv(matrix=capacity_matrix, panel=atlite.solarpanels.CSI, 
-               orientation="latitude_optimal", index=shape.index,
+wind = cutout.wind(matrix=capacity_matrix, turbine="Vestas_V90_3MW", index=shape.index,  per_unit=True)
+pv = cutout.pv(matrix=capacity_matrix, panel="CdTe", 
+               orientation="latitude_optimal", index=shape.index,  per_unit=True
 )
 
 fig1 = plt.figure(figsize=(6, 6))
@@ -78,14 +79,14 @@ plt.plot(wind)
 fig2 = plt.figure(figsize=(6, 6))
 plt.plot(pv)
 
+print(wind)
+print(pv)
 print("conversion done")
 
 ## Conversion to availability factors
-wind = wind/max(wind)
 fig2 = plt.figure(figsize=(6, 6))
 plt.plot(wind)
 
-pv = pv/max(pv)
 fig3 = plt.figure(figsize=(6, 6))
 plt.plot(pv)
 

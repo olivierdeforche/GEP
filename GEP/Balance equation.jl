@@ -23,7 +23,8 @@ sum(g[j,i,jh,jd] i in I) + sum(inp[j,k,jh,jd] for k in K) - sum(exp[j,k,jh,jd] f
 
 # Our multi node
 
-sum(g[j,i,jh,jd] i in I) + sum(inp[j,k,jh,jd] for k in K) - sum(exp[j,k,jh,jd] for k in K) + sum(perc[j,r,z,jh,jd]*cluster[r,z,jh,jd] for z in Z, r in R) == D[j,jh,jd] -ens[j,jh,jd]
+sum(g[j,i,jh,jd] i in I) + sum(inp[j,k,jh,jd] for k in K) - sum(exp[j,k,jh,jd] for k in K) 
++ sum(perc[j,r,z,jh,jd]*cluster[r,z,jh,jd] for z in Z, r in R) == D[j,jh,jd] -ens[j,jh,jd]
 
 # --> i is now generators (base mid and peak)
 # inport and export stays the same

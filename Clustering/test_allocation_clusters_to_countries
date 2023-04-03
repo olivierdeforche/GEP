@@ -1,0 +1,67 @@
+import atlite
+from shapely.geometry import Point, Polygon
+from atlite.gis import shape_availability
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+from rasterio.plot import show
+import numpy as np
+import pandas as pd
+
+cutout = atlite.Cutout("C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc")
+
+countries = gpd.read_file("C:/Users/defor/Desktop/Thesis/country_shapes.geojson")
+countries.plot(edgecolor='k', facecolor='lightgrey')
+crs = ccrs.EqualEarth()
+fig = plt.figure(figsize=(10,5))
+ax = plt.axes(projection=crs)
+
+# Chang index of GeoDataFrame from number to 'name' 
+countries = countries.set_index('name')
+
+countries.to_crs(crs.proj4_init).plot(
+    ax=ax,
+    edgecolor='k',
+    facecolor='lightgrey'
+)
+
+# Get the x and y coordinates from the cutout object as numpy arrays
+x = cutout.coords['x'].values
+y = cutout.coords['y'].values
+
+# Use np.meshgrid to create a grid of x and y coordinates
+xx, yy = np.meshgrid(x, y)
+
+# Use np.ravel to flatten the grid arrays into one-dimensional arrays
+xx = xx.ravel()
+yy = yy.ravel()
+
+# Use pd.DataFrame to create a pandas dataframe with columns for x, y and capacity
+df = pd.DataFrame({'x': xx, 'y': yy, 'capacity': 1})
+
+# Create a column with the combined xy coordinate to be the future column name for the results
+df['XY'] = df['x'].astype(str).str.cat(df['y'].astype(str), sep=',')
+
+# Turn this into a GeoDataFrame, like a pandas dataframe but with a geography attribute
+sites = gpd.GeoDataFrame(df)
+
+# Set the XY column as the index
+sites = gpd.GeoDataFrame(sites).set_index('XY')
+
+
+### Test 
+# Create Point objects
+p1 = Point(24.82, 60.24)
+p2 = Point(24.895, 60.05)
+
+# Create a square
+coords = [(24.89, 60.06), (24.75, 60.06), (24.75, 60.30), (24.89, 60.30)]
+poly = Polygon(coords)
+
+# PIP test with 'within'
+p1.within(poly)     # True
+p2.within(poly)     # False
+
+# PIP test with 'contains'
+poly.contains(p1)   # True
+poly.contains(p2)   # False 
