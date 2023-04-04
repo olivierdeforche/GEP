@@ -17,7 +17,7 @@ print(cutout.data)
 # A = cutout.availabilitymatrix(shape, excluder)
 
 cutout.prepare()
-# cap_factors_wind = cutout.wind(turbine="Vestas_V112_3MW", capacity_factor=True)
+cap_factors_wind = cutout.wind(turbine="Vestas_V112_3MW", capacity_factor=True)
 
 # ax = shape.to_crs(4326).plot()
 # cutout.grid.plot(ax=ax, edgecolor='grey', color='None')
@@ -25,7 +25,7 @@ cutout.prepare()
 # print(cutout.available_features)
 
 # Turbines: Vestas-112-3MW 
-cap_factors_wind = cutout.wind(turbine="Vestas_V112_3MW", per_unit=True)
+# cap_factors_wind = cutout.wind(turbine="Vestas_V112_3MW", per_unit=True)
 # cap_factors_wind = cutout.wind(turbine="Vestas_V112_3MW", capacity_factor=True)
 print(type(cap_factors_wind))
 # max

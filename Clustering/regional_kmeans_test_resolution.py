@@ -26,9 +26,9 @@ wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each with nr of clusters
-res = 142  #orig 100
+res = 142  
 resize = 1
-clusters = 10 #orig 30
+clusters = 10 
 res_resized = int(res/resize)
 np.random.seed(RANDOM_SEED)
 
@@ -179,7 +179,7 @@ plt.title("Raw sun data")
 # plt.scatter(lon, lat,
 #            c=id)
 # plt.title("Sun clusters, ranked with color, kmeans")
-²
+
 # end_sun = time.time()
 # print("Computation time sun (h)")
 # print((start_sun-end_sun)/3600)

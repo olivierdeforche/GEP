@@ -49,7 +49,7 @@ start_wind = time.time()
 
 afw = np.loadtxt(AF_wind, delimiter=',')
 afw = afw[:-(lenlat-res),:-(lenlon-res)]
-afw = np. reshape(afw,-1)
+afw = np.reshape(afw,-1)
 afw_copy = afw
 afw = [[i] for i in afw]
 

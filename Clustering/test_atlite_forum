@@ -11,14 +11,22 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from pathlib import Path
+import netCDF4 as nc
 
-filepath_solar = Path('Data/Capacity_factor_solar.csv')
-filepath_wind = Path('Data/Capacity_factor_wind.csv')
+filepath_solar = Path('Data/Capacity_factor_solar.nc')
+filepath_wind = Path('Data/Capacity_factor_wind.nc')
 
 #### PRODUCE 8760 HOURLY TIMESERIES FOR EVERY GRID SQUARE IN THE CUTOUT
 
 ### First we create a xarray duplicating that of the cutout. We will assign a capacity value of 1 MW to each grid square.
 ### When we feed this into the cutout, it will know to produce an hourly timeseries for each gridsquare
+
+
+fn_era = 'C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc'
+
+ds = dict()
+ds["w"] = nc.Dataset(fn_era)
+print(ds["w"])
 
 cutout = atlite.Cutout("C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc")
 
@@ -68,19 +76,42 @@ print("yes excluder")
 cutout.prepare()
 capacity_factor_wind = cutout.wind(turbine="Vestas_V90_3MW", layout=layout, shapes=cells_generation.geometry)
 capacity_factor_solar = cutout.pv(panel="CdTe", orientation="latitude_optimal", layout=layout, shapes=cells_generation.geometry)
-
-# Here I convert it to a pandas data frame so the data is easier to work with
-capacity_factor_wind = capacity_factor_wind.to_pandas()
-capacity_factor_solar = capacity_factor_solar.to_pandas()
-
-
-print(capacity_factor_wind.head())
-print(capacity_factor_solar.head())
+print(type(capacity_factor_solar))
+print(type(capacity_factor_wind))
 print(capacity_factor_wind)
-print(capacity_factor_solar)
+
+
+
+value_wind = capacity_factor_wind
+value_solar = capacity_factor_solar
+
+print(ds["w"])
+
+ds.close()
+
+
+# new_fileame_wind = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/Capacity_factor_wind.nc'
+# new_filename_solar = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/Capacity_factor_solar.nc'
+# print("saving to", new_filename_solar, "and", new_fileame_wind)
+# capacity_factor_solar.to_netcdf(new_filename_solar)
+# capacity_factor_wind.to_netcdf(new_fileame_wind)
+# print("finished saving")
+
+# # Here I convert it to a pandas data frame so the data is easier to work with
+# capacity_factor_wind = capacity_factor_wind.to_pandas()
+# capacity_factor_solar = capacity_factor_solar.to_pandas()
+
+
+# print(capacity_factor_wind.head())
+# print(capacity_factor_solar.head())
+# print(capacity_factor_wind)
+# print(capacity_factor_solar)
+# print(type(capacity_factor_solar))
+# print(type(capacity_factor_wind))
 
 filepath_wind.parent.mkdir(parents=True, exist_ok=True)  
-capacity_factor_wind.to_csv(filepath_wind)  
+capacity_factor_wind.to_netcdf(filepath_wind)  
 
 filepath_solar.parent.mkdir(parents=True, exist_ok=True)  
-capacity_factor_solar.to_csv(filepath_solar)  
+capacity_factor_solar.to_netcdf(filepath_solar)
+
