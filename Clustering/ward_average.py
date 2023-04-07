@@ -19,8 +19,8 @@ import pytest
 # Skip warnings
 warnings.filterwarnings("ignore")
 
-# fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
-fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
+fn_era = "C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc"
+# fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
@@ -54,9 +54,12 @@ w = libpysal.weights.lat2W(res, res)
 start_wind = time.time()
 
 wm_time = dict.fromkeys(range(1, len(wm)))
+print(len(wm))
+print(len(id))
 
 for i in range(len(wm)):
     wm_time[i] = list(np.concatenate(wm[i][:-(lenlat-res), :-(lenlon-res)]).flat)
+# print(wm_time)
 
 wm = np.average(wm,axis=0)
 wm = wm[:-(lenlat-res),:-(lenlon-res)]
@@ -89,7 +92,7 @@ print("Model Solved, starting calculations of cluster values")
 
 frame["ward_new"] = model.labels_
 frame["number"] = 1
-print(frame[["ward_new", "number"]].groupby(by="ward_new").count())
+# print(frame[["ward_new", "number"]].groupby(by="ward_new").count())
 
 
 fig2 = plt.figure(figsize=(6, 6))
@@ -122,7 +125,7 @@ for key in clusters:
         average = np.average(average)
         clusters_one_time[key].insert(j, average)
 
-print(clusters_one_time)
+# print(clusters_one_time)
 # print(len(clusters_one_time))
 # print(len(clusters_one_time[1]))
 # print(clusters)
@@ -166,9 +169,9 @@ print(clusters_one_time)
 # print(clusters) # dictionary with clusternumbers per cluster
 # print(clusters_values) # dictionary with cluster values per cluster
 # print(clusters_time) # dictionary with time series per cluster
-print(clusters_one_time) # dictionary with one time series per cluster
-print(len(clusters_one_time))
-print(len(clusters_one_time[1]))
+# print(clusters_one_time) # dictionary with one time series per cluster
+# print(len(clusters_one_time))
+# print(len(clusters_one_time[1]))
 
 fig3 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,

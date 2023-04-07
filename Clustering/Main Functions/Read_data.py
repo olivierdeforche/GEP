@@ -1,49 +1,52 @@
 import netCDF4 as nc
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+import geopandas as gpd
+from shapely.geometry import Point
 
-def Read_data(data, resize, plot, user):
+def Read_data(data, resize, plot, user, documentation):
     if data=="af":
         if user == "Olivier":
-            solar_data = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_solar.nc"
-            wind_data = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_wind.nc"
-            dataset = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
+            dataset = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_lonlat.nc"
         else: 
-            solar_data = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_solar.nc"
-            wind_data = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_wind.nc"
-            dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
-    else:
+            dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_lonlat.nc"
+    elif data=="weather":
         if user == "Olivier":
-            dataset = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
+            dataset = "C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc"
         else:
             dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
 
+    if documentation:
+        print("dataread check")
+
     ds = dict()
     ds["w"] = nc.Dataset(dataset)
-    solar = nc.Dataset(solar_data)
-    wind = nc.Dataset(wind_data)
 
     ### Select smaller range of both datapoints
-    lon = ds["w"]["lon"][:]
-    lat = ds["w"]["lat"][:]
-
     if data=="af":
-        wm = solar[:,:]
-        id = wind[:,:]
+        wm = ds["w"]["wind_af"][:,:,:]
+        id = ds["w"]["solar_af"][:,:,:]
+        lon = ds["w"]["x"][:]
+        lat = ds["w"]["y"][:]
                 
     else:
         wm = ds["w"]["wnd100m"][:,:,:]
         id = ds["w"]["influx_direct"][:,:,:]
+        lon = ds["w"]["lon"][:]
+        lat = ds["w"]["lat"][:]
+
+    print("smaller range of both datapoints check")
 
     ## Only select first res values of each with nr of clusters
     res = 142  
     resize = 1
-    clusters = 10 
     res_resized = int(res/resize)
 
     lenlon = len(lon)
     lenlat = len(lat)
-    lon = lon[:-(lenlon-res)]
+    adjusted_size = lenlon-res
+    lon = lon[:-(adjusted_size)]
     lon = lon[0::resize]
     lat = lat[0::resize]
 
@@ -56,12 +59,33 @@ def Read_data(data, resize, plot, user):
     lon = np.tile(lon, res_resized)
     lat = np.repeat(lat, res_resized)
 
+    print("length adjusted and transformed")
+    # Get list of coordinates
+    df = pd.DataFrame(
+        {     'Latitude': lat,
+            'Longitude': lon})
+
+    gdf = gpd.GeoDataFrame(
+        df, geometry=gpd.points_from_xy(df.Longitude, df.Latitude))
+    coordinates = list(gdf["geometry"])
+
+  
+    # Get time series
+    wm_time = dict.fromkeys(range(1, len(wm)))
+    id_time = dict.fromkeys(range(1, len(id)))
+    for i in range(len(wm)):
+        print(i)
+        wm_time[i] = list(np.concatenate(wm[i][:, :-(lenlon-res)]).flat)
+        id_time[i] = list(np.concatenate(id[i][:, :-(lenlon-res)]).flat)
+
+    print("timeseries done")
     # Transform from houry data
     wm = np.average(wm,axis=0)
 
     # Make it a square
     wm = wm[:lenlat,:lenlon]
 
+    print("square and made average, sarting loops nop")
     i = 0
     k = 0
     l = 0
@@ -78,16 +102,18 @@ def Read_data(data, resize, plot, user):
         k += 1
         i += resize
 
-        wm = list(np.concatenate(wm_resized).flat)
-        wm_copy = wm
-        wm = [[i] for i in wm]
-        print("done with resizing wind")
+    wm = list(np.concatenate(wm_resized).flat)
+    wm_copy = wm
+    wm = [[i] for i in wm]
 
-        if plot:
-            fig1 = plt.figure(figsize=(6, 6))
-            plt.scatter(lon, lat,
-                    c=wm)
-            plt.title("Raw wind data")
+    if plot:
+        fig1 = plt.figure(figsize=(6, 6))
+        plt.scatter(lon, lat,
+                c=wm)
+        plt.title("Raw wind data")
+
+    if documentation:
+        print("wind resize done")
 
     ## Solar        
     id = np.average(id,axis=0)
@@ -109,10 +135,12 @@ def Read_data(data, resize, plot, user):
             l += 1
         k += 1
         i += resize
-
+    print("yes")
+    
     id = list(np.concatenate(id_resized).flat)
     id_copy = id
     id = [[i] for i in id]
+
     print("done with resizing sun")
 
     if plot:
@@ -121,4 +149,7 @@ def Read_data(data, resize, plot, user):
                 c=id)
         plt.title("Raw sun data")
 
-    return(wm, wm_copy, id, id_copy, lon, lat, res_resized)
+    if documentation:
+        print("Solar resize done")
+
+    return(wm, wm_copy, wm_time, id, id_copy, id_time, lon, lat, coordinates, res_resized)

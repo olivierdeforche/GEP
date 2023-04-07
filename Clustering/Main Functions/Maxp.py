@@ -5,7 +5,7 @@ import geopandas as gpd
 import libpysal
 from spopt.region import MaxPHeuristic as MaxP
 
-
+## TODO: figure out how to get amount of clusters!
 def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, plot):
 
     geo = gpd.GeoSeries.from_xy(lon, lat)
@@ -17,7 +17,7 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     
     ## transform to GeoDataFrame
     frame = gpd.GeoDataFrame(wind, geometry=geo)
-    frame["count"] = wind_copy
+    frame["count"] = wind_copy 
     threshold_wind = threshold*np.average(wind_copy)
     threshold_wind = int(threshold_wind)
     frame.rename(columns={0:'Data'}, inplace=True )
@@ -33,7 +33,9 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     print("Model Solved, starting calculations of cluster values")
     
     labels_wind = model.labels_ 
-
+    areas = np.arange(res_resized * res_resized)
+    regions_wind = [areas[model.labels_ == region] for region in range(clusters)]
+    
     # Plot results wind if specified
     if plot:
         fig22 = plt.figure(figsize=(6, 6))
@@ -93,7 +95,7 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     print("Model Solved, starting calculations of cluster values")
 
     labels_solar = model.labels_
-    
+    regions_solar = [areas[model.labels_ == region] for region in range(clusters)]
     # Plot results wind if specified
     if plot: 
         fig5 = plt.figure(figsize=(6, 6))
@@ -132,4 +134,4 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     print((end_sun-start_sun)/3600)
 
     # Returns values
-    return(labels_wind, labels_solar) # TBC
+    return(labels_wind, regions_wind, labels_solar, regions_solar)

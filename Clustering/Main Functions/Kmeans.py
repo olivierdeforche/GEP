@@ -3,7 +3,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, n_clusters, res_resized, plot):
+def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot):
     RANDOM_SEED = 123456
 
     ### Wind
@@ -12,14 +12,17 @@ def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, n_clusters, res_resized
     print("starting model")
 
     # Solve model wind
-    model = KMeans(n_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(wind)
+    model = KMeans(number_of_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(wind)
     model.solve()
     print("Model Solved, starting calculations of cluster values")
 
     # Get values
     labels_wind = model.labels_
-    clusters = dict.fromkeys(range(1, n_clusters))
-    clusters_values = dict.fromkeys(range(1, n_clusters))
+    areas = np.arange(res_resized * res_resized)
+    regions_wind = [areas[model.labels_ == region] for region in range(number_of_clusters)]
+    
+    clusters = dict.fromkeys(range(1, number_of_clusters))
+    clusters_values = dict.fromkeys(range(1, number_of_clusters))
 
     # Plot results if specified in plot variable (=True)
     if plot:
@@ -57,13 +60,14 @@ def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, n_clusters, res_resized
 
     # Solver model solar
     print("starting model")
-    model = KMeans(n_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(solar)
+    model = KMeans(number_of_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(solar)
     print("Model Solved, starting calculations of cluster values")
 
     labels_solar = model.labels_
+    regions_solar = [areas[model.labels_ == region] for region in range(number_of_clusters)]
 
-    clusters = dict.fromkeys(range(1, n_clusters))
-    clusters_values = dict.fromkeys(range(1, n_clusters))
+    clusters = dict.fromkeys(range(1, number_of_clusters))
+    clusters_values = dict.fromkeys(range(1, number_of_clusters))
 
     if plot: 
         fig5 = plt.figure(figsize=(6, 6))
@@ -93,4 +97,4 @@ def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, n_clusters, res_resized
     print("Computation time (h):")
     print((end_sun-start_sun)/3600)
 
-    return(labels_wind, labels_solar)
+    return(labels_wind, regions_wind, labels_solar, regions_solar)

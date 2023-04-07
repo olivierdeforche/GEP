@@ -3,72 +3,103 @@ import atlite
 import numpy as np
 import geopandas as gpd
 import pandas as pd
-import tabulate
+from shapely.geometry import Point, Polygon
 
 
-def Asign_clusters_to_countries(labels_wind, labels_solar, plot, user):
+def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, regions_solar, regions_off_shore_solar, coordinates, method, data, number_of_clusters, plot, user):
+    
+    # Load data of Exclusive Economic Zones 
     if user =="Olivier":
-        EZZ = geopandas.read_file('C:/Users/defor/Desktop/Thesis/Data/EEZ_Land_v3_202030.shp')
-        EZZ.to_file('C:/Users/defor/Desktop/Thesis/Data/EEZ_Land_v3_202030.geojson', driver='GeoJSON')
-        cutout = atlite.Cutout("C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc")
+        EEZ = geopandas.read_file('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/EEZ_Europe_land.geojson')
     else:
-        shp_file = geopandas.read_file('"C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/EEZ_Land_v3_202030.shp')
-        shp_file.to_file('C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/EEZ_Land_v3_202030.geojson', driver='GeoJSON')
-        cutout = atlite.Cutout("C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc")
+        EEZ = geopandas.read_file('"C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/EEZ_Europe_land.geojson')
 
-    # Get the x and y coordinates from the cutout object as numpy arrays
-    x = cutout.coords['x'].values
-    y = cutout.coords['y'].values
+    # Create dictionaries for each file we want to create 
+    dict_wind = dict()
+    dict_wind_offshore = dict()
+    dict_solar = dict()
+    dict_solar_offshore = dict()
 
-    # Use np.meshgrid to create a grid of x and y coordinates
-    xx, yy = np.meshgrid(x, y)
+    # Put each zone of the EEZ as keys in the dictionaries with 
+    for country_name in EEZ["UNION"]:
+        dict_wind[country_name] = np.zeros(len(regions_wind))
+        dict_wind_offshore[country_name] = np.zeros(len(regions_off_shore_wind))
+        dict_solar[country_name] = np.zeros(len(regions_solar))
+        dict_solar_offshore[country_name] = np.zeros(len(regions_off_shore_solar))
 
-    # Use np.ravel to flatten the grid arrays into one-dimensional arrays
-    xx = xx.ravel()
-    yy = yy.ravel()
+    ## Wind
+    # Regions wind: assign the correct percentages to the respective country
+    cluster_number = 0
+    for cluster in regions_wind:
+        size_cluster = len(cluster)
+        for number in cluster:
+            i = 0
+            for polygon in EEZ["geometry"]:
+                if polygon.contains(coordinates[number]):
+                    dict_wind[EEZ["UNION"][i]][cluster_number] += 1/size_cluster
+                i += 1
+        cluster_number +=1
 
-    # Use pd.DataFrame to create a pandas dataframe with columns for x, y and capacity
-    df = pd.DataFrame({'x': xx, 'y': yy, 'capacity': 1})
+    # Regions offshore wind: assign the correct percentages to the respective country
+    cluster_number = 0
+    for cluster in regions_off_shore_wind:
+        size_cluster = len(cluster)
+        for number in cluster:
+            i = 0
+            for polygon in EEZ["geometry"]:
+                if polygon.contains(coordinates[number]):
+                    dict_wind_offshore[EEZ["UNION"][i]][cluster_number] += 1/size_cluster
+                i += 1
+        cluster_number +=1
 
-    # Create a column with the combined xy coordinate to be the future column name for the results
-    df['XY'] = df['x'].astype(str).str.cat(df['y'].astype(str), sep=',')
+    ## Solar
+    # Regions solar: assign the correct percentages to the respective country
+    cluster_number = 0
+    for cluster in regions_solar:
+        size_cluster = len(cluster)
+        for number in cluster:
+            i = 0
+            for polygon in EEZ["geometry"]:
+                if polygon.contains(coordinates[number]):
+                    dict_solar[EEZ["UNION"][i]][cluster_number] += 1/size_cluster
+                i += 1
+        cluster_number +=1
 
-    # Turn this into a GeoDataFrame, like a pandas dataframe but with a geography attribute
-    sites = gpd.GeoDataFrame(df)
+    # Regions offshore solar: assign the correct percentages to the respective country
+    cluster_number = 0
+    for cluster in regions_off_shore_solar:
+        size_cluster = len(cluster)
+        for number in cluster:
+            i = 0
+            for polygon in EEZ["geometry"]:
+                if polygon.contains(coordinates[number]):
+                    dict_solar_offshore[EEZ["UNION"][i]][cluster_number] += 1/size_cluster
+                i += 1
+        cluster_number +=1
 
-    # Set the XY column as the index
-    sites = gpd.GeoDataFrame(sites).set_index('XY')
-
-    # Create dictionary to convert to an excel later
-    dict_solar = {}
-    dict_wind = {}
-
-
-    for country_name in EZZ:
-        dict_solar[country_name] = None
-        dict_wind[country_name] = None
-
-    for label in labels_wind:
-        size = label.length()
-        for point in label:
-            for country_name in EZZ:
-                country_polygon = country_name.polygon()
-                if country_polygon.contains_point(point):
-                    dict_wind[country_name] = 
-                    
-
- 
-
-    df_solar = pd.DataFrame(data=dict_solar, index=[0])
+    # Save the dictionaries to excel files
     df_wind = pd.DataFrame(data=dict_wind, index=[0])
+    df_wind_offshore = pd.DataFrame(data=dict_wind_offshore, index=[0])
+    df_solar = pd.DataFrame(data=dict_solar, index=[0])
+    df_solar_offshore = pd.DataFrame(data=dict_solar_offshore, index=[0])
 
-    df_solar = (df_solar.T)
     df_wind = (df_wind.T)
+    df_wind_offshore = (df_wind_offshore.T)
+    df_solar = (df_solar.T)
+    df_solar_offshore = (df_solar_offshore.T)
 
     if plot:
-        print(df_solar, df_wind)
+        print(df_wind, df_wind_offshore, df_solar, df_solar_offshore)
 
-    df_solar.to_excel('df_solar.xlsx')
-    df_wind.to_excel('df_wind.xlsx')
+    if user=="Olivier":
+        df_wind.to_excel('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/',method,'_',number_of_clusters,'_',data,'_df_wind.xlsx')
+        df_wind_offshore.to_excel('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/',method,'_',number_of_clusters,'_',data,'_df_wind_offshore.xlsx')
+        df_solar.to_excel('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/',method,'_',number_of_clusters,'_',data,'_df_solar.xlsx')
+        df_solar_offshore.to_excel('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/',method,'_',number_of_clusters,'_',data,'_df_solar_offshore.xlsx')
+    else:
+        df_wind.to_excel('TBD/df_wind.xlsx') #@Louis
+        df_wind_offshore.to_excel('TBD/df_wind_offshore.xlsx') #@Louis
+        df_solar.to_excel('TBD/df_solar.xlsx') #@Louis
+        df_solar_offshore.to_excel('TBD/df_solar_offshore.xlsx') #@Louis
 
     return()

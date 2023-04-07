@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 import time
-import cv2
 
 
 # Skip warnings

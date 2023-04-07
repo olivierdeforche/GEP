@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import time
 import libpysal
 
-def RegionalKmeans(wind, solar, lon, lat, clusters ,res_resized, plot):
+def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot):
     ### Wind
     # Begin timer
     start_wind = time.time()
@@ -13,13 +13,13 @@ def RegionalKmeans(wind, solar, lon, lat, clusters ,res_resized, plot):
 
     wind = np.array(wind)
 
-    model = RegionKMeansHeuristic(wind, clusters, w)
+    model = RegionKMeansHeuristic(wind, number_of_clusters, w)
     model.solve()
     print("Done with clustering wind")
     labels_wind = model.labels_
     centroids_wind = model.centroids_
     areas_wind = np.arange(res_resized * res_resized)
-    regions_wind = [areas_wind[model.labels_ == region] for region in range(clusters)]
+    regions_wind = [areas_wind[model.labels_ == region] for region in range(number_of_clusters)]
 
     # Plot clustered zones if specified
     if plot:
@@ -31,7 +31,7 @@ def RegionalKmeans(wind, solar, lon, lat, clusters ,res_resized, plot):
         wind = np.array(wind)
         wind = list(np.concatenate(wind).flat)
 
-        for i in range(clusters):
+        for i in range(number_of_clusters):
             for j in range(len(regions_wind[i])):
                 wind[regions_wind[i][j]] = centroids_wind[i]
 
@@ -51,20 +51,20 @@ def RegionalKmeans(wind, solar, lon, lat, clusters ,res_resized, plot):
 
     solar = np.array(solar)
 
-    model = RegionKMeansHeuristic(solar, clusters, w)
+    model = RegionKMeansHeuristic(solar, number_of_clusters, w)
     model.solve()
     print("done with clustering sun")
     labels_solar = model.labels_
     centroids_solar = model.centroids_ 
     areas_solar = np.arange(res_resized * res_resized)
-    regions_solar = [areas_solar[model.labels_ == region] for region in range(clusters)]
+    regions_solar = [areas_solar[model.labels_ == region] for region in range(number_of_clusters)]
 
     # Plot results clustering sun if plot enabled 
     if plot:
         solar = np.array(solar)
         solar = list(np.concatenate(solar).flat)
 
-        for i in range(clusters):
+        for i in range(number_of_clusters):
             for j in range(len(regions_solar[i])):
                 solar[regions_solar[i][j]] = centroids_solar[i]
 
@@ -84,5 +84,4 @@ def RegionalKmeans(wind, solar, lon, lat, clusters ,res_resized, plot):
     print("Computation time sun (h)")
     print((start_sun-end_sun)/3600)
 
-#     return(labels_solar, labels_wind, centroids_solar, centroids_wind, areas_wind, areas_solar) # TBC
-    return(labels_wind, labels_solar) 
+    return(labels_wind, regions_wind, labels_solar, regions_solar) 
