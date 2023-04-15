@@ -6,6 +6,14 @@ from shapely.geometry import Point, Polygon
 import pandas as pd
 
 
+thisdict = {
+  "brand": "Ford",
+  "model": "Mustang",
+  "year": 1964
+}
+print(thisdict)
+thisdict.pop('model')
+print(thisdict)
 
 # EZZ = gpd.read_file("C:/Users/defor/Desktop/Thesis/Data/EEZ-Europe.shp")
 # print(EZZ)

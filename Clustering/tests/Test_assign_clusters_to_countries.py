@@ -10,13 +10,14 @@ from scipy.spatial import ConvexHull, convex_hull_plot_2d
 import numpy as np
 
 
-# EEZ = gpd.read_file('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/EEZ_Europe_land.geojson')
-# EEZ.plot(edgecolor='k', facecolor='lightgrey')
-# print(EEZ)
-# # print(EZZ["geometry"][0])
+EEZ = gpd.read_file('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/EEZ_Europe_land.geojson')
+EEZ.plot(edgecolor='k', facecolor='lightgrey')
+print(EEZ)
+plt.show()
+# print(EZZ["geometry"][0])
 # print(EEZ["MRGID_EEZ"][0])
-# # for polygon in EZZ["geometry"]:
-# #     print(polygon)
+# for polygon in EEZ["UNION"]:
+#     print(polygon)
 
 # dict_wind = dict()
 

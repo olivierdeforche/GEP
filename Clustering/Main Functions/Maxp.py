@@ -35,7 +35,8 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     labels_wind = model.labels_ 
     areas = np.arange(res_resized * res_resized)
     regions_wind = [areas[model.labels_ == region] for region in range(clusters)]
-    
+    number_of_clusters_wind = len(regions_wind)
+
     # Plot results wind if specified
     if plot:
         fig22 = plt.figure(figsize=(6, 6))
@@ -96,6 +97,7 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
 
     labels_solar = model.labels_
     regions_solar = [areas[model.labels_ == region] for region in range(clusters)]
+    number_of_clusters_solar = len(regions_solar)
     # Plot results wind if specified
     if plot: 
         fig5 = plt.figure(figsize=(6, 6))
@@ -134,4 +136,4 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     print((end_sun-start_sun)/3600)
 
     # Returns values
-    return(labels_wind, regions_wind, labels_solar, regions_solar)
+    return(labels_wind, regions_wind, number_of_clusters_wind, labels_solar, regions_solar, number_of_clusters_solar)

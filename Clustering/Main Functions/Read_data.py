@@ -36,8 +36,6 @@ def Read_data(data, resize, plot, user, documentation):
         lon = ds["w"]["lon"][:]
         lat = ds["w"]["lat"][:]
 
-    print("smaller range of both datapoints check")
-
     ## Only select first res values of each with nr of clusters
     res = 142  
     resize = 1
@@ -59,7 +57,6 @@ def Read_data(data, resize, plot, user, documentation):
     lon = np.tile(lon, res_resized)
     lat = np.repeat(lat, res_resized)
 
-    print("length adjusted and transformed")
     # Get list of coordinates
     df = pd.DataFrame(
         {     'Latitude': lat,
@@ -74,18 +71,16 @@ def Read_data(data, resize, plot, user, documentation):
     wm_time = dict.fromkeys(range(1, len(wm)))
     id_time = dict.fromkeys(range(1, len(id)))
     for i in range(len(wm)):
-        print(i)
-        wm_time[i] = list(np.concatenate(wm[i][:, :-(lenlon-res)]).flat)
-        id_time[i] = list(np.concatenate(id[i][:, :-(lenlon-res)]).flat)
+        wm_time[i] = wm[i][:, :-(lenlon-res)].flatten()
+        id_time[i] = id[i][:, :-(lenlon-res)].flatten()
 
-    print("timeseries done")
+
     # Transform from houry data
     wm = np.average(wm,axis=0)
 
     # Make it a square
     wm = wm[:lenlat,:lenlon]
 
-    print("square and made average, sarting loops nop")
     i = 0
     k = 0
     l = 0
@@ -135,13 +130,10 @@ def Read_data(data, resize, plot, user, documentation):
             l += 1
         k += 1
         i += resize
-    print("yes")
     
     id = list(np.concatenate(id_resized).flat)
     id_copy = id
     id = [[i] for i in id]
-
-    print("done with resizing sun")
 
     if plot:
         fig4 = plt.figure(figsize=(6, 6))

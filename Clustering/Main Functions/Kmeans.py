@@ -13,7 +13,6 @@ def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res
 
     # Solve model wind
     model = KMeans(number_of_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(wind)
-    model.solve()
     print("Model Solved, starting calculations of cluster values")
 
     # Get values

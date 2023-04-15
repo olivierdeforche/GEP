@@ -50,11 +50,13 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
         start_resizing = time.time()
 
     wind, wind_copy, wind_time, solar, solar_copy, solar_time, lon, lat, coordinates, res_resized = Read_data(data, resize, plot, user, documentation)
-    
+    number_of_clusters_solar = number_of_clusters
+    number_of_clusters_wind = number_of_clusters
+
     # Compute the clusters
     if documentation:
         stop_resizing = time.time()
-        print("Data loading and resizing done with a computation time (h):", (stop_resizing-start_resizing)/3600)
+        print("Data loading and resizing done")
         print("start computing clusters")
         print("------------------------------------")
         start_clustering = time.time()
@@ -62,7 +64,7 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
     if method == "kmeans":
         labels_wind, regions_wind, labels_solar, regions_solar = Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot)
     elif method == "maxp":
-        labels_wind, regions_wind, labels_solar, regions_solar = Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, plot)
+        labels_wind, regions_wind, number_of_clusters_wind, labels_solar, regions_solar, number_of_clusters_solar = Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, plot)
     elif method == "kmedoids":
         labels_wind, regions_wind, labels_solar, regions_solar = Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot)
     elif method == "regional_kmeans":
@@ -73,42 +75,55 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
     # Split in off-shore and on-shore
     if documentation:
         stop_clustering = time.time()
-        print("Clustering done with a computation time (h):", (stop_clustering-start_clustering)/3600)
-        print("start splitting off-shore and on-shore")
+        print("Clustering done")
         print("------------------------------------")
+        print("start splitting off-shore and on-shore")
         start_splitting_ofonshore = time.time()
 
-    regions_wind, regions_off_shore_wind, labels_wind, regions_solar, regions_off_shore_solar, labels_solar = Split_offshore_onshore(regions_wind, labels_wind, regions_solar, labels_solar, coordinates, number_of_clusters, user)
+    regions_wind, regions_off_shore_wind, labels_wind, current_amount_of_clusters_wind, to_remove_wind, regions_solar, regions_off_shore_solar, labels_solar, current_amount_of_clusters_solar, to_remove_solar = Split_offshore_onshore(regions_wind, labels_wind, number_of_clusters_wind, regions_solar, labels_solar, number_of_clusters_solar, coordinates, lon, lat, plot, user)
 
     # Compute time series for clusters and save them in a csv
     if documentation:
         stop_splitting_ofonshore = time.time()
-        print("Splitting of off-shore and on-shore done with a computation time (h):", (stop_splitting_ofonshore-start_splitting_ofonshore)/3600)
-        print("Start converting to time series per cluster")
+        print("Splitting of off-shore and on-shore done")
+    
+    if plot:
+        plt.show()
+    
+    if documentation:
         print("------------------------------------")
+        print("Start converting to time series per cluster")
         start_time_series = time.time()
 
-    Convert_to_timeseries(wind, wind_copy, wind_time, regions_wind, regions_off_shore_wind, labels_wind, solar, solar_copy, solar_time, regions_solar, regions_off_shore_solar, labels_solar, method, data, number_of_clusters, adjusted_size, plot, user)
+    Convert_to_timeseries(wind_copy, wind_time, labels_wind, number_of_clusters_wind, current_amount_of_clusters_wind, to_remove_wind, solar_copy, solar_time, labels_solar, number_of_clusters_solar, current_amount_of_clusters_solar, to_remove_solar, method, data, documentation, plot, user)
 
     # Assign clusters to countries and save it in a csv
     if documentation:
         stop_time_series = time.time()
-        print("Conversion to time series of capacity factor done with a computation time (h):", (stop_time_series-start_time_series)/3600)
-        print("Start asigning clusters to countries")
+        print("Conversion to time series of capacity factor")
         print("------------------------------------")
+        print("Start asigning clusters to countries")
         start_asigning_cluster = time.time()
 
-    Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, regions_solar, regions_off_shore_solar, coordinates, method, data, number_of_clusters, plot, user)
+    Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_clusters_wind, regions_solar, regions_off_shore_solar, number_of_clusters_solar, coordinates, method, data, documentation, plot, user)
     
     if documentation:
         stop_asigning_cluster = time.time()
-        print("Assignment of clusters done with a computation time (h):", (stop_asigning_cluster-start_asigning_cluster)/3600)
         print("------------------------------------")
+        print("Assignment of clusters done")
+        print("------------------------------------")
+        print("Total time (hours:minutes:seconds):", (stop_asigning_cluster-start_resizing)//3600,":",(stop_asigning_cluster-start_resizing)%3600//60,":",(stop_asigning_cluster-start_resizing)%60//1)
+        print("TIME CONTRIBUTION OF EACH SEGMENT:")
+        print("   Resizing - ", (stop_resizing-start_resizing)/(stop_asigning_cluster-start_resizing)*100,"% - ", (stop_resizing-start_resizing)//3600,":",(stop_resizing-start_resizing)%3600//60,":",(stop_resizing-start_resizing)%60//1)
+        print("   Clustering - ", (stop_clustering-start_clustering)/(stop_asigning_cluster-start_resizing)*100,"% - ", (stop_clustering-start_clustering)//3600,":",(stop_clustering-start_clustering)%3600//60,":",(stop_clustering-start_clustering)%60//1)
+        print("   On/offshore - ", (stop_splitting_ofonshore-start_splitting_ofonshore)/(stop_asigning_cluster-start_resizing)*100,"% - ", (stop_splitting_ofonshore-start_splitting_ofonshore)//3600,":",(stop_splitting_ofonshore-start_splitting_ofonshore)%3600//60,":",(stop_splitting_ofonshore-start_splitting_ofonshore)%60//1)
+        print("   Time series conversion - ", (stop_time_series-start_time_series)/(stop_asigning_cluster-start_resizing)*100,"% - ", (stop_time_series-start_time_series)//3600,":",(stop_time_series-start_time_series)%3600//60,":",(stop_time_series-start_time_series)%60//1)
+        print("   Clusters to Countries - ", (stop_asigning_cluster-start_asigning_cluster)/(stop_asigning_cluster-start_resizing)*100,"% - ", (stop_asigning_cluster-start_asigning_cluster)//3600,":",(stop_asigning_cluster-start_asigning_cluster)%3600//60,":",(stop_asigning_cluster-start_asigning_cluster)%60//1)
     if plot:
         plt.show()
 
     return()
 
-    
-Clustering(method="ward", data="weather", number_of_clusters=10, plot=True)
+# Clusters 10 or Threshold 1008 for AF
+Clustering(method="regional_kmeans", data="af", number_of_clusters=10, plot=False)
     

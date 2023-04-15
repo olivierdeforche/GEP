@@ -6,7 +6,7 @@ import pandas as pd
 from shapely.geometry import Point, Polygon
 
 
-def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, regions_solar, regions_off_shore_solar, coordinates, method, data, number_of_clusters, plot, user):
+def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_clusters_wind, regions_solar, regions_off_shore_solar, number_of_clusters_solar, coordinates, method, data, documentation, plot, user):
     
     # Load data of Exclusive Economic Zones 
     if user =="Olivier":
@@ -52,6 +52,9 @@ def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, regions_so
                 i += 1
         cluster_number +=1
 
+    if documentation:
+        print("wind done")
+
     ## Solar
     # Regions solar: assign the correct percentages to the respective country
     cluster_number = 0
@@ -77,29 +80,37 @@ def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, regions_so
                 i += 1
         cluster_number +=1
 
-    # Save the dictionaries to excel files
-    df_wind = pd.DataFrame(data=dict_wind, index=[0])
-    df_wind_offshore = pd.DataFrame(data=dict_wind_offshore, index=[0])
-    df_solar = pd.DataFrame(data=dict_solar, index=[0])
-    df_solar_offshore = pd.DataFrame(data=dict_solar_offshore, index=[0])
+    if documentation:
+        print("solar done")
 
-    df_wind = (df_wind.T)
-    df_wind_offshore = (df_wind_offshore.T)
-    df_solar = (df_solar.T)
-    df_solar_offshore = (df_solar_offshore.T)
+    # Save the dictionaries to excel files
+    df_wind = pd.DataFrame.from_dict(dict_wind)
+    df_wind_offshore = pd.DataFrame.from_dict(dict_wind_offshore)
+    df_solar = pd.DataFrame.from_dict(dict_solar)
+    df_solar_offshore = pd.DataFrame.from_dict(dict_solar_offshore)
 
     if plot:
         print(df_wind, df_wind_offshore, df_solar, df_solar_offshore)
 
     if user=="Olivier":
-        df_wind.to_excel('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/',method,'_',number_of_clusters,'_',data,'_df_wind.xlsx')
-        df_wind_offshore.to_excel('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/',method,'_',number_of_clusters,'_',data,'_df_wind_offshore.xlsx')
-        df_solar.to_excel('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/',method,'_',number_of_clusters,'_',data,'_df_solar.xlsx')
-        df_solar_offshore.to_excel('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/',method,'_',number_of_clusters,'_',data,'_df_solar_offshore.xlsx')
+        string_wind = str('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind.xlsx')
+        string_wind_offshore = str('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind_offshore.xlsx')
+        string_solar = str('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar.xlsx')
+        string_solar_offshore = str('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar_offshore.xlsx')
+        
+        df_wind.T.to_excel(string_wind)
+        df_wind_offshore.T.to_excel(string_wind_offshore)
+        df_solar.T.to_excel(string_solar)
+        df_solar_offshore.T.to_excel(string_solar_offshore)
     else:
-        df_wind.to_excel('TBD/df_wind.xlsx') #@Louis
-        df_wind_offshore.to_excel('TBD/df_wind_offshore.xlsx') #@Louis
-        df_solar.to_excel('TBD/df_solar.xlsx') #@Louis
-        df_solar_offshore.to_excel('TBD/df_solar_offshore.xlsx') #@Louis
+        string_wind = str('TBD')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind.xlsx') #@Louis
+        string_wind_offshore = str('TBD')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind_offshore.xlsx') #@Louis
+        string_solar = str('TBD')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar.xlsx') #@Louis
+        string_solar_offshore = str('TBD')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar_offshore.xlsx') #@Louis
+        
+        df_wind.T.to_excel(string_wind)
+        df_wind_offshore.T.to_excel(string_wind_offshore)
+        df_solar.T.to_excel(string_solar)
+        df_solar_offshore.T.to_excel(string_solar_offshore)
 
-    return()
+    return()    

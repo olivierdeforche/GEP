@@ -20,7 +20,7 @@ def Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, r
 
     labels_wind = model.labels
     areas = np.arange(res_resized * res_resized)
-    regions_wind = [areas[model.labels_ == region] for region in range(number_of_clusters)]
+    regions_wind = [areas[labels_wind == region] for region in range(number_of_clusters)]
 
     # Plot results wind if specified (plot=True)
     if plot:
@@ -69,7 +69,7 @@ def Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, r
     print("Model Solved, starting calculations of cluster values")
 
     labels_solar = model.labels
-    regions_solar = [areas[model.labels_ == region] for region in range(number_of_clusters)]
+    regions_solar = [areas[labels_solar == region] for region in range(number_of_clusters)]
 
     # Plot results solar if specified (plot=True)
     if plot:
