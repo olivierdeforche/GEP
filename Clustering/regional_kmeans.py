@@ -10,8 +10,8 @@ import time
 # Skip warnings
 warnings.filterwarnings("ignore")
 
-# fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
-fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
+fn_era = "C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc"
+# fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
@@ -24,8 +24,8 @@ wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each with nr of clusters
-res = 100  #orig 100
-clusters = 30 #orig 30
+res = 10  #orig 100
+clusters = 4 #orig 30
 np.random.seed(RANDOM_SEED)
 
 lenlon = len(lon)

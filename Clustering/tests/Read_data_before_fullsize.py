@@ -54,24 +54,27 @@ def Read_data(data, resize, plot, user, documentation):
 
     lenlon = len(lon)
     lenlat = len(lat)
-    # adjusted_size = lenlon-res
-    # lon = lon[:-(adjusted_size)]
-    # lon = lon[0::resize]
-    # lat = lat[0::resize]
+    adjusted_size = lenlon-res
+    lon = lon[:-(adjusted_size)]
+    lon = lon[0::resize]
+    lat = lat[0::resize]
 
-    # # Adjust length lon and lat by cutting of left and bottom
-    # if len(lon) > res_resized:
-    #     lon = lon[1:]
-    #     lat = lat[1:]
+    # Adjust length lon and lat by cutting of left and bottom
+    if len(lon) > res_resized:
+        lon = lon[1:]
+        lat = lat[1:]
 
     ## Transform the lists
-    lon = np.tile(lon, lenlat)
-    lat = np.repeat(lat, lenlon)
+    lon = np.tile(lon, res_resized)
+    lat = np.repeat(lat, res_resized)
 
     # Get list of coordinates
-    df = pd.DataFrame({'Latitude': lat,'Longitude': lon})
+    df = pd.DataFrame(
+        {     'Latitude': lat,
+            'Longitude': lon})
 
-    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.Longitude, df.Latitude))
+    gdf = gpd.GeoDataFrame(
+        df, geometry=gpd.points_from_xy(df.Longitude, df.Latitude))
     coordinates = list(gdf["geometry"])
 
   
@@ -79,17 +82,33 @@ def Read_data(data, resize, plot, user, documentation):
     wm_time = dict.fromkeys(range(1, len(wmm)))
     id_time = dict.fromkeys(range(1, len(idd)))
     for i in range(len(wmm)):
-        wm_time[i] = wmm[i][:, :].flatten()
-        id_time[i] = idd[i][:, :].flatten()
+        wm_time[i] = wmm[i][:, :-(lenlon-res)].flatten()
+        id_time[i] = idd[i][:, :-(lenlon-res)].flatten()
 
 
     # Transform from houry data
     wm = np.average(wm,axis=0)
 
     # Make it a square
-    wm = wm[:,:]
+    wm = wm[:lenlat,:lenlon]
 
-    wm = list(np.concatenate(wm).flat)
+    i = 0
+    k = 0
+    l = 0
+    wm_resized = [[0 for _ in range(res_resized)] for _ in range(res_resized)]
+    while i < res and (k < res_resized):
+        j = 0
+        l = 0
+        while (j < res) and (l < res_resized):
+            values = wm[i:i+resize,j:j+resize]
+            value_list = list(np.concatenate(values).flat)
+            wm_resized[k][l] = sum(value_list)/len(value_list)
+            j += resize
+            l += 1
+        k += 1
+        i += resize
+
+    wm = list(np.concatenate(wm_resized).flat)
     wm_copy = wm
     wm = [[i] for i in wm]
 
@@ -106,9 +125,24 @@ def Read_data(data, resize, plot, user, documentation):
     id = np.average(id,axis=0)
 
     # Make it square 
-    id = id[:,:]
+    id = id[:lenlat,:lenlon]
+    i = 0
+    k = 0
+    l = 0
+    id_resized = [[0 for _ in range(res_resized)] for _ in range(res_resized)]
+    while i < res and (k < res_resized):
+        j = 0
+        l = 0
+        while (j < res) and (l < res_resized):
+            values = id[i:i+resize,j:j+resize]
+            value_list = list(np.concatenate(values).flat)
+            id_resized[k][l] = sum(value_list)/len(value_list)
+            j += resize
+            l += 1
+        k += 1
+        i += resize
     
-    id = list(np.concatenate(id).flat)
+    id = list(np.concatenate(id_resized).flat)
     id_copy = id
     id = [[i] for i in id]
 

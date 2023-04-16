@@ -24,7 +24,7 @@ def Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_r
     attrs_name = np.array(attrs_name)
 
     # Spatial weights
-    w = libpysal.weights.lat2W(res_resized, res_resized)
+    w = libpysal.weights.lat2W(142, 191)
 
     # Solve model wind
     print("starting model")
@@ -33,7 +33,7 @@ def Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_r
     print("Model Solved, starting calculations of cluster values")
 
     labels_wind = model.labels_
-    areas = np.arange(res_resized * res_resized)
+    areas = np.arange(142 * 191)
     regions_wind = [areas[model.labels_ == region] for region in range(number_of_clusters)]
 
     # Plot resutls wind if specified (plot=True)

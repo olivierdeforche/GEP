@@ -9,7 +9,7 @@ from spopt.region import MaxPHeuristic as MaxP
 def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, plot):
 
     geo = gpd.GeoSeries.from_xy(lon, lat)
-    w = libpysal.weights.lat2W(res_resized, res_resized)
+    w = libpysal.weights.lat2W(142, 191)
     
     ### Wind
     # Start timer wind
@@ -33,7 +33,7 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     print("Model Solved, starting calculations of cluster values")
     
     labels_wind = model.labels_ 
-    areas = np.arange(res_resized * res_resized)
+    areas = np.arange(142 * 191)
     regions_wind = [areas[model.labels_ == region] for region in range(clusters)]
     number_of_clusters_wind = len(regions_wind)
 

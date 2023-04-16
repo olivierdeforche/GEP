@@ -9,26 +9,27 @@ def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot)
     # Begin timer
     start_wind = time.time()
 
-    w = libpysal.weights.lat2W(res_resized, res_resized)
+    w = libpysal.weights.lat2W(142, 191)
 
     wind = np.array(wind)
-
+ 
+    print("ready for model")
     model = RegionKMeansHeuristic(wind, number_of_clusters, w)
     model.solve()
     print("Done with clustering wind")
     labels_wind = model.labels_
     centroids_wind = model.centroids_
-    areas_wind = np.arange(res_resized * res_resized)
+    areas_wind = np.arange(142 * 191)
     regions_wind = [areas_wind[model.labels_ == region] for region in range(number_of_clusters)]
-
-    # Plot clustered zones if specified
+    print("model done")
+    # Plot clustered zones if specified 
     if plot:
         fig2 = plt.figure(figsize=(6, 6))
         plt.scatter(lon, lat,
                 c=model.labels_)
         plt.title("Wind clusters, random colors, kmeans")
 
-        wind = np.array(wind)
+        wind = np.array(wind) 
         wind = list(np.concatenate(wind).flat)
 
         for i in range(number_of_clusters):

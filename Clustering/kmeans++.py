@@ -19,8 +19,8 @@ import pytest
 # Skip warnings
 warnings.filterwarnings("ignore")
 
-# fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
-fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
+fn_era = "C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc"
+# fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
@@ -38,22 +38,20 @@ n_clusters = 30
 
 lenlon = len(lon)
 lenlat = len(lat)
-lon = lon[:-(lenlon-res)]
-lat = lat[:-(lenlat-res)]
 
 ## Transform the lists
-lon = np.tile(lon, res)
-lat = np.repeat(lat, res)
+lon = np.tile(lon, lenlat)
+lat = np.repeat(lat, lenlon)
 
 ## Preperation for GeoDataFrame
 geo = gpd.GeoSeries.from_xy(lon, lat)
-w = libpysal.weights.lat2W(res, res)
+w = libpysal.weights.lat2W(lenlon, lenlat)
 
 ### Wind
 start_wind = time.time()
 
 wm = np.average(wm,axis=0)
-wm = wm[:-(lenlat-res),:-(lenlon-res)]
+wm = wm[:,:]
 wm = list(np.concatenate(wm).flat)
 wm_copy = wm
 wm = [[i] for i in wm]
@@ -102,7 +100,7 @@ print((end_wind-start_wind)/3600)
 start_sun = time.time()
 
 id = np.average(id,axis=0)
-id = id[:-(lenlat-res),:-(lenlon-res)]
+id = id[:,:]
 id = list(np.concatenate(id).flat)
 id_copy = id
 id = [[i] for i in id]

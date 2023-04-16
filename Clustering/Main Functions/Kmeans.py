@@ -17,7 +17,7 @@ def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res
 
     # Get values
     labels_wind = model.labels_
-    areas = np.arange(res_resized * res_resized)
+    areas = np.arange(142 * 191)
     regions_wind = [areas[model.labels_ == region] for region in range(number_of_clusters)]
     
     clusters = dict.fromkeys(range(1, number_of_clusters))

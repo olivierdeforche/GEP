@@ -9,7 +9,7 @@ def Convert_to_timeseries(wind_copy, wind_time, labels_wind, number_of_clusters_
     start_wind = time.time()
 
     clusters_wind = dict()
-    clusters_values_wind = dict()
+    # clusters_values_wind = dict()
     clusters_one_time_wind = dict()
     clusters_one_time_wind_offshore = dict()
     
@@ -17,7 +17,7 @@ def Convert_to_timeseries(wind_copy, wind_time, labels_wind, number_of_clusters_
     for i in range(current_amount_of_clusters_wind):
         
         clusters_wind[i] = list()
-        clusters_values_wind[i] = list()
+        # clusters_values_wind[i] = list()
         
         if i < number_of_clusters_wind-len(to_remove_wind):
             clusters_one_time_wind[i] = list()
@@ -27,7 +27,7 @@ def Convert_to_timeseries(wind_copy, wind_time, labels_wind, number_of_clusters_
     # Time series per point
     for i in range(len(labels_wind)):
         clusters_wind[labels_wind[i]].append(i)
-        clusters_values_wind[labels_wind[i]].append(wind_copy[i])
+        # clusters_values_wind[labels_wind[i]].append(wind_copy[i])
 
     # Put the average time series per cluster in the dict
     k = 0
