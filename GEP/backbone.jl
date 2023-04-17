@@ -13,14 +13,11 @@ Pkg.instantiate() # If a Manifest.toml file exist in the current project, downlo
 using CSV
 using DataFrames
 using YAML
+using XLSX
 
 data = YAML.load_file(joinpath(@__DIR__, "data_gep.yaml"))
 repr_days = CSV.read(joinpath(@__DIR__, "Weights_12_reprdays.csv"), DataFrame)
 ts = CSV.read(joinpath(@__DIR__, "Profiles_12_reprdays.csv"), DataFrame)
-
-
-
-
 
 ## Step 2: create model & pass data to model
 using JuMP

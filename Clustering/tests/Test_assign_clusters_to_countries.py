@@ -16,8 +16,8 @@ print(EEZ)
 plt.show()
 # print(EZZ["geometry"][0])
 # print(EEZ["MRGID_EEZ"][0])
-# for polygon in EEZ["UNION"]:
-#     print(polygon)
+for polygon in EEZ["UNION"]:
+    print(polygon)
 
 # dict_wind = dict()
 

@@ -134,11 +134,14 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
 # Clustering(method="kmedoids", data="weather", number_of_clusters=10, plot=False)
 # Clustering(method="kmedoids", data="af", number_of_clusters=10, plot=False)
 
-Clustering(method="ward", data="weather", number_of_clusters=10, plot=False)
-Clustering(method="ward", data="af", number_of_clusters=10, plot=False)
+# Clustering(method="ward", data="weather", number_of_clusters=10, plot=False)
+# Clustering(method="ward", data="af", number_of_clusters=10, plot=False)
 
-# # Clusters 10 or Threshold 1008 for AF    
-# Clustering(method="maxp", data="weather", threshold=3000, plot=False)
+Clustering(method="regional_kmeans", data="weather", number_of_clusters=10, plot=False)
+Clustering(method="regional_kmeans", data="af", number_of_clusters=10, plot=False)
 
-# Clustering(method="regional_kmeans", data="weather", number_of_clusters=10, plot=False)
+# Threshold 2700 for AF    
+Clustering(method="maxp", data="af", threshold=2700, plot=False)
+Clustering(method="maxp", data="weather", threshold=2700, plot=False)
+
 
