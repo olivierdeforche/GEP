@@ -103,10 +103,10 @@ def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_
         df_solar.T.to_excel(string_solar)
         df_solar_offshore.T.to_excel(string_solar_offshore)
     else:
-        string_wind = str('TBD')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind.xlsx') #@Louis
-        string_wind_offshore = str('TBD')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind_offshore.xlsx') #@Louis
-        string_solar = str('TBD')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar.xlsx') #@Louis
-        string_solar_offshore = str('TBD')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar_offshore.xlsx') #@Louis
+        string_wind = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind.xlsx')
+        string_wind_offshore = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind_offshore.xlsx')
+        string_solar = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar.xlsx')
+        string_solar_offshore = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar_offshore.xlsx')
         
         df_wind.T.to_excel(string_wind)
         df_wind_offshore.T.to_excel(string_wind_offshore)

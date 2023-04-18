@@ -9,6 +9,7 @@ import spopt
 import warnings
 import geopandas as gpd
 import time
+from sklearn.neighbors import kneighbors_graph
 
 # Skip warnings
 warnings.filterwarnings("ignore")
@@ -27,8 +28,8 @@ wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each for threshold=number of points you should take together
-res = 100 #orig 100
-threshold = 320 #orig 333
+res = 50 #orig 100
+threshold = 100 #orig 333
 np.random.seed(RANDOM_SEED)
 
 lenlon = len(lon)
@@ -42,7 +43,15 @@ lat = np.repeat(lat, res)
 
 ## Preperation for GeoDataFrame
 geo = gpd.GeoSeries.from_xy(lon, lat)
-w = libpysal.weights.lat2W(res, res)
+# w = libpysal.weights.lat2W(res, res)
+
+# define number of neighbors for KNN
+k = 3
+
+# compute KNN weights
+coords = list(zip(lon, lat))
+knn_graph = kneighbors_graph(coords, k, mode='distance', include_self=False)
+w = libpysal.weights.KNN(coords, k)
 
 # ### Wind
 # start_wind = time.time()

@@ -8,7 +8,7 @@ def Split_offshore_onshore(regions_wind, labels_wind, number_of_clusters_wind, r
     if user=='Olivier':
         europe_land = gpd.read_file("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/europe.geojson")
     else:
-        europe_land = gpd.read_file("[TODO]") #@Louis check
+        europe_land = gpd.read_file("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Main Functions/europe.geojson")
 
 
     # Take out geometry out of Geoseries file
@@ -77,7 +77,11 @@ def Split_offshore_onshore(regions_wind, labels_wind, number_of_clusters_wind, r
             to_remove_solar.append(i)
             regions_solar.pop(i)
 
-    EEZ = gpd.read_file('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/EEZ_Europe_land.geojson')
+    if user == 'Olivier':
+        EEZ = gpd.read_file('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/EEZ_Europe_land.geojson')
+    else:
+        EEZ = gpd.read_file('C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Main Functions/EEZ_Europe_land.geojson')
+
     fig1, ax1 = plt.subplots()
     fig2, ax2 = plt.subplots()
     if plot:
