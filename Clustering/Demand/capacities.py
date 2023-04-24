@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 xls_capacity = pd.DataFrame()
 
@@ -20,7 +21,7 @@ filtered_import = filtered_rename[filtered_rename['Parameter'] == 'Import Capaci
 selected_export = filtered_export.loc[:, ['Node/Line', 'Capacity (MW)']]
 selected_import = filtered_import.loc[:, ['Node/Line', 'Capacity (MW)']]
 
-
+## EXPORT MATRIX
 # Split the "Node/Line" column into two separate columns
 selected_export[['Node1', 'Node2']] = selected_export['Node/Line'].str.split('-', expand=True)
 
@@ -33,7 +34,9 @@ selected_export = selected_export.groupby(['Node1', 'Node2'])['Capacity (MW)'].s
 
 # Pivot the data to get a 2D grid with countries as row and column labels
 selected_export = selected_export.pivot(index='Node1', columns='Node2', values='Capacity (MW)')
+selected_export.fillna(0, inplace=True)
 
+## IMPORT MATRIX
 # Split the "Node/Line" column into two separate columns
 selected_import[['Node1', 'Node2']] = selected_import['Node/Line'].str.split('-', expand=True)
 
@@ -46,7 +49,8 @@ selected_import = selected_import.groupby(['Node1', 'Node2'])['Capacity (MW)'].s
 
 # Pivot the data to get a 2D grid with countries as row and column labels
 selected_import = selected_import.pivot(index='Node1', columns='Node2', values='Capacity (MW)')
+selected_import.fillna(0, inplace=True)
 
 # Export to csv
-selected_export.to_csv(f"C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Demand/export_capacity.csv")
-selected_import.to_csv(f"C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Demand/import_capacity.csv")
+selected_export.to_csv(f"C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Demand/export_capacity_new.csv")
+selected_import.to_csv(f"C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Demand/import_capacity_new.csv")
