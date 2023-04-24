@@ -18,66 +18,95 @@ Pkg.instantiate() # If a Manifest.toml file exist in the current project, downlo
 ##  Step 1: Choose the correct data and load every input data
 method = "kmeans"
 no_clusters = "10"
-data = "af"
+data_used = "af"
 
 
 data = YAML.load_file(joinpath(@__DIR__, "data_gep_louis.yaml"))
-imp = CSV.read(joinpath(@__DIR__,"Data/import_capacity.csv"))
-exp = CSV.read(joinpath(@__DIR__,"Data/export_capacity.csv"))
-load = CSV.read(joinpath(@__DIR__,"Data/Demand_TimeSeries_output_2030_NationalTrends_2013.csv"))
+imp = CSV.read(joinpath(@__DIR__,"Data/import_capacity.csv"), DataFrame)
+exp = CSV.read(joinpath(@__DIR__,"Data/export_capacity.csv"), DataFrame)
+demand = CSV.read(joinpath(@__DIR__,"Data/Demand_TimeSeries_output_2030_NationalTrends_2013.csv"), DataFrame)
+countries = DataFrame(XLSX.readtable(joinpath(@__DIR__,"Data/Countries_nodes.xlsx"),"Sheet1"))
 
-Clusters_to_countries_wind = XLSX.read(joinpath(@__DIR__,"Output_Clusters_Asigned_To_Countries/"*method*"_"*no_clusters*"_"*data*"_df_wind.xlsx"), DataFrame)
-Clusters_to_countries_wind_offshore = XLSX.read(joinpath(@__DIR__,"Output_Clusters_Asigned_To_Countries/"*method*"_"*no_clusters*"_"*data*"_df_wind_offshore.xlsx"), DataFrame)
-Clusters_to_countries_solar = XLSX.read(joinpath(@__DIR__,"Output_Clusters_Asigned_To_Countries/"*method*"_"*no_clusters*"_"*data*"_df_solar.xlsx"), DataFrame)
-Clusters_to_countries_solar_offshore = XLSX.read(joinpath(@__DIR__,"Output_Clusters_Asigned_To_Countries/"*method*"_"*no_clusters*"_"*data*"_df_solar_offshore.xlsx"), DataFrame)
+Clusters_to_countries_wind = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Asigned_To_Countries/",method,"_",no_clusters,"_",data_used,"_df_wind.xlsx")),"Sheet1"))
+Clusters_to_countries_wind_offshore = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Asigned_To_Countries/",method,"_",no_clusters,"_",data_used,"_df_wind_offshore.xlsx")),"Sheet1"))
+Clusters_to_countries_solar = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Asigned_To_Countries/",method,"_",no_clusters,"_",data_used,"_df_solar.xlsx")),"Sheet1"))
+Clusters_to_countries_solar_offshore = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Asigned_To_Countries/",method,"_",no_clusters,"_",data_used,"_df_solar_offshore.xlsx")),"Sheet1"))
 
-Time_series_wind = XLSX.read(joinpath(@__DIR__,"Output_Clusters_Timeseries/"*method*"_"*no_clusters*"_"*data*"_clustered_on_wind.xlsx"), DataFrame)
-Time_series_wind_offshore = XLSX.read(joinpath(@__DIR__,"Output_Clusters_Timeseries/"*method*"_"*no_clusters*"_"*data*"_clustered_on_wind_offshore.xlsx"), DataFrame)
-Time_series_solar = XLSX.read(joinpath(@__DIR__,"Output_Clusters_Timeseries/"*method*"_"*no_clusters*"_"*data*"_clustered_on_solar.xlsx"), DataFrame)
-Time_series_solar_offshore = XLSX.read(joinpath(@__DIR__,"Output_Clusters_Timeseries/"*method*"_"*no_clusters*"_"*data*"_clustered_on_solar_offshore.xlsx"), DataFrame)
-
-
-
-
-
-
+Time_series_wind = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Timeseries/",method,"_",no_clusters,"_",data_used,"_clustered_on_wind.xlsx")),"Sheet1"))
+Time_series_wind_offshore = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Timeseries/",method,"_",no_clusters,"_",data_used,"_clustered_on_wind_offshore.xlsx")),"Sheet1"))
+Time_series_solar = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Timeseries/",method,"_",no_clusters,"_",data_used,"_clustered_on_solar.xlsx")),"Sheet1"))
+Time_series_solar_offshore = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Timeseries/",method,"_",no_clusters,"_",data_used,"_clustered_on_solar_offshore.xlsx")),"Sheet1"))
 
 ## Step 2: create model & pass data to model
 using JuMP
 using Gurobi
 m = Model(optimizer_with_attributes(Gurobi.Optimizer))
 
+ncol(Clusters_to_countries_wind)
+0:ncol(Clusters_to_countries_wind)-1
+1:data["nTimesteps"]
+[c for c in countries[!,"Countries"]]
+[0:ncol(Clusters_to_countries_wind)-1]
 # Step 2a: create sets
-function define_sets!(m::Model, data::Dict)
+function define_sets!(m::Model, data::Dict, Clusters_to_countries_wind::DataFrame, Clusters_to_countries_wind_offshore::DataFrame, Clusters_to_countries_solar::DataFrame, Clusters_to_countries_solar_offshore::DataFrame)
+    
     # create dictionary to store sets
     m.ext[:sets] = Dict()
 
     # define the sets
-    m.ext[:sets][:JH] = 1:data["nTimesteps"] # Timesteps
-    m.ext[:sets][:JD] = 1:data["nReprDays"] # Representative days
+    m.ext[:sets][:JH] = 1:data["nTimesteps"] # Timesteps (24)
+    m.ext[:sets][:JD] = 1:data["nDays"] # Number of days days (365)
     m.ext[:sets][:ID] = [id for id in keys(data["dispatchableGenerators"])] # dispatchable generators
     m.ext[:sets][:IV] = [iv for iv in keys(data["variableGenerators"])] # variable generators
     m.ext[:sets][:I] = union(m.ext[:sets][:ID], m.ext[:sets][:IV]) # all generators
-
+    m.ext[:sets][:C] = [c for c in countries[!,"Countries"]] # variable generators
+    m.ext[:sets][:CWon] = 0:ncol(Clusters_to_countries_wind)-1
+    m.ext[:sets][:CWof] = 0:ncol(Clusters_to_countries_wind_offshore)-1
+    m.ext[:sets][:CSon] = 0:ncol(Clusters_to_countries_solar)-1
+    m.ext[:sets][:CSof] = 0:ncol(Clusters_to_countries_solar_offshore)-1
     # return model
     return m
 end
 
+
+define_sets!(m, data, Clusters_to_countries_wind, Clusters_to_countries_wind_offshore, Clusters_to_countries_solar, Clusters_to_countries_solar_offshore)
+
 # Step 2b: add time series
-function process_time_series_data!(m::Model, data::Dict, ts::DataFrame)
+function process_time_series_data!(m::Model, data::Dict, demand::DataFrame, Time_series_wind::DataFrame, Time_series_wind_offshore::DataFrame, Time_series_soalr::DataFrame, Time_series_solar_offshore::DataFrame)
     # extract the relevant sets
     IV = m.ext[:sets][:IV] # Variable generators
     JH = m.ext[:sets][:JH] # Time steps
     JD = m.ext[:sets][:JD] # Days
 
     # create dictionary to store time series
-    m.ext[:timeseries] = Dict()
+    m.ext[:timeseries][:D] = Dict()
     m.ext[:timeseries][:AF] = Dict()
+    
+    m.ext[:timeseries][:AF][IV[1]] = Dict()
+    m.ext[:timeseries][:AF][IV[2]] = Dict()
+    m.ext[:timeseries][:AF][IV[3]] = Dict()
+    m.ext[:timeseries][:AF][IV[4]] = Dict()
 
     # example: add time series to dictionary
-    m.ext[:timeseries][:D] = [ts.Load[jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD]
-    m.ext[:timeseries][:AF][IV[1]] = [ts.LFW[jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD]
-    m.ext[:timeseries][:AF][IV[2]] = [ts.LFS[jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD] 
+    for country in m.ext[:sets][:C]
+        m.ext[:timeseries][:D][country] = [demand[!,country][jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD]  # This will need to be fixed in terms of days and hours I think? Might not actually!
+    end
+
+    for cluster in m.ext[:sets][:CWon]
+        m.ext[:timeseries][:AF][IV[1]][cluster] = [Time_series_wind[!,cluster][jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD]
+    end
+
+    for cluster in m.ext[:sets][:CWof]
+        m.ext[:timeseries][:AF][IV[2]][cluster] = [Time_series_wind_offshore[!,cluster][jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD]
+    end
+
+    for cluster in m.ext[:sets][:CSon]
+        m.ext[:timeseries][:AF][IV[3]][cluster] = [Time_series_solar[!,cluster][jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD]
+    end
+
+    for cluster in m.ext[:sets][:CSof]
+        m.ext[:timeseries][:AF][IV[4]][cluster] = [Time_series_solar_offshore[!,cluster][jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD]
+    end
 
     # return model
     return m
@@ -97,7 +126,6 @@ function process_parameters!(m::Model, data::Dict, repr_days::DataFrame)
     αCO2 = m.ext[:parameters][:αCO2] = data["CO2Price"] #euro/ton
     m.ext[:parameters][:VOLL] = data["VOLL"] #VOLL
     r = m.ext[:parameters][:discountrate] = data["discountrate"] #discountrate
-    m.ext[:parameters][:W] = repr_days.Weights # wieghts of each representative date
 
    
     d = merge(data["dispatchableGenerators"],data["variableGenerators"])
