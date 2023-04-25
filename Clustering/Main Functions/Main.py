@@ -116,11 +116,11 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
         print('')
         print("Time contribution of each segment:")
         print("----------------------------------")
-        print("   Resizing - ", (stop_resizing-start_resizing)/(stop_asigning_cluster-start_resizing)*100//0.01,"% - ", (stop_resizing-start_resizing)//3600,":",(stop_resizing-start_resizing)%3600//60,":",(stop_resizing-start_resizing)%60//1)
-        print("   Clustering - ", (stop_clustering-start_clustering)/(stop_asigning_cluster-start_resizing)*100//0.01,"% - ", (stop_clustering-start_clustering)//3600,":",(stop_clustering-start_clustering)%3600//60,":",(stop_clustering-start_clustering)%60//1)
-        print("   On/offshore - ", (stop_splitting_ofonshore-start_splitting_ofonshore)/(stop_asigning_cluster-start_resizing)*100//0.01,"% - ", (stop_splitting_ofonshore-start_splitting_ofonshore)//3600,":",(stop_splitting_ofonshore-start_splitting_ofonshore)%3600//60,":",(stop_splitting_ofonshore-start_splitting_ofonshore)%60//1)
-        print("   Time series conversion - ", (stop_time_series-start_time_series)/(stop_asigning_cluster-start_resizing)*100//0.01,"% - ", (stop_time_series-start_time_series)//3600,":",(stop_time_series-start_time_series)%3600//60,":",(stop_time_series-start_time_series)%60//1)
-        print("   Clusters to Countries - ", (stop_asigning_cluster-start_asigning_cluster)/(stop_asigning_cluster-start_resizing)*100//0.01,"% - ", (stop_asigning_cluster-start_asigning_cluster)//3600,":",(stop_asigning_cluster-start_asigning_cluster)%3600//60,":",(stop_asigning_cluster-start_asigning_cluster)%60//1)
+        print("   Resizing - ", (stop_resizing-start_resizing)/(stop_asigning_cluster-start_resizing)//0.01,"% - ", (stop_resizing-start_resizing)//3600,":",(stop_resizing-start_resizing)%3600//60,":",(stop_resizing-start_resizing)%60//1)
+        print("   Clustering - ", (stop_clustering-start_clustering)/(stop_asigning_cluster-start_resizing)//0.01,"% - ", (stop_clustering-start_clustering)//3600,":",(stop_clustering-start_clustering)%3600//60,":",(stop_clustering-start_clustering)%60//1)
+        print("   On/offshore - ", (stop_splitting_ofonshore-start_splitting_ofonshore)/(stop_asigning_cluster-start_resizing)//0.01,"% - ", (stop_splitting_ofonshore-start_splitting_ofonshore)//3600,":",(stop_splitting_ofonshore-start_splitting_ofonshore)%3600//60,":",(stop_splitting_ofonshore-start_splitting_ofonshore)%60//1)
+        print("   Time series conversion - ", (stop_time_series-start_time_series)/(stop_asigning_cluster-start_resizing)//0.01,"% - ", (stop_time_series-start_time_series)//3600,":",(stop_time_series-start_time_series)%3600//60,":",(stop_time_series-start_time_series)%60//1)
+        print("   Clusters to Countries - ", (stop_asigning_cluster-start_asigning_cluster)/(stop_asigning_cluster-start_resizing)//0.01,"% - ", (stop_asigning_cluster-start_asigning_cluster)//3600,":",(stop_asigning_cluster-start_asigning_cluster)%3600//60,":",(stop_asigning_cluster-start_asigning_cluster)%60//1)
         print("")
     if plot:
         plt.show()
@@ -128,20 +128,20 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
     return()
 
 
-# Clustering(method="kmeans", data="af", number_of_clusters=10, plot=True)
-# Clustering(method="kmeans", data="af", number_of_clusters=10, plot=False)
+Clustering(method="kmeans", data="weather", number_of_clusters=10, plot=False)
+Clustering(method="kmeans", data="af", number_of_clusters=10, plot=False)
 
-# Clustering(method="kmedoids", data="weather", number_of_clusters=10, plot=False)
-# Clustering(method="kmedoids", data="af", number_of_clusters=10, plot=False)
+Clustering(method="kmedoids", data="weather", number_of_clusters=10, plot=False)
+Clustering(method="kmedoids", data="af", number_of_clusters=10, plot=False)
 
-# Clustering(method="ward", data="weather", number_of_clusters=10, plot=False)
-# Clustering(method="ward", data="af", number_of_clusters=10, plot=False)
+Clustering(method="ward", data="weather", number_of_clusters=10, plot=False)
+Clustering(method="ward", data="af", number_of_clusters=10, plot=False)
 
 Clustering(method="regional_kmeans", data="weather", number_of_clusters=10, plot=False)
 Clustering(method="regional_kmeans", data="af", number_of_clusters=10, plot=False)
 
 # Threshold 2700 for AF    
-Clustering(method="maxp", data="af", threshold=2700, plot=False)
-Clustering(method="maxp", data="weather", threshold=2700, plot=False)
+# Clustering(method="maxp", data="af", threshold=2700, plot=False)
+# Clustering(method="maxp", data="weather", threshold=2700, plot=False)
 
 

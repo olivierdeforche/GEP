@@ -11,16 +11,34 @@ import numpy as np
 
 
 EEZ = gpd.read_file('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/EEZ_Europe_land.geojson')
+# europe_land = gpd.read_file("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/europe.geojson")
+# print(type(EEZ))
 EEZ.plot(edgecolor='k', facecolor='lightgrey')
-print(EEZ)
+# print(EEZ)
 plt.show()
-# print(EZZ["geometry"][0])
-# print(EEZ["MRGID_EEZ"][0])
-for polygon in EEZ["UN_TER1"]:
+
+EEZ["UNION"][33] = "The former Yugoslav Republic of Macedonia"
+EEZ["UNION"][34] = "Luxembourg"
+EEZ["UNION"][35] = "Ukraine"
+
+for polygon in EEZ["UNION"]:
     print(polygon)
 
-# dict_wind = dict()
+i = 0
+for name in EEZ["NAME"]:
+    print(i)
+    i += 1
+    print(name)
 
+EEZ.to_file("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/EEZ_Europe_land.geojson", driver='GeoJSON')
+
+# print(EZZ["geometry"][0])
+# print(EEZ["MRGID_EEZ"][0])
+# for polygon in EEZ["UNION"]:
+#     # print(polygon)
+#     if polygon == 'nan':
+#         if EEZ["NAME"] == "The former Yugoslav Republic of Macedonia":
+#             EEZ["UNION"][]
 # for country_name in EEZ["UNION"]:
 #     dict_wind[country_name] = None
 

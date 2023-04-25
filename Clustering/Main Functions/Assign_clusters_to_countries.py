@@ -26,6 +26,12 @@ def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_
         dict_wind_offshore[country_name] = np.zeros(len(regions_off_shore_wind))
         dict_solar[country_name] = np.zeros(len(regions_solar))
         dict_solar_offshore[country_name] = np.zeros(len(regions_off_shore_solar))
+        
+    dict_wind["total"] = np.zeros(len(regions_wind))
+    dict_wind_offshore["total"] = np.zeros(len(regions_off_shore_wind))
+    dict_solar["total"] = np.zeros(len(regions_solar))
+    dict_solar_offshore["total"] = np.zeros(len(regions_off_shore_solar))
+
 
     ## Wind
     # Regions wind: assign the correct percentages to the respective country
@@ -40,6 +46,14 @@ def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_
                 i += 1
         cluster_number +=1
 
+    
+    for i in range(cluster_number):
+        total_percentage = 0
+        for country in EEZ["UNION"]:
+            total_percentage += dict_wind[country][i]
+        dict_wind["total"][i] = total_percentage
+
+
     # Regions offshore wind: assign the correct percentages to the respective country
     cluster_number = 0
     for cluster in regions_off_shore_wind:
@@ -51,6 +65,12 @@ def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_
                     dict_wind_offshore[EEZ["UNION"][i]][cluster_number] += 1/size_cluster
                 i += 1
         cluster_number +=1
+
+    for i in range(cluster_number):
+        total_percentage = 0
+        for country in EEZ["UNION"]:
+            total_percentage += dict_wind_offshore[country][i]
+        dict_wind_offshore["total"][i] = total_percentage
 
     if documentation:
         print("wind done")
@@ -68,6 +88,12 @@ def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_
                 i += 1
         cluster_number +=1
 
+    for i in range(cluster_number):
+        total_percentage = 0
+        for country in EEZ["UNION"]:
+            total_percentage += dict_solar[country][i]
+        dict_solar["total"][i] = total_percentage
+
     # Regions offshore solar: assign the correct percentages to the respective country
     cluster_number = 0
     for cluster in regions_off_shore_solar:
@@ -80,6 +106,12 @@ def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_
                 i += 1
         cluster_number +=1
 
+    for i in range(cluster_number):
+        total_percentage = 0
+        for country in EEZ["UNION"]:
+            total_percentage += dict_solar_offshore[country][i]
+        dict_solar_offshore["total"][i] = total_percentage
+
     if documentation:
         print("solar done")
 
@@ -88,6 +120,11 @@ def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_
     df_wind_offshore = pd.DataFrame.from_dict(dict_wind_offshore)
     df_solar = pd.DataFrame.from_dict(dict_solar)
     df_solar_offshore = pd.DataFrame.from_dict(dict_solar_offshore)
+
+    df_wind = df_wind.T
+    df_wind_offshore = df_wind_offshore.T
+    df_solar = df_solar.T
+    df_solar_offshore = df_solar_offshore.T
 
     if plot:
         print(df_wind, df_wind_offshore, df_solar, df_solar_offshore)

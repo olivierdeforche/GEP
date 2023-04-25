@@ -1,19 +1,18 @@
-
-using Pkg
-using CSV
-using DataFrames
-using YAML
-using XLSX
-
 ## Backbone to structure your code
 # author: Olivier Deforche, Louis Maes
 # last update: April 17, 2023
 # reference: This model is build upon the backbone code from Kenneth Bruninx for the course: Optimization problems in Engergy systems 
 # description: TBD
 
+using Pkg
 ## Step 0: Activate environment - ensure consistency accross computers
 Pkg.activate(@__DIR__) # @__DIR__ = directory this script is in
 Pkg.instantiate() # If a Manifest.toml file exist in the current project, download all the packages declared in that manifest. Else, resolve a set of feasible packages from the Project.toml files and install them.
+
+using CSV
+using DataFrames
+using YAML
+using XLSX
 
 ##  Step 1: Choose the correct data and load every input data
 method = "kmeans"
@@ -24,7 +23,7 @@ data_used = "af"
 data = YAML.load_file(joinpath(@__DIR__, "data_gep_louis.yaml"))
 imp = CSV.read(joinpath(@__DIR__,"Data/import_capacity.csv"), DataFrame)
 exp = CSV.read(joinpath(@__DIR__,"Data/export_capacity.csv"), DataFrame)
-demand = CSV.read(joinpath(@__DIR__,"Data/Demand_TimeSeries_output_2030_NationalTrends_2013.csv"), DataFrame)
+demand = CSV.read(joinpath(@__DIR__,"Data/Demand_TimeSeries_output_2030_NationalTrends.csv"), DataFrame)
 countries = DataFrame(XLSX.readtable(joinpath(@__DIR__,"Data/Countries_nodes.xlsx"),"Sheet1"))
 
 Clusters_to_countries_wind = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Asigned_To_Countries/",method,"_",no_clusters,"_",data_used,"_df_wind.xlsx")),"Sheet1"))
@@ -42,11 +41,7 @@ using JuMP
 using Gurobi
 m = Model(optimizer_with_attributes(Gurobi.Optimizer))
 
-ncol(Clusters_to_countries_wind)
-0:ncol(Clusters_to_countries_wind)-1
-1:data["nTimesteps"]
-[c for c in countries[!,"Countries"]]
-[0:ncol(Clusters_to_countries_wind)-1]
+
 # Step 2a: create sets
 function define_sets!(m::Model, data::Dict, Clusters_to_countries_wind::DataFrame, Clusters_to_countries_wind_offshore::DataFrame, Clusters_to_countries_solar::DataFrame, Clusters_to_countries_solar_offshore::DataFrame)
     
@@ -60,25 +55,26 @@ function define_sets!(m::Model, data::Dict, Clusters_to_countries_wind::DataFram
     m.ext[:sets][:IV] = [iv for iv in keys(data["variableGenerators"])] # variable generators
     m.ext[:sets][:I] = union(m.ext[:sets][:ID], m.ext[:sets][:IV]) # all generators
     m.ext[:sets][:C] = [c for c in countries[!,"Countries"]] # variable generators
-    m.ext[:sets][:CWon] = 0:ncol(Clusters_to_countries_wind)-1
-    m.ext[:sets][:CWof] = 0:ncol(Clusters_to_countries_wind_offshore)-1
-    m.ext[:sets][:CSon] = 0:ncol(Clusters_to_countries_solar)-1
-    m.ext[:sets][:CSof] = 0:ncol(Clusters_to_countries_solar_offshore)-1
+    m.ext[:sets][:CWon] = 1:nrow(Clusters_to_countries_wind)
+    m.ext[:sets][:CWof] = 1:nrow(Clusters_to_countries_wind_offshore)
+    m.ext[:sets][:CSon] = 1:nrow(Clusters_to_countries_solar)
+    m.ext[:sets][:CSof] = 1:nrow(Clusters_to_countries_solar_offshore)
+    
     # return model
     return m
 end
 
-
 define_sets!(m, data, Clusters_to_countries_wind, Clusters_to_countries_wind_offshore, Clusters_to_countries_solar, Clusters_to_countries_solar_offshore)
 
 # Step 2b: add time series
-function process_time_series_data!(m::Model, data::Dict, demand::DataFrame, Time_series_wind::DataFrame, Time_series_wind_offshore::DataFrame, Time_series_soalr::DataFrame, Time_series_solar_offshore::DataFrame)
+function process_time_series_data!(m::Model, data::Dict, demand::DataFrame, Time_series_wind::DataFrame, Time_series_wind_offshore::DataFrame, Time_series_solar::DataFrame, Time_series_solar_offshore::DataFrame)
     # extract the relevant sets
     IV = m.ext[:sets][:IV] # Variable generators
     JH = m.ext[:sets][:JH] # Time steps
     JD = m.ext[:sets][:JD] # Days
 
     # create dictionary to store time series
+    m.ext[:timeseries] = Dict()
     m.ext[:timeseries][:D] = Dict()
     m.ext[:timeseries][:AF] = Dict()
     
@@ -112,12 +108,24 @@ function process_time_series_data!(m::Model, data::Dict, demand::DataFrame, Time
     return m
 end
 
+process_time_series_data!(m, data, demand, Time_series_wind, Time_series_wind_offshore, Time_series_solar, Time_series_solar_offshore)
+
+
+d = merge(data["dispatchableGenerators"],data["variableGenerators"])
+d["Nuclear"]
+
 # step 2c: process input parameters
-function process_parameters!(m::Model, data::Dict, repr_days::DataFrame)
+function process_parameters!(m::Model, data::Dict)
+
     # extract the sets you need
     I = m.ext[:sets][:I]
     ID = m.ext[:sets][:ID]
     IV = m.ext[:sets][:IV]
+    C = m.ext[:sets][:C]
+    CWon = m.ext[:sets][:CWon]
+    CWof = m.ext[:sets][:CWof]
+    CSon = m.ext[:sets][:CSon]
+    CSof = m.ext[:sets][:CSof]
 
     # generate a dictonary "parameters"
     m.ext[:parameters] = Dict()
@@ -142,14 +150,87 @@ function process_parameters!(m::Model, data::Dict, repr_days::DataFrame)
     # legacy capacity
     m.ext[:parameters][:LC] = Dict(i => d[i]["legcap"] for i in I) # MW
 
-    # return model
+
+    # Percentages
+    m.ext[:parameters][:perc][IV[1]] = Dict()
+    for c in C
+        for cluster in CWon
+            m.ext[:parameters][:perc][IV[1]][c][cluster] = Clusters_to_countries_wind[!,c][cluster]
+        end
+    end
+
+    m.ext[:parameters][:perc][IV[2]] = Dict()
+    for c in C
+        for cluster in CWof
+            m.ext[:parameters][:perc][IV[2]][c][cluster] = Clusters_to_countries_wind_offshore[!,c][cluster]
+        end
+    end
+
+    m.ext[:parameters][:perc][IV[3]] = Dict()
+    for c in C
+        for cluster in CSon
+            m.ext[:parameters][:perc][IV[3]][c][cluster] = Clusters_to_countries_solar[!,c][cluster]
+        end
+    end
+
+    m.ext[:parameters][:perc][IV[4]] = Dict()
+    for c in C
+        for cluster in CSof
+            m.ext[:parameters][:perc][IV[1]][c][cluster] = Clusters_to_countries_solar_offshore[!,c][cluster]
+        end
+    end
+
+    # Import
+    m.ext[:parameters][:max_import] = Dict(c for c in C)
+    for c in C
+        m.ext[:parameters][:max_import][c] = Dict(k =>  imp[c,k] for k in K, c in C)
+    end 
+    
+    # Export
+    m.ext[:parameters][:max_export] = Dict(c for c in C)
+    for c in C
+        m.ext[:parameters][:max_export][c] = Dict(k =>  exp[c,k] for k in K, c in C)
+    end 
+
+    # Totals
+    m.ext[:parameters][:totals] = Dict()
+
+    total = 0
+    for cluster in m.ext[:sets][:CWon]
+        for country in C
+            total += Clusters_to_countries_wind[!,country][cluster]
+        end
+        m.ext[:parameters][:totals][:CWon][cluster] = total
+    end
+
+    total = 0
+    for cluster in m.ext[:sets][:CWof]
+        for country in C
+            total += Clusters_to_countries_wind_offshore[!,country][cluster]
+        end
+        m.ext[:parameters][:totals][:CWof][cluster] = total
+    end
+
+    total = 0
+    for cluster in m.ext[:sets][:CSon]
+        for country in C
+            total += Clusters_to_countries_solar[!,country][cluster]
+        end
+        m.ext[:parameters][:totals][:CSon][cluster] = total
+    end
+
+    total = 0
+    for cluster in m.ext[:sets][:CSof]
+        for country in C
+            total += Clusters_to_countries_solar_offshore[!,country][cluster]
+        end
+        m.ext[:parameters][:totals][:CSof][cluster] = total
+    end
+
     return m
 end
 
-# call functions
-define_sets!(m, data)
-process_time_series_data!(m, data, ts)
-process_parameters!(m, data, repr_days)
+process_parameters!(m, data)
 
 ## Step 3: construct your model
 # Greenfield GEP - single year (Lecture 3 - slide 25, but based on representative days instead of full year)
@@ -165,102 +246,82 @@ function build_greenfield_1Y_GEP_model!(m::Model)
     IV = m.ext[:sets][:IV]
     JH = m.ext[:sets][:JH]
     JD = m.ext[:sets][:JD]
+    C = m.ext[:sets][:C]
+    K = m.ext[:sets][:C]
+    CWon = m.ext[:sets][:CWon]
+    CWof = m.ext[:sets][:CWof]
+    CSon = m.ext[:sets][:CSon]
+    CSof = m.ext[:sets][:CSof]
+
 
     # Extract time series data
-    D = m.ext[:timeseries][:D] # demand
-    AF = m.ext[:timeseries][:AF] # availabilim.ty factors
+    D = m.ext[:timeseries][:D] # demand | per country
+    AF = m.ext[:timeseries][:AF] # availability factors | per technology IV per cluster Z
 
     # Extract parameters
-    VOLL = m.ext[:parameters][:VOLL] # VOLL
-    VC = m.ext[:parameters][:VC] # variable cost
-    IC = m.ext[:parameters][:IC] # investment cost
-    W = m.ext[:parameters][:W] # weights
-
+    VOLL = m.ext[:parameters][:VOLL] # VOLL | -
+    VC = m.ext[:parameters][:VC] # variable cost | per technology
+    IC = m.ext[:parameters][:IC] # investment cost | per technology
+    perc = m.ext[:parameters][:perc] # Percentage of cluster asigned to country | per technology per country per cluster
+    total = m.ext[:parameters][:totals] # Total percentage of clusterd relevant | per technology per cluster
+    max_imp = m.ext[:parameters][:max_import] # max import | per country per country
+    max_exp = m.ext[:parameters][:max_export] # max import | per country per country
+    
 
     # Create variables
-    cap = m.ext[:variables][:cap] = @variable(m, [i=I], lower_bound=0, base_name="capacity")
-    g = m.ext[:variables][:g] = @variable(m, [i=I,jh=JH,jd=JD], lower_bound=0, base_name="generation")
-    ens = m.ext[:variables][:ens] = @variable(m, [jh=JH,jd=JD], lower_bound=0, base_name="load_shedding")
+    cap = m.ext[:variables][:cap] = @variable(m, [i=I,c=C], lower_bound=0, base_name="capacity")
+    g = m.ext[:variables][:g] = @variable(m, [i=I,c=C,jh=JH,jd=JD], lower_bound=0, base_name="generation")
+    ens = m.ext[:variables][:ens] = @variable(m, [c=C,jh=JH,jd=JD], lower_bound=0, base_name="load_shedding")
+    imp = m.ext[:variables][:inp] = @variable(m, [c=C,k=K,jh=JH,jd=JD], lower_bound=0, base_name="Import")
+    exp = m.ext[:variables][:exp] = @variable(m, [c=C,k=K,jh=JH,jd=JD], lower_bound=0, base_name="Export")
 
-    # Create affine expressions (= linear combinations of variables)
-    curt = m.ext[:expressions][:curt] = @expression(m, [i=IV,jh=JH,jd=JD],
-        AF[i][jh,jd]*cap[i] - g[i,jh,jd]
-    )
+    # # Create affine expressions (= linear combinations of variables)
+    # curt = m.ext[:expressions][:curt] = @expression(m, [i=IV,jh=JH,jd=JD],
+    #     AF[i][Z][jh,jd]*cap[i] - g[i,jh,jd]
+    # )
 
     # Formulate objective 1a
     m.ext[:objective] = @objective(m, Min,
-        + sum(IC[i]*cap[i] for i in I)
-        + sum(W[jd]*VC[i]*g[i,jh,jd] for i in ID, jh in JH, jd in JD)
-        + sum(W[jd]*ens[jh,jd]*VOLL for jh in JH, jd in JD)
+        + sum(IC[i]*cap[i,c] for i in I, c in C)
+        + sum(VC[i]*g[i,c,jh,jd] for i in ID, c in C, jh in JH, jd in JD)
+        + sum(ens[c,jh,jd]*VOLL for c in C, jh in JH, jd in JD)
     )
 
     # 2a - power balance
     m.ext[:constraints][:con2a] = @constraint(m, [jh=JH,jd=JD],
-        sum(g[j,i,jh,jd] i in I) + sum(inp[j,k,jh,jd] for k in K) - sum(exp[j,k,jh,jd] for k in K) + sum(perc[j,r,z,jh,jd]*cluster[r,z,jh,jd] for z in Z, r in R) 
-        == D[j,jh,jd] -ens[j,jh,jd]
+        sum(g[i,c,jh,jd] i in I) + sum(imp[c,k,jh,jd] for k in K) + sum(exp[c,k,jh,jd] for k in K) + sum(perc[i][c][z]*total[i][z]*AF[i][z][jh,jd] for z in CWon, i in IV) 
+        + sum(perc[i][c][z]*total[i][z]*AF[i][z][jh,jd] for z in CWof, i in IV) + sum(perc[i][c][z]*total[i][z]*AF[i][z][jh,jd] for z in CSon, i in IV) + sum(perc[i][c][z]*total[i][z]*AF[i][z][jh,jd] for z in CSof, i in IV) 
+        == D[c,jh,jd] - ens[c,jh,jd]
     )
 
     # 2c2 - load shedding
-    m.ext[:constraints][:con2c] = @constraint(m, [jh=JH,jd=JD],
-        ens[jh,jd] <= D[jh,jd]
+    m.ext[:constraints][:con2c] = @constraint(m, [c=C,jh=JH,jd=JD],
+        ens[c,jh,jd] <= D[c,jh,jd]
     )
     
     # 3a1 - renewables 
-    m.ext[:constraints][:con3a1res] = @constraint(m, [i=IV,jh=JH,jd=JD],
-    g[i,jh,jd] <= AF[i][jh,jd]*cap[i]
+    m.ext[:constraints][:con3a1res] = @constraint(m, [c=C,i=IV,jh=JH,jd=JD],
+    g[i,c,jh,jd] <= AF[i][c][jh,jd]*cap[i]
     )
 
     # 3a1 - conventional
     m.ext[:constraints][:con3a1conv] = @constraint(m, [i=ID,jh=JH,jd=JD],
-        g[i,jh,jd] <= cap[i]
+        g[i,jh,jd] <= cap[i,c]
+    )
+
+    # 4a - Max import
+    m.ext[:constraints][:con4a] = @constraint(m, [c=C,k=K,jh=JH,jd=JD],
+        imp[c,k,jh,jd] <= max_imp[c,k]
+    )
+
+    # 4b - Max export
+    m.ext[:constraints][:con4a] = @constraint(m, [c=C,k=K,jh=JH,jd=JD],
+        exp[c,k,jh,jd] <= max_exp[c,k]
     )
 
     return m
 end
 
-
-# Brownfield GEP - single year
-function build_brownfield_1Y_GEP_model!(m::Model)
-    # start from Greenfield
-    m = build_greenfield_1Y_GEP_model!(m::Model)
-
-    # extract sets
-    ID = m.ext[:sets][:ID]
-    IV = m.ext[:sets][:IV]
-    JH = m.ext[:sets][:JH]
-    JD = m.ext[:sets][:JD]  
-    
-    # Extract parameters
-    LC = m.ext[:parameters][:LC]
-
-    # Extract time series
-    AF = m.ext[:timeseries][:AF] # availability factors
-
-    # extract variables
-    g = m.ext[:variables][:g]
-    cap = m.ext[:variables][:cap]
-
-    # remove the constraints that need to be changed:
-    for iv in IV, jh in JH, jd in JD
-        delete(m,m.ext[:constraints][:con3a1res][iv,jh,jd])
-    end
-    for id in ID, jh in JH, jd in JD
-        delete(m,m.ext[:constraints][:con3a1conv][id,jh,jd]) #If there is an error, check here, not 100% sure
-    end
-
-    # define new constraints
-    # 3a1 - renewables
-    m.ext[:constraints][:con3a1res] = @constraint(m, [i=IV, jh=JH, jd =JD],
-        g[i,jh,jd] <= AF[i][jh,jd]*(cap[i]+LC[i])
-    )
-
-    # 3a1 - conventional
-    m.ext[:constraints][:con3a1conv] = @constraint(m, [i=ID, jh=JH, jd=JD],
-        g[i,jh,jd] <= (cap[i]+LC[i])
-    )
-
-    return m
-end
 
 # Build your model
 build_greenfield_1Y_GEP_model!(m)
@@ -330,5 +391,59 @@ p3 = bar(capvec, label="", xticks=(1:length(capvec), ["Mid" "Base" "Peak" "Wind"
 # combine
 plot(p1, p2, p3, layout = (3,1))
 plot!(size=(1000,800))
+
+
+
+
+
+
+
+
+
+
+
+
+# # Brownfield GEP - single year
+# function build_brownfield_1Y_GEP_model!(m::Model)
+#     # start from Greenfield
+#     m = build_greenfield_1Y_GEP_model!(m::Model)
+
+#     # extract sets
+#     ID = m.ext[:sets][:ID]
+#     IV = m.ext[:sets][:IV]
+#     JH = m.ext[:sets][:JH]
+#     JD = m.ext[:sets][:JD]  
+    
+#     # Extract parameters
+#     LC = m.ext[:parameters][:LC]
+
+#     # Extract time series
+#     AF = m.ext[:timeseries][:AF] # availability factors
+
+#     # extract variables
+#     g = m.ext[:variables][:g]
+#     cap = m.ext[:variables][:cap]
+
+#     # remove the constraints that need to be changed:
+#     for iv in IV, jh in JH, jd in JD
+#         delete(m,m.ext[:constraints][:con3a1res][iv,jh,jd])
+#     end
+#     for id in ID, jh in JH, jd in JD
+#         delete(m,m.ext[:constraints][:con3a1conv][id,jh,jd]) #If there is an error, check here, not 100% sure
+#     end
+
+#     # define new constraints
+#     # 3a1 - renewables
+#     m.ext[:constraints][:con3a1res] = @constraint(m, [i=IV, jh=JH, jd =JD],
+#         g[i,jh,jd] <= AF[i][jh,jd]*(cap[i]+LC[i])
+#     )
+
+#     # 3a1 - conventional
+#     m.ext[:constraints][:con3a1conv] = @constraint(m, [i=ID, jh=JH, jd=JD],
+#         g[i,jh,jd] <= (cap[i]+LC[i])
+#     )
+
+#     return m
+# end
 
 
