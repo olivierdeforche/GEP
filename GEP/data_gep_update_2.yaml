@@ -1,0 +1,60 @@
+# general parameters
+VOLL: 8700 # EUR / MWh (before 1000 €/MWh)
+CO2Price: 128 # EUR / ton (before 25 €/ton)
+nTimesteps: 24 # number of timesteps per representative day
+nReprDays: 12 # days
+discountrate: 0.07 # -
+
+# Generator parameters
+dispatchableGenerators:
+  Nuclear:
+    OC: 5000000 # EUR/MW
+    fuelCosts: 21.3 # EUR/MWh 9.3 fuel & 12 O&M = 21.3 USD/MWh
+    emissions: 0.013 # ton/MWh
+    lifetime: 60 # years
+    legcap:  # MW
+  
+  CCGT:
+    OC: 1100000 # EUR/MW
+    fuelCosts: 51.4 # EUR/MWh 45.3 fuel & 6.1 O&M = 51.4 USD/MWh
+    emissions: 0.44 # ton/MWh
+    lifetime: 30 # years
+    legcap:  # MW
+  
+  OCGT:
+    OC: 530000 # EUR/MW
+    fuelCosts: 79.1 # EUR/MWh 70 fuel & 9.1 O&M = 79.1 USD/MWh
+    emissions: 0.44 # ton/MWh
+    lifetime: 30 # years
+    legcap:  # MW
+
+
+  Coal:
+    OC: 3000000 # EUR/MW
+    fuelCosts: 47.8 # EUR/MWh 20.33 fuel & 27.5 O&M = 47.8 USD/MWh ## based on US data
+    emissions: 1.03 # ton/MWh
+    lifetime: 40 # years
+    legcap:  # MW
+
+
+variableGenerators:
+  On-Wind:
+    OC: 1500000 # EUR/MW ## >1MW
+    fuelCosts: 13.5 # EUR/MWh
+    emissions: 0.013 # ton/MWh
+    lifetime: 25 # years (before 20)
+    legcap:  # MW
+
+  Off-Wind:
+    OC: 2400000 # EUR/MW
+    fuelCosts: 22.28 # EUR/MWh
+    emissions: 0.013 # ton/MWh
+    lifetime: 25 # years (before 20)
+    legcap:  # MW
+
+  Solar:
+    OC: 1000000 # EUR/MW  ## utility scale
+    fuelCosts: 13 # EUR/MWh
+    emissions: 0.043 # ton/MWh
+    lifetime: 25 # years (before 20)
+    legcap:  # MW

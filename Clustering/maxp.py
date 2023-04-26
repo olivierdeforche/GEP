@@ -43,15 +43,15 @@ lat = np.repeat(lat, res)
 
 ## Preperation for GeoDataFrame
 geo = gpd.GeoSeries.from_xy(lon, lat)
-# w = libpysal.weights.lat2W(res, res)
+w = libpysal.weights.lat2W(res, res)
 
-# define number of neighbors for KNN
-k = 3
+# # define number of neighbors for KNN
+# k = 3
 
-# compute KNN weights
-coords = list(zip(lon, lat))
-knn_graph = kneighbors_graph(coords, k, mode='distance', include_self=False)
-w = libpysal.weights.KNN(coords, k)
+# # compute KNN weights
+# coords = list(zip(lon, lat))
+# knn_graph = kneighbors_graph(coords, k, mode='distance', include_self=False)
+# w = libpysal.weights.KNN(coords, k)
 
 ### Wind
 start_wind = time.time()
