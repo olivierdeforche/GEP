@@ -45,8 +45,9 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
 
     # Resize and load in the correct data  
     if documentation:
+        print("Start Clustering",method,number_of_clusters,data)
+        print("----------------------------------------------")
         print("start resizing and loading data")
-        print("------------------------------------")
         start_resizing = time.time()
 
     wind, wind_copy, wind_time, solar, solar_copy, solar_time, lon, lat, coordinates, res_resized = Read_data(data, resize, plot, user, documentation)
@@ -62,15 +63,15 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
         start_clustering = time.time()
 
     if method == "kmeans":
-        labels_wind, regions_wind, labels_solar, regions_solar = Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot)
+        labels_wind, regions_wind, labels_solar, regions_solar = Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data)
     elif method == "maxp":
-        labels_wind, regions_wind, number_of_clusters_wind, labels_solar, regions_solar, number_of_clusters_solar = Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, plot)
+        labels_wind, regions_wind, number_of_clusters_wind, labels_solar, regions_solar, number_of_clusters_solar = Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, plot, user, data)
     elif method == "kmedoids":
-        labels_wind, regions_wind, labels_solar, regions_solar = Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot)
+        labels_wind, regions_wind, labels_solar, regions_solar = Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data)
     elif method == "regional_kmeans":
-        labels_wind, regions_wind, labels_solar, regions_solar = RegionalKmeans(wind, solar, lon, lat, number_of_clusters, res_resized, plot)
+        labels_wind, regions_wind, labels_solar, regions_solar = RegionalKmeans(wind, solar, lon, lat, number_of_clusters, res_resized, plot, user, data)
     elif method == "ward":
-        labels_wind, regions_wind, labels_solar, regions_solar = Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot)
+        labels_wind, regions_wind, labels_solar, regions_solar = Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data)
 
     # Split in off-shore and on-shore
     if documentation:
@@ -80,7 +81,7 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
         print("start splitting off-shore and on-shore")
         start_splitting_ofonshore = time.time()
 
-    regions_wind, regions_off_shore_wind, labels_wind, current_amount_of_clusters_wind, to_remove_wind, regions_solar, regions_off_shore_solar, labels_solar, current_amount_of_clusters_solar, to_remove_solar = Split_offshore_onshore(regions_wind, labels_wind, number_of_clusters_wind, regions_solar, labels_solar, number_of_clusters_solar, coordinates, lon, lat, plot, user)
+    regions_wind, regions_off_shore_wind, labels_wind, current_amount_of_clusters_wind, to_remove_wind, regions_solar, regions_off_shore_solar, labels_solar, current_amount_of_clusters_solar, to_remove_solar = Split_offshore_onshore(method, regions_wind, labels_wind, number_of_clusters_wind, regions_solar, labels_solar, number_of_clusters_solar, coordinates, lon, lat, plot, user, number_of_clusters, threshold, data)
 
     # Compute time series for clusters and save them in a csv
     if documentation:
@@ -110,7 +111,7 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
     if documentation:
         stop_asigning_cluster = time.time()
         print("------------------------------------")
-        print("Assignment of clusters done")
+        print("Assignment of clusters done:", method,number_of_clusters,data)
         print("------------------------------------")
         print("Total time (hours:minutes:seconds):", (stop_asigning_cluster-start_resizing)//3600,":",(stop_asigning_cluster-start_resizing)%3600//60,":",(stop_asigning_cluster-start_resizing)%60//1)
         print('')
@@ -137,8 +138,8 @@ Clustering(method="kmedoids", data="af", number_of_clusters=10, plot=False)
 Clustering(method="ward", data="weather", number_of_clusters=10, plot=False)
 Clustering(method="ward", data="af", number_of_clusters=10, plot=False)
 
-Clustering(method="regional_kmeans", data="weather", number_of_clusters=10, plot=False)
-Clustering(method="regional_kmeans", data="af", number_of_clusters=10, plot=False)
+# Clustering(method="regional_kmeans", data="weather", number_of_clusters=10, plot=False)
+# Clustering(method="regional_kmeans", data="af", number_of_clusters=10, plot=False)
 
 # Threshold 2700 for AF    
 # Clustering(method="maxp", data="af", threshold=2700, plot=False)

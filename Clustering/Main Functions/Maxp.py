@@ -6,7 +6,7 @@ import libpysal
 from spopt.region import MaxPHeuristic as MaxP
 
 ## TODO: figure out how to get amount of clusters!
-def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, plot):
+def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, plot, user, data):
 
     geo = gpd.GeoSeries.from_xy(lon, lat)
     w = libpysal.weights.lat2W(142, 191)
@@ -38,37 +38,44 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     number_of_clusters_wind = len(regions_wind)
 
     # Plot results wind if specified
-    if plot:
-        fig22 = plt.figure(figsize=(6, 6))
-        plt.scatter(lon, lat,
-                c=model.labels_)
-        plt.title("Wind clusters, random colors, max-p")
-        plt.plot()
+    fig2 = plt.figure(figsize=(6, 6))
+    plt.scatter(lon, lat,
+            c=model.labels_)
+    plt.title("Wind clusters, random colors, max-p")
+    plt.plot()
+
+    nr_of_clusters = np.ceil(res_resized*res_resized/threshold)
+    nr_of_clusters = int(nr_of_clusters)
+    clusters = dict.fromkeys(range(1,nr_of_clusters))
+    clusters_values = dict.fromkeys(range(1,nr_of_clusters))
     
-        nr_of_clusters = np.ceil(res_resized*res_resized/threshold)
-        nr_of_clusters = int(nr_of_clusters)
-        clusters = dict.fromkeys(range(1,nr_of_clusters))
-        clusters_values = dict.fromkeys(range(1,nr_of_clusters))
-        
-        for i in range(len(clusters) + 1):
-            clusters[i + 1] = list()
-            clusters_values[i + 1] = list()
-        
-        for i in range(len(model.labels_)):
-            clusters[model.labels_[i]].insert(i, i)
-            clusters_values[model.labels_[i]].insert(i, wind_copy[i])
-        
-        for key in clusters:
-            average = np.average(clusters_values[key])
-            for i in range(len(clusters[key])):
-                wind_copy[clusters[key][i]] = average
-        
-        print("values relating to specific clusters calculated and ready")
-        
-        fig3 = plt.figure(figsize=(6, 6))
-        plt.scatter(lon, lat,
-                c=wind_copy)
-        plt.title("Wind clusters, ranked with color, max-p")
+    for i in range(len(clusters) + 1):
+        clusters[i + 1] = list()
+        clusters_values[i + 1] = list()
+    
+    for i in range(len(model.labels_)):
+        clusters[model.labels_[i]].insert(i, i)
+        clusters_values[model.labels_[i]].insert(i, wind_copy[i])
+    
+    for key in clusters:
+        average = np.average(clusters_values[key])
+        for i in range(len(clusters[key])):
+            wind_copy[clusters[key][i]] = average
+    
+    print("values relating to specific clusters calculated and ready")
+    
+    fig3 = plt.figure(figsize=(6, 6))
+    plt.scatter(lon, lat,
+            c=wind_copy)
+    plt.title("Wind clusters, ranked with color, max-p")
+
+    
+    if user=="Olivier":
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_wind.eps')
+        plt.savefig(string_wind, format='eps')
+    else:
+        string_wind = str("TBD/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_wind.eps')
+        plt.savefig(string_wind, format='eps') # @Louis TBD
     
     # Stop timer wind
     end_wind = time.time()
@@ -99,36 +106,43 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     regions_solar = [areas[model.labels_ == region] for region in range(clusters)]
     number_of_clusters_solar = len(regions_solar)
     # Plot results wind if specified
-    if plot: 
-        fig5 = plt.figure(figsize=(6, 6))
-        plt.scatter(lon, lat,
-                c=model.labels_)
-        plt.title("Sun clusters, random colors, max-p")
+ 
+    fig5 = plt.figure(figsize=(6, 6))
+    plt.scatter(lon, lat,
+            c=model.labels_)
+    plt.title("Sun clusters, random colors, max-p")
 
-        nr_of_clusters = np.ceil(res_resized*res_resized/threshold)
-        nr_of_clusters = int(nr_of_clusters)
-        clusters = dict.fromkeys(range(1,nr_of_clusters))
-        clusters_values = dict.fromkeys(range(1,nr_of_clusters))
+    nr_of_clusters = np.ceil(res_resized*res_resized/threshold)
+    nr_of_clusters = int(nr_of_clusters)
+    clusters = dict.fromkeys(range(1,nr_of_clusters))
+    clusters_values = dict.fromkeys(range(1,nr_of_clusters))
 
-        for i in range(len(clusters) + 1):
-            clusters[i + 1] = list()
-            clusters_values[i + 1] = list()
+    for i in range(len(clusters) + 1):
+        clusters[i + 1] = list()
+        clusters_values[i + 1] = list()
 
-        for i in range(len(model.labels_)):
-            clusters[model.labels_[i]].insert(i, i)
-            clusters_values[model.labels_[i]].insert(i, solar_copy[i])
+    for i in range(len(model.labels_)):
+        clusters[model.labels_[i]].insert(i, i)
+        clusters_values[model.labels_[i]].insert(i, solar_copy[i])
 
-        for key in clusters:
-            average = np.average(clusters_values[key])
-            for i in range(len(clusters[key])):
-                solar_copy[clusters[key][i]] = average
+    for key in clusters:
+        average = np.average(clusters_values[key])
+        for i in range(len(clusters[key])):
+            solar_copy[clusters[key][i]] = average
 
-        print("values relating to specific clusters calculated and ready")
+    print("values relating to specific clusters calculated and ready")
 
-        fig6 = plt.figure(figsize=(6, 6))
-        plt.scatter(lon, lat,
-                c=solar_copy)
-        plt.title("Sun clusters, ranked with color, max-p")
+    fig6 = plt.figure(figsize=(6, 6))
+    plt.scatter(lon, lat,
+            c=solar_copy)
+    plt.title("Sun clusters, ranked with color, max-p")
+
+    if user=="Olivier":
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_solar.eps')
+        plt.savefig(string_solar, format='eps')
+    else:
+        string_solar = str("TBD/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_solar.eps')
+        plt.savefig(string_solar, format='eps') # @Louis TBD
 
     # End timer
     end_sun = time.time()

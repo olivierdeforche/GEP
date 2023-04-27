@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import time
 import libpysal
 
-def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot):
+def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot, user, data):
     ### Wind
     # Begin timer
     start_wind = time.time()
@@ -23,23 +23,30 @@ def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot)
     regions_wind = [areas_wind[model.labels_ == region] for region in range(number_of_clusters)]
     print("model done")
     # Plot clustered zones if specified 
-    if plot:
-        fig2 = plt.figure(figsize=(6, 6))
-        plt.scatter(lon, lat,
-                c=model.labels_)
-        plt.title("Wind clusters, random colors, kmeans")
+    fig2 = plt.figure(figsize=(6, 6))
+    plt.scatter(lon, lat,
+        c=model.labels_)
+    plt.title("Wind clusters, random colors, kmeans")
 
-        wind = np.array(wind) 
-        wind = list(np.concatenate(wind).flat)
+    wind = np.array(wind) 
+    wind = list(np.concatenate(wind).flat)
 
-        for i in range(number_of_clusters):
-            for j in range(len(regions_wind[i])):
-                wind[regions_wind[i][j]] = centroids_wind[i]
+    for i in range(number_of_clusters):
+        for j in range(len(regions_wind[i])):
+            wind[regions_wind[i][j]] = centroids_wind[i]
 
-        fig3 = plt.figure(figsize=(6, 6))
-        plt.scatter(lon, lat,
-                c=wind)
-        plt.title("Wind clusters, ranked with color, kmeans")
+    fig3 = plt.figure(figsize=(6, 6))
+    plt.scatter(lon, lat,
+        c=wind)
+    plt.title("Wind clusters, ranked with color, kmeans")
+    if user=="Olivier":
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
+        plt.savefig(string_wind, format='eps')
+    else:
+        string_wind = str("TBD/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
+        plt.savefig(string_wind, format='eps') # @Louis TBD
+
+
 
     # End timer
     end_wind = time.time()
@@ -61,24 +68,30 @@ def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot)
     regions_solar = [areas_solar[model.labels_ == region] for region in range(number_of_clusters)]
 
     # Plot results clustering sun if plot enabled 
-    if plot:
-        solar = np.array(solar)
-        solar = list(np.concatenate(solar).flat)
+    solar = np.array(solar)
+    solar = list(np.concatenate(solar).flat)
 
-        for i in range(number_of_clusters):
-            for j in range(len(regions_solar[i])):
-                solar[regions_solar[i][j]] = centroids_solar[i]
+    for i in range(number_of_clusters):
+        for j in range(len(regions_solar[i])):
+             solar[regions_solar[i][j]] = centroids_solar[i]
 
-        fig5 = plt.figure(figsize=(6, 6))
-        plt.scatter(lon, lat,
-                c=model.labels_)
-        plt.title("Sun clusters, random colors, kmeans")
+    fig5 = plt.figure(figsize=(6, 6))
+    plt.scatter(lon, lat,
+        c=model.labels_)
+    plt.title("Sun clusters, random colors, kmeans")
 
 
-        fig6 = plt.figure(figsize=(6, 6))
-        plt.scatter(lon, lat,
-                c=solar)
-        plt.title("Sun clusters, ranked with color, kmeans")
+    fig6 = plt.figure(figsize=(6, 6))
+    plt.scatter(lon, lat,
+        c=solar)
+    plt.title("Sun clusters, ranked with color, kmeans")
+    if user=="Olivier":
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
+        plt.savefig(string_solar, format='eps')
+    else:
+        string_solar = str("TBD/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
+        plt.savefig(string_solar, format='eps') # @Louis TBD
+
 
     # End timer
     end_sun = time.time()

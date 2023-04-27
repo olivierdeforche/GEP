@@ -2,7 +2,7 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 from shapely.geometry import Point, Polygon
 
-def Split_offshore_onshore(regions_wind, labels_wind, number_of_clusters_wind, regions_solar, labels_solar, number_of_clusters_solar, coordinates, lon, lat, plot, user):
+def Split_offshore_onshore(method, regions_wind, labels_wind, number_of_clusters_wind, regions_solar, labels_solar, number_of_clusters_solar, coordinates, lon, lat, plot, user, number_of_clusters, threshold, data):
 
     # Load in polygon of Europe
     if user=='Olivier':
@@ -84,18 +84,48 @@ def Split_offshore_onshore(regions_wind, labels_wind, number_of_clusters_wind, r
 
     fig1, ax1 = plt.subplots()
     fig2, ax2 = plt.subplots()
-    if plot:
-        ax1.scatter(lon, lat, c=labels_wind, alpha=0.5, s=100)
-        EEZ.plot(edgecolor='k', facecolor=None, ax=ax1, alpha=0.5)
-        # ax.title("Wind clusters, random colors, after split offshore/onshore")
-        # print(list(range(current_amount_of_clusters_wind)))
-        # ax.legend(list(range(current_amount_of_clusters_wind)), loc="upper right", title="Clusters")
+    ax1.scatter(lon, lat, c=labels_wind, alpha=0.5, s=100)
+    EEZ.plot(edgecolor='k', facecolor=None, ax=ax1, alpha=0.5)
 
-        ax2.scatter(lon, lat, c=labels_solar, alpha=0.5, s=100)
-        EEZ.plot(edgecolor='k', facecolor=None, ax=ax2, alpha=0.5)
-        # axx.title("Solar clusters, random colors, after split offshore/onshore")
-        # print(list(range(current_amount_of_clusters_solar)))
-        # axx.legend(list(range(current_amount_of_clusters_solar)), loc="upper right", title="Clusters")
+    ax2.scatter(lon, lat, c=labels_solar, alpha=0.5, s=100)
+    EEZ.plot(edgecolor='k', facecolor=None, ax=ax2, alpha=0.5)
 
+# kmeans, maxp, kmedoids, regional_kmeans, ward
+
+    if user=="Olivier":
+        if method=="kmeans":
+            string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
+            string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
+        elif method=="maxp":
+            string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_wind.eps')
+            string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_solar.eps')
+        elif method=="kmedoids":
+            string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
+            string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
+        elif method=="regional_kmeans":
+            string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
+            string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
+        elif method=="ward":
+            string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
+            string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
+    else:
+        if method=="kmeans":
+            string_wind = str("TBD/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps') #@Louis
+            string_solar = str("TBD/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps') #@Louis
+        elif method=="maxp":
+            string_wind = str("TBD/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_wind.eps') #@Louis
+            string_solar = str("TBD/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_solar.eps') #@Louis
+        elif method=="kmedoids":
+            string_wind = str("TBD/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps') #@Louis
+            string_solar = str("TBD/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps') #@Louis
+        elif method=="regional_kmeans":
+            string_wind = str("TBD/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps') #@Louis
+            string_solar = str("TBD/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps') #@Louis
+        elif method=="ward":
+            string_wind = str("TBD/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps') #@Louis
+            string_solar = str("TBD/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps') #@Louis
+        
+    fig1.savefig(string_wind, format='eps')
+    fig2.savefig(string_solar, format='eps')
 
     return(regions_wind, regions_off_shore_wind, labels_wind, current_amount_of_clusters_wind, to_remove_wind, regions_solar, regions_off_shore_solar, labels_solar, current_amount_of_clusters_solar, to_remove_solar)
