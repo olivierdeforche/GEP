@@ -35,8 +35,6 @@ RANDOM_SEED = 123456
 ### Select smaller range of both datapoints
 lon = ds["w"]["lon"][:]
 lat = ds["w"]["lat"][:]
-wm = ds["w"]["wnd100m"][:,:,:]
-id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each for threshold=number of points you should take together
 res = 141
@@ -58,14 +56,13 @@ w = libpysal.weights.lat2W(res, res)
 ## Read EEZ file
 EEZ = gpd.read_file("C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/EEZ/Europe/EEZ_Europe_extended_3.geojson")
 
-
 ### Wind
-wm = np.average(wm,axis=0)
-wm = wm[:-(lenlat-res),:-(lenlon-res)]
-wm = list(np.concatenate(wm).flat)
+afw = np.loadtxt(AF_wind, delimiter=',')
+afw = afw[:-(lenlat-res),:-(lenlon-res)]
+afw = list(np.concatenate(afw).flat)
 
 ## transform to GeoDataFrame
-frame = gpd.GeoDataFrame(wm, geometry=geo)
+frame = gpd.GeoDataFrame(afw, geometry=geo)
 geometry = frame.geometry
 
 # create countrie dictionary
@@ -75,11 +72,10 @@ dict_country = dict()
 for country_name in EEZ["UNION"]:
     dict_country[country_name] = list()
     print(country_name)
-    for number in range(len(wm)):
+    for number in range(len(afw)):
         for polygon in EEZ[EEZ["UNION"] == country_name]['geometry']:
             if polygon.contains(geometry.iloc[number]):
-                dict_country[country_name].append(wm[number])
-# print(dict_country)
+                dict_country[country_name].append(afw[number])
 
 assigned = 0
 for value in dict_country:
@@ -87,19 +83,19 @@ for value in dict_country:
 print('Assigned points ', assigned)
 
 ## calculate within-cluster sum of squares
-wss = 0
+wss = dict()
 for key, value in dict_country.items():
-    wss += sum([(x - np.mean(value)) ** 2 for x in value])
+    wss[key] = sum([(x - np.mean(value)) ** 2 for x in value])
 print('within-cluster sum of squares', wss)
 
 
 ## Sun
-id = np.average(id,axis=0)
-id = id[:-(lenlat-res),:-(lenlon-res)]
-id = list(np.concatenate(id).flat)
+afs = np.loadtxt(AF_sun, delimiter=',')
+afs = afs[:-(lenlat-res),:-(lenlon-res)]
+afs = list(np.concatenate(afs).flat)
 
 ## transform to GeoDataFrame
-frame = gpd.GeoDataFrame(id, geometry=geo)
+frame = gpd.GeoDataFrame(afs, geometry=geo)
 geometry = frame.geometry
 
 # create countrie dictionary
@@ -109,11 +105,10 @@ dict_country = dict()
 for country_name in EEZ["UNION"]:
     dict_country[country_name] = list()
     print(country_name)
-    for number in range(len(id)):
+    for number in range(len(afs)):
         for polygon in EEZ[EEZ["UNION"] == country_name]['geometry']:
             if polygon.contains(geometry.iloc[number]):
-                dict_country[country_name].append(id[number])
-# print(dict_country)
+                dict_country[country_name].append(afs[number])
 
 assigned = 0
 for value in dict_country:
@@ -121,7 +116,7 @@ for value in dict_country:
 print('Assigned points ', assigned)
 
 ## calculate within-cluster sum of squares
-wss = 0
+wss = dict()
 for key, value in dict_country.items():
-    wss += sum([(x - np.mean(value)) ** 2 for x in value])
+    wss[key] = sum([(x - np.mean(value)) ** 2 for x in value])
 print('within-cluster sum of squares', wss)

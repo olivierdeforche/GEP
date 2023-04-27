@@ -23,6 +23,8 @@ warnings.filterwarnings("ignore")
 
 # fn_era = 'C:/Users/defor/OneDrive/Bureaublad/unif/Master/Thesis/GEP/Data/data_clustering/europe-2013-era5.nc'
 fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
+AF_wind = "C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/cap_factors_wind.csv"
+AF_sun = "C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/cap_factors_sun.csv"
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
@@ -54,11 +56,16 @@ w = libpysal.weights.lat2W(res, res)
 ### Wind
 start_wind = time.time()
 
-wm = np.average(wm,axis=0)
-wm = wm[:-(lenlat-res),:-(lenlon-res)]
-wm = list(np.concatenate(wm).flat)
-wm_copy = wm
-wm = [[i] for i in wm]
+afw = np.loadtxt(AF_wind, delimiter=',')
+afw = afw[:-(lenlat-res),:-(lenlon-res)]
+afw = np.reshape(afw,-1)
+afw_copy = afw
+afw = [[i] for i in afw]
+
+fig1 = plt.figure(figsize=(6, 6))
+plt.scatter(lon, lat,
+            c=afw)
+plt.title("Availability factors wind")
 
 # Initialize an empty list to store the WCSS (within-cluster sum of squares) wind values for each k
 wcss_wind = []
@@ -66,7 +73,7 @@ wcss_test = []
 
 for n_clusters in k_range:
     print("starting model")
-    model = KMeans(n_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(wm)
+    model = KMeans(n_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(afw)
     # model.solve()
     print("Model Solved, starting calculations of cluster values")
     print(model.inertia_)
@@ -76,7 +83,7 @@ for n_clusters in k_range:
     for i in range(len(clusters_values_wind) + 1):
         clusters_values_wind[i + 1] = list()
     for i in range(len(model.labels_)):
-        clusters_values_wind[model.labels_[i]+1].append(wm_copy[i])
+        clusters_values_wind[model.labels_[i]+1].append(afw_copy[i])
     wss = 0
     for key, value in clusters_values_wind.items():
         wss += (sum([(x - np.mean(value)) ** 2 for x in value]))
@@ -103,17 +110,22 @@ plt.show(block=False)
 ### Sun
 start_sun = time.time()
 
-id = np.average(id,axis=0)
-id = id[:-(lenlat-res),:-(lenlon-res)]
-id = list(np.concatenate(id).flat)
-id_copy = id
-id = [[i] for i in id]
+afs = np.loadtxt(AF_sun, delimiter=',')
+afs = afs[:-(lenlat-res),:-(lenlon-res)]
+afs = list(np.concatenate(afs).flat)
+afs_copy = afs
+afs = [[i] for i in afs]
+
+fig4 = plt.figure(figsize=(6, 6))
+plt.scatter(lon, lat,
+           c=afs)
+plt.title("Availability factors sun")
 
 wcss_sun = []
 
 for n_clusters in k_range:
     print("starting model")
-    model = KMeans(n_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(id)
+    model = KMeans(n_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(afs)
     print("Model Solved, starting calculations of cluster values")
     wcss_sun.append(model.inertia_)
 
@@ -131,3 +143,4 @@ plt.show()
 end_sun = time.time()
 print("Computation time (h):")
 print((end_sun-start_sun)/3600)
+plt.show()

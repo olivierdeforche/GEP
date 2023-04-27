@@ -17,14 +17,14 @@ dispatchableGenerators:
   CCGT:
     OC: 1100000 # EUR/MW
     fuelCosts: 51.4 # EUR/MWh 45.3 fuel & 6.1 O&M = 51.4 USD/MWh
-    emissions: 0.44 # ton/MWh
+    emissions: 0.34 # ton/MWh
     lifetime: 30 # years
     legcap:  # MW
   
   OCGT:
     OC: 530000 # EUR/MW
     fuelCosts: 79.1 # EUR/MWh 70 fuel & 9.1 O&M = 79.1 USD/MWh
-    emissions: 0.44 # ton/MWh
+    emissions: 0.52 # ton/MWh
     lifetime: 30 # years
     legcap:  # MW
 
