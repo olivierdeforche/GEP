@@ -99,6 +99,8 @@ def Read_data(data, resize, plot, user, documentation):
                 c=wm)
         plt.title("Raw wind data")
 
+
+
     if documentation:
         print("wind resize done")
 

@@ -44,9 +44,9 @@ dispatchableGenerators:
 
 variableGenerators:
  On-Wind:
-  OC: 1700000 # EUR/MW
-  lifetime: 25 # years (before 20)
-  legcap:  # MW
+   OC: 1700000 # EUR/MW
+   lifetime: 25 # years (before 20)
+   legcap:  # MW
 
  Off-Wind:
    OC: 4800000 # EUR/MW
