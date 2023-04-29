@@ -76,7 +76,7 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
     elif method == "ward":
         labels_wind, regions_wind, labels_solar, regions_solar = Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data, resize)
     elif method == "political_regions":
-        labels_wind, regions_wind, number_of_clusters_wind, labels_solar, regions_solar, number_of_clusters_solar = PoliticalRegions(lon, lat, coordinates, resize, user)
+        labels_wind, regions_wind, number_of_clusters_wind, labels_solar, regions_solar, number_of_clusters_solar, number_of_clusters = PoliticalRegions(lon, lat, coordinates, resize, user)
         
 
     # Split in off-shore and on-shore
@@ -87,7 +87,20 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
         print("start splitting off-shore and on-shore")
         start_splitting_ofonshore = time.time()
 
+    print(regions_wind)
+    print(regions_solar)
+    plt.show()
+
+
     regions_wind, regions_off_shore_wind, labels_wind, current_amount_of_clusters_wind, to_remove_wind, regions_solar, regions_off_shore_solar, labels_solar, current_amount_of_clusters_solar, to_remove_solar = Split_offshore_onshore(method, regions_wind, labels_wind, number_of_clusters_wind, regions_solar, labels_solar, number_of_clusters_solar, coordinates, lon, lat, plot, user, number_of_clusters, threshold, data, resize)
+
+
+    print(regions_wind)
+    print(regions_off_shore_wind)
+    print(regions_solar)
+    print(regions_off_shore_solar)
+    plt.show()
+
 
     # Compute time series for clusters and save them in a csv
     if documentation:
@@ -96,7 +109,7 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
     
     if plot:
         plt.show()
-    
+
     if documentation:
         print("------------------------------------")
         print("Start converting to time series per cluster")
@@ -137,13 +150,13 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
 
 
 
-Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=4, plot=False)
+# Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=4, plot=False)
 
 # Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=1, plot=False)
 # Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=2, plot=False)
 # Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=3, plot=False)
 
-# Clustering(method="political_regions", plot=False)
+Clustering(method="political_regions", plot=False)
 # Clustering(method="kmeans", resize=4, number_of_clusters=10)
 
 # Clustering(method="kmeans", data="weather", number_of_clusters=10, plot=True)

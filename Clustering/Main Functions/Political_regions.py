@@ -31,12 +31,17 @@ def PoliticalRegions(lon, lat, coordinates, resize, user):
 
     labels_solar = labels_wind.copy()
 
+
+    labels_wind = np.array(labels_wind)
+    labels_solar = np.array(labels_solar)
+
     areas = np.arange((142//resize) * (191//resize))
     regions_wind = [areas[labels_wind == region] for region in range(len(EEZ["geometry"])+1)]
     regions_solar = [areas[labels_solar == region] for region in range(len(EEZ["geometry"])+1)]
     
-    number_of_clusters_wind = len(EEZ["geometry"])+1
-    number_of_clusters_solar = len(EEZ["geometry"])+1
+    number_of_clusters = len(EEZ["geometry"])+1
+    number_of_clusters_wind = number_of_clusters
+    number_of_clusters_solar = number_of_clusters
 
     EEZ.plot(edgecolor='k', facecolor='lightgrey')
 
@@ -51,4 +56,4 @@ def PoliticalRegions(lon, lat, coordinates, resize, user):
     plt.title("Sun clusters, random colors, Political regions")
 
 
-    return(labels_wind, regions_wind, number_of_clusters_wind, labels_solar, regions_solar, number_of_clusters_solar)
+    return(labels_wind, regions_wind, number_of_clusters_wind, labels_solar, regions_solar, number_of_clusters_solar, number_of_clusters)

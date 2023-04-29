@@ -44,11 +44,11 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     plt.title("Wind clusters, random colors, max-p")
     plt.plot()
     if user=="Olivier":
-        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.svg')
-        plt.savefig(string_wind, format='svg')
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.eps')
+        plt.savefig(string_wind, format='eps')
     else:
-        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.svg')
-        plt.savefig(string_wind, format='svg') # @Louis TBD
+        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.eps')
+        plt.savefig(string_wind, format='eps') # @Louis TBD
 
 
     nr_of_clusters = np.ceil(res_resized*res_resized/threshold)
@@ -76,11 +76,11 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
             c=wind_copy)
     plt.title("Wind clusters, ranked with color, max-p")    
     if user=="Olivier":
-        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_wind.svg')
-        plt.savefig(string_wind, format='svg')
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_wind.eps')
+        plt.savefig(string_wind, format='eps')
     else:
-        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_wind.svg')
-        plt.savefig(string_wind, format='svg') # @Louis TBD
+        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_wind.eps')
+        plt.savefig(string_wind, format='eps') # @Louis TBD
     
     # Stop timer wind
     end_wind = time.time()
@@ -118,11 +118,11 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     plt.title("Sun clusters, random colors, max-p")
 
     if user=="Olivier":
-        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.svg')
-        plt.savefig(string_solar, format='svg')
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.eps')
+        plt.savefig(string_solar, format='eps')
     else:
-        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.svg')
-        plt.savefig(string_solar, format='svg') # @Louis TBD
+        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.eps')
+        plt.savefig(string_solar, format='eps') # @Louis TBD
 
 
     nr_of_clusters = np.ceil(res_resized*res_resized/threshold)
@@ -151,11 +151,11 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     plt.title("Sun clusters, ranked with color, max-p")
 
     if user=="Olivier":
-        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_solar.svg')
-        plt.savefig(string_solar, format='svg')
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_solar.eps')
+        plt.savefig(string_solar, format='eps')
     else:
-        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_solar.svg')
-        plt.savefig(string_solar, format='svg') # @Louis TBD
+        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_solar.eps')
+        plt.savefig(string_solar, format='eps') # @Louis TBD
 
     # End timer
     end_sun = time.time()
