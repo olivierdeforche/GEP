@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 import time
 import libpysal
 
-def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot, user, data):
+def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot, user, data, resize):
     ### Wind
     # Begin timer
     start_wind = time.time()
 
-    w = libpysal.weights.lat2W(142, 191)
+    w = libpysal.weights.lat2W((142//resize), (191//resize))
 
     wind = np.array(wind)
  
@@ -19,7 +19,7 @@ def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot,
     print("Done with clustering wind")
     labels_wind = model.labels_
     centroids_wind = model.centroids_
-    areas_wind = np.arange(142 * 191)
+    areas_wind = np.arange((142//resize) * (191//resize))
     regions_wind = [areas_wind[model.labels_ == region] for region in range(number_of_clusters)]
     print("model done")
     # Plot clustered zones if specified 
@@ -27,6 +27,12 @@ def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot,
     plt.scatter(lon, lat,
         c=model.labels_)
     plt.title("Wind clusters, random colors, kmeans")
+    if user=="Olivier":
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.svg')
+        plt.savefig(string_wind, format='svg')
+    else:
+        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.svg')
+        plt.savefig(string_wind, format='svg') # @Louis TBD
 
     wind = np.array(wind) 
     wind = list(np.concatenate(wind).flat)
@@ -40,11 +46,11 @@ def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot,
         c=wind)
     plt.title("Wind clusters, ranked with color, kmeans")
     if user=="Olivier":
-        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
-        plt.savefig(string_wind, format='eps')
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind.svg')
+        plt.savefig(string_wind, format='svg')
     else:
-        string_wind = str("TBD/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
-        plt.savefig(string_wind, format='eps') # @Louis TBD
+        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind.svg')
+        plt.savefig(string_wind, format='svg') # @Louis TBD
 
 
 
@@ -64,7 +70,7 @@ def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot,
     print("done with clustering sun")
     labels_solar = model.labels_
     centroids_solar = model.centroids_ 
-    areas_solar = np.arange(res_resized * res_resized)
+    areas_solar = np.arange((142//resize) * (191//resize))
     regions_solar = [areas_solar[model.labels_ == region] for region in range(number_of_clusters)]
 
     # Plot results clustering sun if plot enabled 
@@ -79,6 +85,12 @@ def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot,
     plt.scatter(lon, lat,
         c=model.labels_)
     plt.title("Sun clusters, random colors, kmeans")
+    if user=="Olivier":
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.svg')
+        plt.savefig(string_solar, format='svg')
+    else:
+        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.svg')
+        plt.savefig(string_solar, format='svg') # @Louis TBD
 
 
     fig6 = plt.figure(figsize=(6, 6))
@@ -86,11 +98,11 @@ def RegionalKmeans(wind, solar, lon, lat, number_of_clusters ,res_resized, plot,
         c=solar)
     plt.title("Sun clusters, ranked with color, kmeans")
     if user=="Olivier":
-        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
-        plt.savefig(string_solar, format='eps')
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar.svg')
+        plt.savefig(string_solar, format='svg')
     else:
-        string_solar = str("TBD/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
-        plt.savefig(string_solar, format='eps') # @Louis TBD
+        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/RegionalKmeans/")+str("RegionalKmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar.svg')
+        plt.savefig(string_solar, format='svg') # @Louis TBD
 
 
     # End timer

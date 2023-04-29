@@ -6,7 +6,7 @@ import pandas as pd
 from shapely.geometry import Point, Polygon
 
 
-def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_clusters_wind, regions_solar, regions_off_shore_solar, number_of_clusters_solar, coordinates, method, data, documentation, plot, user):
+def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_clusters_wind, regions_solar, regions_off_shore_solar, number_of_clusters_solar, coordinates, method, data, resize, documentation, plot, user):
     
     # Load data of Exclusive Economic Zones 
     if user =="Olivier":
@@ -130,20 +130,20 @@ def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_
         print(df_wind, df_wind_offshore, df_solar, df_solar_offshore)
 
     if user=="Olivier":
-        string_wind = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind.xlsx')
-        string_wind_offshore = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind_offshore.xlsx')
-        string_solar = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar.xlsx')
-        string_solar_offshore = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar_offshore.xlsx')
+        string_wind = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_')+str(resize)+str('_df_wind.xlsx')
+        string_wind_offshore = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_')+str(resize)+str('_df_wind_offshore.xlsx')
+        string_solar = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_')+str(resize)+str('_df_solar.xlsx')
+        string_solar_offshore = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_')+str(resize)+str('_df_solar_offshore.xlsx')
         
         df_wind.T.to_excel(string_wind)
         df_wind_offshore.T.to_excel(string_wind_offshore)
         df_solar.T.to_excel(string_solar)
         df_solar_offshore.T.to_excel(string_solar_offshore)
     else:
-        string_wind = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind.xlsx')
-        string_wind_offshore = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_df_wind_offshore.xlsx')
-        string_solar = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar.xlsx')
-        string_solar_offshore = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_df_solar_offshore.xlsx')
+        string_wind = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_')+str(resize)+str('_df_wind.xlsx')
+        string_wind_offshore = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_')+str(resize)+str('_df_wind_offshore.xlsx')
+        string_solar = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_')+str(resize)+str('_df_solar.xlsx')
+        string_solar_offshore = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_')+str(resize)+str('_df_solar_offshore.xlsx')
         
         df_wind.T.to_excel(string_wind)
         df_wind_offshore.T.to_excel(string_wind_offshore)

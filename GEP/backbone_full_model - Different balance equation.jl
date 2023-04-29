@@ -347,7 +347,7 @@ function build_greenfield_1Y_GEP_model!(m::Model)
 
     # 3a3 - Onshore solar 
     m.ext[:constraints][:con3a3] = @constraint(m, [c=K,z=CSon,jh=JH,jd=JD],
-    g["On-Solar",c,jh,jd] <= perc["On-Solar"][c][z][z]*AF["Solar"][z][jh,jd]*cap_ren_Son["On-Solar",z]
+    g["On-Solar",c,jh,jd] <= perc["Solar"][c][z][z]*AF["Solar"][z][jh,jd]*cap_ren_Son["Solar",z]
     )
 
     # 3b - conventional

@@ -73,40 +73,40 @@ print("wind", wm, "solar", id, "lon",lon,"lat",lat)
 
 # solar = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_solar.nc"
 # wind = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_wind.nc"
-# fn = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_lonlat.nc"
+fn = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_lonlat.nc"
 
 # solar = Dataset(solar)
 # solar = solar["specific generation"]
 # wind = Dataset(wind)
 # wind = wind["specific generation"]
-# ds = Dataset(fn, mode='w', format='NETCDF4_CLASSIC')
-# time = ds.createDimension('time', 8760)
-# lat = ds.createDimension('y', 142)
-# lon = ds.createDimension('x', 191)
+ds = Dataset(fn, mode='w', format='NETCDF4_CLASSIC')
+time = ds.createDimension('time', 8760)
+lat = ds.createDimension('y', 142)
+lon = ds.createDimension('x', 191)
 
 
 
-# times = ds.createVariable('time', 'f4', ('time',))
-# lats = ds.createVariable('y', 'f4', ('y',))
-# lons = ds.createVariable('x', 'f4', ('x',))
-# solar_af = ds.createVariable('solar_af', 'f4', ('time', 'y', 'x',))
-# solar_af.units = 'AF'
-# wind_af = ds.createVariable('wind_af', 'f4', ('time', 'y', 'x',))
-# wind_af.units = 'AF'
+times = ds.createVariable('time', 'f4', ('time',))
+lats = ds.createVariable('y', 'f4', ('y',))
+lons = ds.createVariable('x', 'f4', ('x',))
+solar_af = ds.createVariable('solar_af', 'f4', ('time', 'y', 'x',))
+solar_af.units = 'AF'
+wind_af = ds.createVariable('wind_af', 'f4', ('time', 'y', 'x',))
+wind_af.units = 'AF'
 
 # lats[:] = lat_era
 # lons[:] = lon_era
 # times[:] = time_era
 
-# for t in time_era:
-#     xy = 0
-#     for la in range(142):
-#         print("time", t, "latitude", la)
-#         solar_af[t,la,:] = solar[t,xy:xy+191]
-#         wind_af[t,la,:] = wind[t,xy:xy+191]
-#         xy += 191
-# print("yes")
-# ds.close()
+for t in time_era:
+    xy = 0
+    for la in range(142):
+        print("time", t, "latitude", la)
+        solar_af[t,la,:] = solar[t,xy:xy+191]
+        wind_af[t,la,:] = wind[t,xy:xy+191]
+        xy += 191
+print("yes")
+ds.close()
 
 
 # for t in time_era:

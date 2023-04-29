@@ -4,7 +4,7 @@ from sklearn.metrics.pairwise import euclidean_distances
 import kmedoids
 import numpy as np
 
-def Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data):
+def Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data, resize):
     
     ### Wind
     # Start timer
@@ -19,7 +19,7 @@ def Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, r
     print("Model Solved, starting calculations of cluster values")
 
     labels_wind = model.labels
-    areas = np.arange(142 * 191)
+    areas = np.arange((142//resize) * (191//resize))
     regions_wind = [areas[labels_wind == region] for region in range(number_of_clusters)]
 
     # Plot results wind if specified (plot=True)
@@ -28,6 +28,13 @@ def Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, r
     plt.scatter(lon, lat,
             c=model.labels)
     plt.title("Wind clusters, random colors, k-medoids")
+    if user=="Olivier":
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.svg')
+        plt.savefig(string_wind, format='svg')
+    else:
+        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.svg')
+        plt.savefig(string_wind, format='svg') # @Louis TBD
+
 
     clusters = dict.fromkeys(range(1, number_of_clusters))
     clusters_values = dict.fromkeys(range(1, number_of_clusters))
@@ -50,11 +57,11 @@ def Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, r
             c=wind_copy)
     plt.title("Wind clusters, ranked with color, k-medoids")
     if user=="Olivier":
-        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
-        plt.savefig(string_wind, format='eps')
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind.svg')
+        plt.savefig(string_wind, format='svg')
     else:
-        string_wind = str("TBD/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
-        plt.savefig(string_wind, format='eps') # @Louis TBD
+        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind.svg')
+        plt.savefig(string_wind, format='svg') # @Louis TBD
 
     # End timer
     end_wind = time.time()
@@ -83,6 +90,13 @@ def Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, r
     plt.scatter(lon, lat,
             c=model.labels)
     plt.title("Sun clusters, random colors, k-medoids")
+    if user=="Olivier":
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.svg')
+        plt.savefig(string_solar, format='svg')
+    else:
+        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.svg')
+        plt.savefig(string_solar, format='svg') # @Louis TBD
+
 
     clusters = dict.fromkeys(range(1, number_of_clusters))
     clusters_values = dict.fromkeys(range(1, number_of_clusters))
@@ -105,11 +119,11 @@ def Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, r
             c=solar_copy)
     plt.title("Sun clusters, ranked with color, k-medoids")
     if user=="Olivier":
-        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
-        plt.savefig(string_solar, format='eps')
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar.svg')
+        plt.savefig(string_solar, format='svg')
     else:
-        string_solar = str("TBD/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
-        plt.savefig(string_solar, format='eps') # @Louis TBD
+        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Kmedoids/")+str("Kmedoids")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar.svg')
+        plt.savefig(string_solar, format='svg') # @Louis TBD
 
     # End timer solar
     end_sun = time.time()

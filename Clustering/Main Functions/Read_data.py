@@ -6,20 +6,44 @@ import geopandas as gpd
 from shapely.geometry import Point
 
 def Read_data(data, resize, plot, user, documentation):
-    if data=="af":
+    if resize==1:
+        if data=="af":
+            if user == "Olivier":
+                dataset_clusters = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_lonlat.nc"
+                dataset = dataset_clusters
+            else: 
+                dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_lonlat.nc"
+                dataset = dataset_clusters
+        elif data=="weather":
+            if user == "Olivier":
+                dataset_clusters = "C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc"
+                dataset = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_lonlat.nc"
+            else:
+                dataset_clusters = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
+                dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_lonlat.nc"
+    
+    if resize==2:
         if user == "Olivier":
-            dataset_clusters = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_lonlat.nc"
-            dataset = dataset_clusters
+            dataset = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_lonlat_resize2.nc"
         else: 
-            dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_lonlat.nc"
-            dataset = dataset_clusters
-    elif data=="weather":
+            dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_lonlat_resize2.nc"
+        dataset_clusters = dataset
+
+    if resize==3:
         if user == "Olivier":
-            dataset_clusters = "C:/Users/defor/Desktop/Thesis/Data/europe-2013-era5.nc"
-            dataset = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_lonlat.nc"
-        else:
-            dataset_clusters = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-era5.nc"
-            dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_lonlat.nc"
+            dataset = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_lonlat_resize3.nc"
+        else: 
+            dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_lonlat_resize3.nc"
+        dataset_clusters = dataset
+        
+    if resize==4:
+        if user == "Olivier":
+            dataset = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_lonlat_resize4.nc"
+        else: 
+            dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_lonlat_resize4.nc"
+        dataset_clusters = dataset
+
+
 
     if documentation:
         print("dataread check")
@@ -33,13 +57,17 @@ def Read_data(data, resize, plot, user, documentation):
 
     ds = dict()
     ds["w"] = nc.Dataset(dataset_clusters)
-
+    
     # Select data that will be used to form the clusters
     if data=="af":
         wm = ds["w"]["wind_af"][:,:,:]
         id = ds["w"]["solar_af"][:,:,:]
-        lon = ds["w"]["x"][:]
-        lat = ds["w"]["y"][:]
+        if resize==1:
+            lon = ds["w"]["x"][:]
+            lat = ds["w"]["y"][:]
+        else:
+            lon = ds["w"]["lon"][:]
+            lat = ds["w"]["lat"][:]            
                 
     else:
         wm = ds["w"]["wnd100m"][:,:,:]
@@ -73,7 +101,6 @@ def Read_data(data, resize, plot, user, documentation):
 
     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.Longitude, df.Latitude))
     coordinates = list(gdf["geometry"])
-
   
     # Get time series of AF
     wm_time = dict.fromkeys(range(1, len(wmm)))

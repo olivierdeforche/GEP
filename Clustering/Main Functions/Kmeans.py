@@ -3,7 +3,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data):
+def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data, resize):
     RANDOM_SEED = 123456
 
     ### Wind
@@ -17,9 +17,9 @@ def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res
 
     # Get values
     labels_wind = model.labels_
-    areas = np.arange(142 * 191)
+    areas = np.arange((142//resize) * (191//resize))
     regions_wind = [areas[model.labels_ == region] for region in range(number_of_clusters)]
-    
+
     clusters = dict.fromkeys(range(1, number_of_clusters))
     clusters_values = dict.fromkeys(range(1, number_of_clusters))
 
@@ -29,6 +29,13 @@ def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res
     plt.scatter(lon, lat,
             c=model.labels_)
     plt.title("Wind clusters, random colors, KMeans++")
+
+    if user=="Olivier":
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.svg')
+        plt.savefig(string_wind, format='svg')
+    else:
+        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.svg')
+        plt.savefig(string_wind, format='svg') # @Louis TBD
 
     for i in range(len(clusters) + 1):
         clusters[i + 1] = list()
@@ -49,11 +56,11 @@ def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res
     plt.title("Wind clusters, ranked with color, KMeans++")
 
     if user=="Olivier":
-        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
-        plt.savefig(string_wind, format='eps')
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind.svg')
+        plt.savefig(string_wind, format='svg')
     else:
-        string_wind = str("TBD/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
-        plt.savefig(string_wind, format='eps') # @Louis TBD
+        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind.svg')
+        plt.savefig(string_wind, format='svg') # @Louis TBD
 
     # End timer
     end_wind = time.time()
@@ -81,6 +88,14 @@ def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res
             c=model.labels_)
     plt.title("Sun clusters, random colors, KMeans++")
 
+    if user=="Olivier":
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.svg')
+        plt.savefig(string_solar, format='svg')
+    else:
+        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.svg')
+        plt.savefig(string_solar, format='svg') # @Louis TBD
+
+
     for i in range(len(clusters) + 1):
         clusters[i + 1] = list()
         clusters_values[i + 1] = list()
@@ -100,11 +115,11 @@ def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res
     plt.title("Sun clusters, ranked with color, KMeans++")
 
     if user=="Olivier":
-        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
-        plt.savefig(string_solar, format='eps')
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar.svg')
+        plt.savefig(string_solar, format='svg')
     else:
-        string_solar = str("TBD/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
-        plt.savefig(string_solar, format='eps') # @Louis TBD
+        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Kmeans/")+str("Kmeans")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar.svg')
+        plt.savefig(string_solar, format='svg') # @Louis TBD
 
     end_sun = time.time()
     print("Computation time (h):")

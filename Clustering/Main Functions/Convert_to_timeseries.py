@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import time
 
-def Convert_to_timeseries(wind_copy, wind_time, labels_wind, number_of_clusters_wind, current_amount_of_clusters_wind, to_remove_wind, solar_copy, solar_time, labels_solar, number_of_clusters_solar, current_amount_of_clusters_solar, to_remove_solar, method, data, documentation, plot, user):
+def Convert_to_timeseries(wind_copy, wind_time, labels_wind, number_of_clusters_wind, current_amount_of_clusters_wind, to_remove_wind, solar_copy, solar_time, labels_solar, number_of_clusters_solar, current_amount_of_clusters_solar, to_remove_solar, method, data, resize, documentation, plot, user):
 
     ### Wind
     # Start timer wind
@@ -52,13 +52,13 @@ def Convert_to_timeseries(wind_copy, wind_time, labels_wind, number_of_clusters_
     if documentation:
         print("conversion wind done, saving now")
     if user=="Olivier":
-        string = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_clustered_on_wind.xlsx')
-        string_offshore = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_clustered_on_wind_offshore.xlsx')
+        string = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_')+str(resize)+str('_clustered_on_wind.xlsx')
+        string_offshore = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_')+str(resize)+str('_clustered_on_wind_offshore.xlsx')
         df_clustered_on_wind.to_excel(string)
         df_clustered_on_wind_offshore.to_excel(string_offshore)
     else:
-        string = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_clustered_on_wind.xlsx')
-        string_offshore = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_clustered_on_wind_offshore.xlsx')
+        string = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_')+str(resize)+str('_clustered_on_wind.xlsx')
+        string_offshore = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_')+str(resize)+str('_clustered_on_wind_offshore.xlsx')
         df_clustered_on_wind.to_excel(string)
         df_clustered_on_wind_offshore.to_excel(string_offshore)
 
@@ -117,13 +117,13 @@ def Convert_to_timeseries(wind_copy, wind_time, labels_wind, number_of_clusters_
     
 
     if user=="Olivier":
-        string = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_clustered_on_solar.xlsx')
-        string_offshore = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_clustered_on_solar_offshore.xlsx')
+        string = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_')+str(resize)+str('_clustered_on_solar.xlsx')
+        string_offshore = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_')+str(resize)+str('_clustered_on_solar_offshore.xlsx')
         df_clustered_on_solar.to_excel(string)
         df_clustered_on_solar_offshore.to_excel(string_offshore)
     else:
-        string = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_clustered_on_solar.xlsx')
-        string_offshore = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_clustered_on_solar_offshore.xlsx')
+        string = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str('_')+str(resize)+str('_clustered_on_solar.xlsx')
+        string_offshore = str('C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/Output_Clusters_Timeseries/')+str(method)+str('_')+str(number_of_clusters_solar)+str('_')+str(data)+str("_")+str(resize)+str('_clustered_on_solar_offshore.xlsx')
         df_clustered_on_solar.to_excel(string) #@Louis
         df_clustered_on_solar_offshore.to_excel(string_offshore) #@Louis
 

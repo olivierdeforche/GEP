@@ -4,19 +4,21 @@ from Kmedoids import Kmedoids
 from Maxp import Maxp
 from RegionalKmeans import RegionalKmeans
 from Ward import Ward
+from Political_regions import PoliticalRegions
 from Split_offshore_onshore import Split_offshore_onshore
 from Convert_to_timeseries import Convert_to_timeseries
 from Assign_clusters_to_countries import Asign_clusters_to_countries
 import matplotlib.pyplot as plt
 import time
+import warnings
 
 ## Main Function
 # This function converts the weather data from Era to clusters with their 
 # respective capacity factors in time series:
 # Inputs: 
-# - method: kmeans, maxp, kmedoids, regional_kmeans, ward
+# - method: kmeans, maxp, kmedoids, regional_kmeans, ward, political_regions
 # - data: weather, af (default: weather)
-# - size: number (default: 1)
+# - size: 1,2,3,4 (default: 1)
 # - number_of_clusters: (default: None)
 # - threshold=None
 # - Documentation: True, False (default=True)
@@ -29,10 +31,11 @@ import time
 
 
 def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, threshold=None, documentation=True, plot=False, user="Olivier"):
-    
+
+    warnings.filterwarnings("ignore")
     # Check if right inputs:
-    if not method=="kmeans" and not method=="maxp" and not method=="kmedoids" and not method=="regional_kmeans" and not method=="ward":
-        print("!!!WARNING!!! Wrong input in method field, only possibility are: 'kmeans', 'maxp', 'kmedoids', 'regional_kmeans', 'ward'. You put ", method)
+    if not method=="kmeans" and not method=="maxp" and not method=="kmedoids" and not method=="regional_kmeans" and not method=="ward" and not method=="political_regions":
+        print("!!!WARNING!!! Wrong input in method field, only possibility are: 'kmeans', 'maxp', 'kmedoids', 'regional_kmeans', 'ward' and 'political_regions'. You put ", method)
         return
 
     if not data=="af" and not data=="weather":
@@ -63,15 +66,18 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
         start_clustering = time.time()
 
     if method == "kmeans":
-        labels_wind, regions_wind, labels_solar, regions_solar = Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data)
+        labels_wind, regions_wind, labels_solar, regions_solar = Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data, resize)
     elif method == "maxp":
-        labels_wind, regions_wind, number_of_clusters_wind, labels_solar, regions_solar, number_of_clusters_solar = Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, plot, user, data)
+        labels_wind, regions_wind, number_of_clusters_wind, labels_solar, regions_solar, number_of_clusters_solar = Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, plot, user, data, resize)
     elif method == "kmedoids":
-        labels_wind, regions_wind, labels_solar, regions_solar = Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data)
+        labels_wind, regions_wind, labels_solar, regions_solar = Kmedoids(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data, resize)
     elif method == "regional_kmeans":
-        labels_wind, regions_wind, labels_solar, regions_solar = RegionalKmeans(wind, solar, lon, lat, number_of_clusters, res_resized, plot, user, data)
+        labels_wind, regions_wind, labels_solar, regions_solar = RegionalKmeans(wind, solar, lon, lat, number_of_clusters, res_resized, plot, user, data, resize)
     elif method == "ward":
-        labels_wind, regions_wind, labels_solar, regions_solar = Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data)
+        labels_wind, regions_wind, labels_solar, regions_solar = Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data, resize)
+    elif method == "political_regions":
+        labels_wind, regions_wind, number_of_clusters_wind, labels_solar, regions_solar, number_of_clusters_solar = PoliticalRegions(lon, lat, coordinates, resize, user)
+        
 
     # Split in off-shore and on-shore
     if documentation:
@@ -81,7 +87,7 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
         print("start splitting off-shore and on-shore")
         start_splitting_ofonshore = time.time()
 
-    regions_wind, regions_off_shore_wind, labels_wind, current_amount_of_clusters_wind, to_remove_wind, regions_solar, regions_off_shore_solar, labels_solar, current_amount_of_clusters_solar, to_remove_solar = Split_offshore_onshore(method, regions_wind, labels_wind, number_of_clusters_wind, regions_solar, labels_solar, number_of_clusters_solar, coordinates, lon, lat, plot, user, number_of_clusters, threshold, data)
+    regions_wind, regions_off_shore_wind, labels_wind, current_amount_of_clusters_wind, to_remove_wind, regions_solar, regions_off_shore_solar, labels_solar, current_amount_of_clusters_solar, to_remove_solar = Split_offshore_onshore(method, regions_wind, labels_wind, number_of_clusters_wind, regions_solar, labels_solar, number_of_clusters_solar, coordinates, lon, lat, plot, user, number_of_clusters, threshold, data, resize)
 
     # Compute time series for clusters and save them in a csv
     if documentation:
@@ -96,7 +102,7 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
         print("Start converting to time series per cluster")
         start_time_series = time.time()
 
-    Convert_to_timeseries(wind_copy, wind_time, labels_wind, number_of_clusters_wind, current_amount_of_clusters_wind, to_remove_wind, solar_copy, solar_time, labels_solar, number_of_clusters_solar, current_amount_of_clusters_solar, to_remove_solar, method, data, documentation, plot, user)
+    Convert_to_timeseries(wind_copy, wind_time, labels_wind, number_of_clusters_wind, current_amount_of_clusters_wind, to_remove_wind, solar_copy, solar_time, labels_solar, number_of_clusters_solar, current_amount_of_clusters_solar, to_remove_solar, method, data, resize, documentation, plot, user)
 
     # Assign clusters to countries and save it in a csv
     if documentation:
@@ -106,7 +112,7 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
         print("Start asigning clusters to countries")
         start_asigning_cluster = time.time()
 
-    Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_clusters_wind, regions_solar, regions_off_shore_solar, number_of_clusters_solar, coordinates, method, data, documentation, plot, user)
+    Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_clusters_wind, regions_solar, regions_off_shore_solar, number_of_clusters_solar, coordinates, method, data, resize, documentation, plot, user)
     
     if documentation:
         stop_asigning_cluster = time.time()
@@ -129,14 +135,25 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
     return()
 
 
-Clustering(method="kmeans", data="weather", number_of_clusters=10, plot=False)
-Clustering(method="kmeans", data="af", number_of_clusters=10, plot=False)
 
-Clustering(method="kmedoids", data="weather", number_of_clusters=10, plot=False)
-Clustering(method="kmedoids", data="af", number_of_clusters=10, plot=False)
 
-Clustering(method="ward", data="weather", number_of_clusters=10, plot=False)
-Clustering(method="ward", data="af", number_of_clusters=10, plot=False)
+Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=4, plot=False)
+
+# Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=1, plot=False)
+# Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=2, plot=False)
+# Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=3, plot=False)
+
+# Clustering(method="political_regions", plot=False)
+# Clustering(method="kmeans", resize=4, number_of_clusters=10)
+
+# Clustering(method="kmeans", data="weather", number_of_clusters=10, plot=True)
+# Clustering(method="kmeans", data="af", number_of_clusters=10, plot=False)
+
+# Clustering(method="kmedoids", data="weather", number_of_clusters=10, plot=False)
+# Clustering(method="kmedoids", data="af", number_of_clusters=10, plot=False)
+
+# Clustering(method="ward", data="weather", number_of_clusters=10, plot=False)
+# Clustering(method="ward", data="af", number_of_clusters=10, plot=False)
 
 # Clustering(method="regional_kmeans", data="weather", number_of_clusters=10, plot=False)
 # Clustering(method="regional_kmeans", data="af", number_of_clusters=10, plot=False)

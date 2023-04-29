@@ -6,7 +6,7 @@ import libpysal
 import time
 
 
-def Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data):
+def Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_resized, plot, user, data, resize):
     
     ### Wind
     # Start timer wind
@@ -24,7 +24,7 @@ def Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_r
     attrs_name = np.array(attrs_name)
 
     # Spatial weights
-    w = libpysal.weights.lat2W(142, 191)
+    w = libpysal.weights.lat2W((142//resize), (191//resize))
 
     # Solve model wind
     print("starting model")
@@ -33,7 +33,7 @@ def Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_r
     print("Model Solved, starting calculations of cluster values")
 
     labels_wind = model.labels_
-    areas = np.arange(142 * 191)
+    areas = np.arange((142//resize) * (191//resize))
     regions_wind = [areas[model.labels_ == region] for region in range(number_of_clusters)]
 
     # Plot resutls wind if specified (plot=True)
@@ -41,6 +41,13 @@ def Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_r
     plt.scatter(lon, lat,
             c=model.labels_)
     plt.title("Wind clusters, random colors, Ward HAC")
+    if user=="Olivier":
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.svg')
+        plt.savefig(string_wind, format='svg')
+    else:
+        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind_random.svg')
+        plt.savefig(string_wind, format='svg') # @Louis TBD
+
 
     clusters = dict.fromkeys(range(1, number_of_clusters))
     clusters_values = dict.fromkeys(range(1, number_of_clusters))
@@ -64,11 +71,11 @@ def Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_r
             c=wind_copy)
     plt.title("Wind clusters, ranked with color, Ward HAC")
     if user=="Olivier":
-        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
-        plt.savefig(string_wind, format='eps')
+        string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind.svg')
+        plt.savefig(string_wind, format='svg')
     else:
-        string_wind = str("TBD/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_wind.eps')
-        plt.savefig(string_wind, format='eps') # @Louis TBD
+        string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind.svg')
+        plt.savefig(string_wind, format='svg') # @Louis TBD
 
     # Stop timer wind
     end_wind = time.time()
@@ -103,6 +110,13 @@ def Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_r
             c=model.labels_)
     plt.title("Sun clusters, random colors, Ward HAC")
 
+    if user=="Olivier":
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.svg')
+        plt.savefig(string_solar, format='svg')
+    else:
+        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.svg')
+        plt.savefig(string_solar, format='svg') # @Louis TBD
+
     clusters = dict.fromkeys(range(1, number_of_clusters))
     clusters_values = dict.fromkeys(range(1, number_of_clusters))
 
@@ -125,11 +139,11 @@ def Ward(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res_r
     plt.title("Sun clusters, ranked with color, Ward HAC")
 
     if user=="Olivier":
-        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
-        plt.savefig(string_solar, format='eps')
+        string_solar = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar.svg')
+        plt.savefig(string_solar, format='svg')
     else:
-        string_solar = str("TBD/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_solar.eps')
-        plt.savefig(string_solar, format='eps') # @Louis TBD
+        string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar.svg')
+        plt.savefig(string_solar, format='svg') # @Louis TBD
 
     # End timer solar
     end_sun = time.time()
