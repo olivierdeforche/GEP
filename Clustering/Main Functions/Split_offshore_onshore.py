@@ -128,8 +128,8 @@ def Split_offshore_onshore(method, regions_wind, labels_wind, number_of_clusters
             string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind_split_off_on.png') #@Louis
             string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Ward/")+str("Ward")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar_split_off_on.png') #@Louis
         elif method=="political_regions":
-            string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Ward/")+str("polytical_regions")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind_split_off_on.png')
-            string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/Ward/")+str("polytical_regions")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar_split_off_on.png')
+            string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/PoliticalRegions/")+str("polytical_regions")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_wind_split_off_on.png')
+            string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/PoliticalRegions/")+str("polytical_regions")+str('_')+str(number_of_clusters)+str('_')+str(data)+str('_')+str(resize)+str('_solar_split_off_on.png')
     
     fig1.savefig(string_wind, format='png')
     fig2.savefig(string_solar, format='png')

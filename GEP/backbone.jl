@@ -131,10 +131,10 @@ function build_greenfield_1Y_GEP_model!(m::Model)
     g = m.ext[:variables][:g] = @variable(m, [i=I,jh=JH,jd=JD], lower_bound=0, base_name="generation")
     ens = m.ext[:variables][:ens] = @variable(m, [jh=JH,jd=JD], lower_bound=0, base_name="load_shedding")
 
-    # Create affine expressions (= linear combinations of variables)
-    curt = m.ext[:expressions][:curt] = @expression(m, [i=IV,jh=JH,jd=JD],
-        AF[i][jh,jd]*cap[i] - g[i,jh,jd]
-    )
+    # # Create affine expressions (= linear combinations of variables)
+    # curt = m.ext[:expressions][:curt] = @expression(m, [i=IV,jh=JH,jd=JD],
+    #     AF[i][jh,jd]*cap[i] - g[i,jh,jd]
+    # )
 
     # Formulate objective 1a
     m.ext[:objective] = @objective(m, Min,

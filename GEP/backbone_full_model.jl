@@ -19,7 +19,7 @@ method = "kmeans"
 no_clusters = "10"
 data_used = "af"
 
-data = YAML.load_file(joinpath(@__DIR__, "data_gep_update.yaml"))
+data = YAML.load_file(joinpath(@__DIR__, "data_gep_update_2.yaml"))
 imp = DataFrame(XLSX.readtable(joinpath(@__DIR__,"Data/Data_GEP.xlsx"), "Import"))
 exp = DataFrame(XLSX.readtable(joinpath(@__DIR__,"Data/Data_GEP.xlsx"), "Export"))
 demand = DataFrame(XLSX.readtable(joinpath(@__DIR__,"Data/Data_GEP.xlsx"), "Demand"))
@@ -28,21 +28,21 @@ countries = DataFrame(XLSX.readtable(joinpath(@__DIR__,"Data/Data_GEP.xlsx"),"Co
 Clusters_to_countries_wind = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Asigned_To_Countries/",method,"_",no_clusters,"_",data_used,"_df_wind.xlsx")),"Sheet1"))
 Clusters_to_countries_wind_offshore = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Asigned_To_Countries/",method,"_",no_clusters,"_",data_used,"_df_wind_offshore.xlsx")),"Sheet1"))
 Clusters_to_countries_solar = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Asigned_To_Countries/",method,"_",no_clusters,"_",data_used,"_df_solar.xlsx")),"Sheet1"))
-Clusters_to_countries_solar_offshore = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Asigned_To_Countries/",method,"_",no_clusters,"_",data_used,"_df_solar_offshore.xlsx")),"Sheet1"))
 
 Time_series_wind = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Timeseries/",method,"_",no_clusters,"_",data_used,"_clustered_on_wind.xlsx")),"Sheet1"))
 Time_series_wind_offshore = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Timeseries/",method,"_",no_clusters,"_",data_used,"_clustered_on_wind_offshore.xlsx")),"Sheet1"))
 Time_series_solar = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Timeseries/",method,"_",no_clusters,"_",data_used,"_clustered_on_solar.xlsx")),"Sheet1"))
-Time_series_solar_offshore = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Timeseries/",method,"_",no_clusters,"_",data_used,"_clustered_on_solar_offshore.xlsx")),"Sheet1"))
 
 ## Step 2: create model & pass data to model
 using JuMP
 using Gurobi
-m = Model(optimizer_with_attributes(Gurobi.Optimizer))
+# m = Model(optimizer_with_attributes(Gurobi.Optimizer))
+m = Model(optimizer_with_attributes(Gurobi.Optimizer, "NodefileStart" => 0.5))
 
+# JuMP.set_optimizer_attribute(m, "NodefileStart", 0.1)
 
 # Step 2a: create sets
-function define_sets!(m::Model, data::Dict, Clusters_to_countries_wind::DataFrame, Clusters_to_countries_wind_offshore::DataFrame, Clusters_to_countries_solar::DataFrame, Clusters_to_countries_solar_offshore::DataFrame)
+function define_sets!(m::Model, data::Dict, Clusters_to_countries_wind::DataFrame, Clusters_to_countries_wind_offshore::DataFrame, Clusters_to_countries_solar::DataFrame)
     
     # create dictionary to store sets
     m.ext[:sets] = Dict()
@@ -58,16 +58,18 @@ function define_sets!(m::Model, data::Dict, Clusters_to_countries_wind::DataFram
     m.ext[:sets][:CWon] = 1:nrow(Clusters_to_countries_wind)
     m.ext[:sets][:CWof] = 1:nrow(Clusters_to_countries_wind_offshore)
     m.ext[:sets][:CSon] = 1:nrow(Clusters_to_countries_solar)
-    m.ext[:sets][:CSof] = 1:nrow(Clusters_to_countries_solar_offshore)
     
     # return model
     return m
 end
 
-define_sets!(m, data, Clusters_to_countries_wind, Clusters_to_countries_wind_offshore, Clusters_to_countries_solar, Clusters_to_countries_solar_offshore)
+
+define_sets!(m, data, Clusters_to_countries_wind, Clusters_to_countries_wind_offshore, Clusters_to_countries_solar)
+
+m.ext[:sets][:IV]
 
 # Step 2b: add time series
-function process_time_series_data!(m::Model, data::Dict, demand::DataFrame, Time_series_wind::DataFrame, Time_series_wind_offshore::DataFrame, Time_series_solar::DataFrame, Time_series_solar_offshore::DataFrame)
+function process_time_series_data!(m::Model, data::Dict, demand::DataFrame, Time_series_wind::DataFrame, Time_series_wind_offshore::DataFrame, Time_series_solar::DataFrame)
     # extract the relevant sets
     IV = m.ext[:sets][:IV] # Variable generators
     JH = m.ext[:sets][:JH] # Time steps
@@ -81,7 +83,6 @@ function process_time_series_data!(m::Model, data::Dict, demand::DataFrame, Time
     m.ext[:timeseries][:AF][IV[1]] = Dict()
     m.ext[:timeseries][:AF][IV[2]] = Dict()
     m.ext[:timeseries][:AF][IV[3]] = Dict()
-    m.ext[:timeseries][:AF][IV[4]] = Dict()
 
     # example: add time series to dictionary
     l = 1
@@ -102,16 +103,11 @@ function process_time_series_data!(m::Model, data::Dict, demand::DataFrame, Time
         m.ext[:timeseries][:AF][IV[3]][cluster] = [Time_series_solar[!,cluster][jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD]
     end
 
-    for cluster in m.ext[:sets][:CSof]
-        m.ext[:timeseries][:AF][IV[4]][cluster] = [Time_series_solar_offshore[!,cluster][jh+data["nTimesteps"]*(jd-1)] for jh in JH, jd in JD]
-    end
-
     # return model
     return m
 end
 
-process_time_series_data!(m, data, demand, Time_series_wind, Time_series_wind_offshore, Time_series_solar, Time_series_solar_offshore)
-
+process_time_series_data!(m, data, demand, Time_series_wind, Time_series_wind_offshore, Time_series_solar)
 
 
 # step 2c: process input parameters
@@ -126,7 +122,6 @@ function process_parameters!(m::Model, data::Dict)
     CWon = m.ext[:sets][:CWon]
     CWof = m.ext[:sets][:CWof]
     CSon = m.ext[:sets][:CSon]
-    CSof = m.ext[:sets][:CSof]
 
     # generate a dictonary "parameters"
     m.ext[:parameters] = Dict()
@@ -139,9 +134,9 @@ function process_parameters!(m::Model, data::Dict)
    
     d = merge(data["dispatchableGenerators"],data["variableGenerators"])
     # variable costs
-    β = m.ext[:parameters][:β] = Dict(i => d[i]["fuelCosts"] for i in ID) #EUR/MWh
-    δ = m.ext[:parameters][:δ] = Dict(i => d[i]["emissions"] for i in ID) #ton/MWh
-    m.ext[:parameters][:VC] = Dict(i => β[i]+αCO2*δ[i] for i in ID) # variable costs - EUR/MWh
+    β = m.ext[:parameters][:β] = Dict(i => d[i]["fuelCosts"] for i in I) #EUR/MWh
+    δ = m.ext[:parameters][:δ] = Dict(i => d[i]["emissions"] for i in I) #ton/MWh
+    m.ext[:parameters][:VC] = Dict(i => β[i]+αCO2*δ[i] for i in I) # variable costs - EUR/MWh
     
     # Investment costs
     OC = m.ext[:parameters][:OC] = Dict(i => d[i]["OC"] for i in I) # EUR/MW
@@ -180,16 +175,6 @@ function process_parameters!(m::Model, data::Dict)
         m.ext[:parameters][:perc][IV[3]][l] = Dict()
         for cluster in CSon
             m.ext[:parameters][:perc][IV[3]][l][cluster] = Clusters_to_countries_solar[!,c][cluster]
-        end
-        l += 1
-    end
-
-    m.ext[:parameters][:perc][IV[4]] = Dict()
-    l = 1
-    for c in C
-        m.ext[:parameters][:perc][IV[4]][l] = Dict()
-        for cluster in CSof
-            m.ext[:parameters][:perc][IV[4]][l][cluster] = Clusters_to_countries_solar_offshore[!,c][cluster]
         end
         l += 1
     end
@@ -246,15 +231,6 @@ function process_parameters!(m::Model, data::Dict)
         m.ext[:parameters][:totals][IV[3]][cluster] = total
     end
 
-    total = 0
-    m.ext[:parameters][:totals][IV[4]] = Dict()
-    for cluster in m.ext[:sets][:CSof]
-        for country in C
-            total += Clusters_to_countries_solar_offshore[!,country][cluster]
-        end
-        m.ext[:parameters][:totals][IV[4]][cluster] = total
-    end
-
     return m
 end
 
@@ -298,7 +274,6 @@ function build_greenfield_1Y_GEP_model!(m::Model)
     CWon = m.ext[:sets][:CWon]
     CWof = m.ext[:sets][:CWof]
     CSon = m.ext[:sets][:CSon]
-    CSof = m.ext[:sets][:CSof]
 
 
     # Extract time series data
@@ -316,11 +291,14 @@ function build_greenfield_1Y_GEP_model!(m::Model)
     
 
     # Create variables
-    cap = m.ext[:variables][:cap] = @variable(m, [i=I,c=K], lower_bound=0, base_name="capacity") # Capacity must be per cluster, but also need a capacity per country
+    cap_conv = m.ext[:variables][:capc] = @variable(m, [i=ID,c=K], lower_bound=0, base_name="capacity conventional") # Capacity must be per cluster, but also need a capacity per country
+    cap_ren_Won = m.ext[:variables][:cap_r_won] = @variable(m, [z=CWon], lower_bound=0, base_name="capacity renewables wind onshore")
+    cap_ren_Wof = m.ext[:variables][:cap_r_wof] = @variable(m, [z=CWof], lower_bound=0, base_name="capacity renewables wind offshore")
+    cap_ren_Son = m.ext[:variables][:cap_r_son] = @variable(m, [z=CSon], lower_bound=0, base_name="capacity renewables solar onshore")
     g = m.ext[:variables][:g] = @variable(m, [i=I,c=K,jh=JH,jd=JD], lower_bound=0, base_name="generation") # Generation per country
     ens = m.ext[:variables][:ens] = @variable(m, [c=K,jh=JH,jd=JD], lower_bound=0, base_name="load_shedding")
-    imp = m.ext[:variables][:inp] = @variable(m, [c=K,k=K,jh=JH,jd=JD], lower_bound=0, base_name="Import")
-    exp = m.ext[:variables][:exp] = @variable(m, [c=K,k=K,jh=JH,jd=JD], lower_bound=0, base_name="Export")
+    imp = m.ext[:variables][:inp] = @variable(m, [c=K,k=K,jh=JH,jd=JD], base_name="Import")
+    exp = m.ext[:variables][:exp] = @variable(m, [c=K,k=K,jh=JH,jd=JD], base_name="Export")
 
     # # Create affine expressions (= linear combinations of variables)
     # curt = m.ext[:expressions][:curt] = @expression(m, [i=IV,jh=JH,jd=JD],
@@ -329,7 +307,10 @@ function build_greenfield_1Y_GEP_model!(m::Model)
 
     # Formulate objective 1a
     m.ext[:objective] = @objective(m, Min,
-        + sum(IC[i]*cap[i,c] for i in I, c in K)
+        + sum(IC[i]*cap_conv[i,c] for i in ID, c in K)
+        + sum(IC["On-Wind"]*cap_ren_Won[z]/total["On-Wind"][z] for z in CWon)
+        + sum(IC["Off-Wind"]*cap_ren_Wof[z]/total["Off-Wind"][z] for z in CWof)
+        + sum(IC["Solar"]*cap_ren_Son[z]/total["Solar"][z] for z in CSon)
         + sum(VC[i]*g[i,c,jh,jd] for i in ID, c in K, jh in JH, jd in JD)
         + sum(ens[c,jh,jd]*VOLL for c in K, jh in JH, jd in JD)
     )
@@ -338,12 +319,8 @@ function build_greenfield_1Y_GEP_model!(m::Model)
     # 2a - power balance
     m.ext[:constraints][:con2a] = @constraint(m, [c=K,jh=JH,jd=JD],
     + sum(g[i,c,jh,jd] for i in I) 
-    - sum(imp[c,k,jh,jd] for k in K) 
-    - sum(exp[c,k,jh,jd] for k in K) 
-    + sum(perc["On-Wind"][c][z]*total["On-Wind"][z]*AF["On-Wind"][z][jh,jd]*cap[] for z in CWon) 
-    + sum(perc["Off-Wind"][c][z]*total["Off-Wind"][z]*AF["Off-Wind"][z][jh,jd] for z in CWof) 
-    + sum(perc["On-Solar"][c][z]*total["On-Solar"][z]*AF["On-Solar"][z][jh,jd] for z in CSon) 
-    + sum(perc["Off-Solar"][c][z]*total["Off-Solar"][z]*AF["Off-Solar"][z][jh,jd] for z in CSof)
+    + sum(imp[c,k,jh,jd] for k in K) 
+    + sum(exp[c,k,jh,jd] for k in K) 
     == D[c][jh,jd] - ens[c,jh,jd]
     )
 
@@ -357,40 +334,35 @@ function build_greenfield_1Y_GEP_model!(m::Model)
     display("Start constraints max generation")
     # 3a - renewables
     # 3a1 - Onshore wind 
-    m.ext[:constraints][:con3a1] = @constraint(m, [c=K,z=CWon,jh=JH,jd=JD],
-    g["On-Wind",c,jh,jd] <= perc["On-Wind"][c][z]*total["On-Wind"][z]*AF["On-Wind"][z][jh,jd]*cap["On-Wind",c]
+    m.ext[:constraints][:con3a1] = @constraint(m, [c=K,jh=JH,jd=JD],
+    g["On-Wind",c,jh,jd] <= sum(perc["On-Wind"][c][z]*AF["On-Wind"][z][jh,jd]*cap_ren_Won[z] for z in CWon) 
     )
 
     # 3a2 - Offshore wind 
-    m.ext[:constraints][:con3a2] = @constraint(m, [c=K,z=CWof,jh=JH,jd=JD],
-    g["Off-Wind",c,jh,jd] <= perc["Off-Wind"][c][z]*total["Off-Wind"][z]*AF["Off-Wind"][z][jh,jd]*cap["On-Wind",c]
+    m.ext[:constraints][:con3a2] = @constraint(m, [c=K,jh=JH,jd=JD],
+    g["Off-Wind",c,jh,jd] <= sum(perc["Off-Wind"][c][z]*AF["Off-Wind"][z][jh,jd]*cap_ren_Wof[z] for z in CWof)
     )
 
     # 3a3 - Onshore solar 
-    m.ext[:constraints][:con3a3] = @constraint(m, [c=K,z=CSon,jh=JH,jd=JD],
-    g["On-Solar",c,jh,jd] <= perc["On-Solar"][c][z]*total["On-Solar"][z]*AF["On-Solar"][z][jh,jd]*cap["On-Wind",c]
-    )
-
-    # 3a4 - Offshore solar
-    m.ext[:constraints][:con3a4] = @constraint(m, [c=K,z=CSof,jh=JH,jd=JD],
-    g["Off-Solar",c,jh,jd] <= perc["Off-Solar"][c][z]*total["Off-Solar"][z]*AF["Off-Solar"][z][jh,jd]*cap["On-Wind",c]
+    m.ext[:constraints][:con3a3] = @constraint(m, [c=K,jh=JH,jd=JD],
+    g["Solar",c,jh,jd] <= sum(perc["Solar"][c][z]*AF["Solar"][z][jh,jd]*cap_ren_Son[z] for z in CSon)
     )
 
     # 3b - conventional
     m.ext[:constraints][:con3b] = @constraint(m, [c=K,i=ID,jh=JH,jd=JD],
-        g[i,c,jh,jd] <= cap[i,c]
+        g[i,c,jh,jd] <= cap_conv[i,c]
     )
 
     
     display("Start import/export")
     # 4a - Max import
     m.ext[:constraints][:con4a] = @constraint(m, [c=K,k=K,jh=JH,jd=JD],
-        imp[c,k,jh,jd] <= max_imp[c][k]
+        0 <= imp[c,k,jh,jd] <= abs(max_imp[c][k])
     )
 
     # 4b - Max export
     m.ext[:constraints][:con4b] = @constraint(m, [c=K,k=K,jh=JH,jd=JD],
-        exp[c,k,jh,jd] <= max_exp[c][k]
+         -max_exp[c][k] <= exp[c,k,jh,jd] <= 0
     )
 
     return m
@@ -412,10 +384,29 @@ print(
     """
 )
 
+# termination_status(m)
+
+# if termination_status(m) == "INFEASIBLE"
+#     Display("yes")
+#     @assert termination_status(m) == MOI.INFEASIBLE_OR_UNBOUNDED
+#     compute_conflict!(m)
+#     MOI.get.(m, MOI.ConstraintConflictStatus(), m.ext[:constraints][:con2a]) 
+#     MOI.get.(m, MOI.ConstraintConflictStatus(), m.ext[:constraints][:con2c]) 
+#     MOI.get.(m, MOI.ConstraintConflictStatus(), m.ext[:constraints][:con3a1]) 
+#     MOI.get.(m, MOI.ConstraintConflictStatus(), m.ext[:constraints][:con3a2]) 
+#     MOI.get.(m, MOI.ConstraintConflictStatus(), m.ext[:constraints][:con3a3]) 
+#     MOI.get.(m, MOI.ConstraintConflictStatus(), m.ext[:constraints][:con3a4]) 
+#     MOI.get.(m, MOI.ConstraintConflictStatus(), m.ext[:constraints][:con4a]) 
+#     MOI.get.(m, MOI.ConstraintConflictStatus(), m.ext[:constraints][:con4b]) 
+# end
 
 # print some output
 @show value(m.ext[:objective])
-@show value.(m.ext[:variables][:cap])
+@show value.(m.ext[:variables][:cap_c])
+@show value.(m.ext[:variables][:cap_r_won])
+@show value.(m.ext[:variables][:cap_r_wof])
+@show value.(m.ext[:variables][:cap_r_son])
+@show value.(m.ext[:variables][:cap_r_sonf])
 
 ## Step 5: interpretation
 using Plots
@@ -425,44 +416,61 @@ using StatsPlots
 # examples on how to access data
 
 # sets
+I = m.ext[:sets][:I]
+ID = m.ext[:sets][:ID]
+IV = m.ext[:sets][:IV]
 JH = m.ext[:sets][:JH]
 JD = m.ext[:sets][:JD]
-I = m.ext[:sets][:I]
+C = m.ext[:sets][:C]
+K = m.ext[:sets][:K]
+CWon = m.ext[:sets][:CWon]
+CWof = m.ext[:sets][:CWof]
+CSon = m.ext[:sets][:CSon]
+CSof = m.ext[:sets][:CSof]
 
 # parameters
 D = m.ext[:timeseries][:D]
-W = m.ext[:parameters][:W]
-LC = m.ext[:parameters][:LC]
+VOLL = m.ext[:parameters][:VOLL] # VOLL | -
+VC = m.ext[:parameters][:VC] # variable cost | per technology
+IC = m.ext[:parameters][:IC] # investment cost | per technology
+perc = m.ext[:parameters][:perc] # Percentage of cluster asigned to country | per technology per country per cluster
+total = m.ext[:parameters][:totals] # Total percentage of clusterd relevant | per technology per cluster
+max_imp = m.ext[:parameters][:max_import] # max import | per country per country
+max_exp = m.ext[:parameters][:max_export] # max import | per country per country
 
 # variables/expressions
-cap = value.(m.ext[:variables][:cap])
+cap_conv = value.(m.ext[:variables][:capc])
+cap_res_won = value.(m.ext[:variables][:cap_r_won])
+cap_res_wof = value.(m.ext[:variables][:cap_r_wof])
+cap_res_son = value.(m.ext[:variables][:cap_r_son])
+cap_res_sof = value.(m.ext[:variables][:cap_r_sonf])
 g = value.(m.ext[:variables][:g])
 ens = value.(m.ext[:variables][:ens])
-curt = value.(m.ext[:expressions][:curt])
-λ = dual.(m.ext[:constraints][:con2a])
+# curt = value.(m.ext[:expressions][:curt])
+# λ = dual.(m.ext[:constraints][:con2a])
 
-# create arrays for plotting
-λvec = [λ[jh,jd]/W[jd] for jh in JH, jd in JD]
-gvec = [g[i,jh,jd] for i in I, jh in JH, jd in JD]
-capvec = [cap[i] for  i in I]
+# # create arrays for plotting
+# λvec = [λ[jh,jd]/W[jd] for jh in JH, jd in JD]
+# gvec = [g[i,jh,jd] for i in I, jh in JH, jd in JD]
+# cap_conv_vec = [cap_conv[i] for  i in I]
+# cap_res_sof
 
+# # Select day for which you'd like to plotting
+# jd = 1
 
-# Select day for which you'd like to plotting
-jd = 1
+# # Electricity price 
+# p1 = plot(JH,λvec[:,jd], xlabel="Timesteps [-]", ylabel="λ [EUR/MWh]", label="λ [EUR/MWh]", legend=:outertopright );
 
-# Electricity price 
-p1 = plot(JH,λvec[:,jd], xlabel="Timesteps [-]", ylabel="λ [EUR/MWh]", label="λ [EUR/MWh]", legend=:outertopright );
+# # Dispatch
+# p2 = groupedbar(transpose(gvec[:,:,jd]), label=["Mid" "Base" "Peak" "Wind" "Solar"], bar_position = :stack,legend=:outertopright,ylims=(0,13_000));
+# plot!(p2, JH, D[:,jd], label ="Demand", xlabel="Timesteps [-]", ylabel="Generation [MWh]", legend=:outertopright, lindewidth=3, lc=:black);
 
-# Dispatch
-p2 = groupedbar(transpose(gvec[:,:,jd]), label=["Mid" "Base" "Peak" "Wind" "Solar"], bar_position = :stack,legend=:outertopright,ylims=(0,13_000));
-plot!(p2, JH, D[:,jd], label ="Demand", xlabel="Timesteps [-]", ylabel="Generation [MWh]", legend=:outertopright, lindewidth=3, lc=:black);
+# # Capacity
+# p3 = bar(capvec, label="", xticks=(1:length(capvec), ["Mid" "Base" "Peak" "Wind" "Solar"]), xlabel="Technology [-]", ylabel="New capacity [MW]", legend=:outertopright);
 
-# Capacity
-p3 = bar(capvec, label="", xticks=(1:length(capvec), ["Mid" "Base" "Peak" "Wind" "Solar"]), xlabel="Technology [-]", ylabel="New capacity [MW]", legend=:outertopright);
-
-# combine
-plot(p1, p2, p3, layout = (3,1))
-plot!(size=(1000,800))
+# # combine
+# plot(p1, p2, p3, layout = (3,1))
+# plot!(size=(1000,800))
 
 
 

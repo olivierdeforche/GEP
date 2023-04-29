@@ -9,7 +9,7 @@ def Read_data(data, resize, plot, user, documentation):
     if resize==1:
         if data=="af":
             if user == "Olivier":
-                dataset_clusters = "C:/Users/defor/Desktop/Thesis/Data/Capacity_factor_lonlat.nc"
+                dataset_clusters = "../../Data/Capacity_factor_lonlat.nc"
                 dataset = dataset_clusters
             else: 
                 dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_lonlat.nc"
