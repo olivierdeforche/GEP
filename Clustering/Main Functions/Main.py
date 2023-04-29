@@ -87,19 +87,8 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
         print("start splitting off-shore and on-shore")
         start_splitting_ofonshore = time.time()
 
-    print(regions_wind)
-    print(regions_solar)
-    plt.show()
-
 
     regions_wind, regions_off_shore_wind, labels_wind, current_amount_of_clusters_wind, to_remove_wind, regions_solar, regions_off_shore_solar, labels_solar, current_amount_of_clusters_solar, to_remove_solar = Split_offshore_onshore(method, regions_wind, labels_wind, number_of_clusters_wind, regions_solar, labels_solar, number_of_clusters_solar, coordinates, lon, lat, plot, user, number_of_clusters, threshold, data, resize)
-
-
-    print(regions_wind)
-    print(regions_off_shore_wind)
-    print(regions_solar)
-    print(regions_off_shore_solar)
-    plt.show()
 
 
     # Compute time series for clusters and save them in a csv
@@ -150,13 +139,13 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
 
 
 
-# Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=4, plot=False)
+Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=4, plot=False)
 
 # Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=1, plot=False)
 # Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=2, plot=False)
 # Clustering(method="kmeans", data="weather", number_of_clusters=10, resize=3, plot=False)
 
-Clustering(method="political_regions", plot=False)
+# Clustering(method="political_regions", plot=False)
 # Clustering(method="kmeans", resize=4, number_of_clusters=10)
 
 # Clustering(method="kmeans", data="weather", number_of_clusters=10, plot=True)

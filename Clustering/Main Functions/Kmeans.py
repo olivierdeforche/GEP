@@ -24,7 +24,6 @@ def Kmeans(wind, wind_copy, solar, solar_copy, lon, lat, number_of_clusters, res
     clusters_values = dict.fromkeys(range(1, number_of_clusters))
 
     # Plot results if specified in plot variable (=True)
-
     fig2 = plt.figure(figsize=(6, 6))
     plt.scatter(lon, lat,
             c=model.labels_)

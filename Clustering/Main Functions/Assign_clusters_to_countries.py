@@ -126,9 +126,6 @@ def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_
     df_solar = df_solar.T
     df_solar_offshore = df_solar_offshore.T
 
-    if plot:
-        print(df_wind, df_wind_offshore, df_solar, df_solar_offshore)
-
     if user=="Olivier":
         string_wind = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_')+str(resize)+str('_df_wind.xlsx')
         string_wind_offshore = str('C:/Users/defor/Desktop/Thesis/GEP/GEP/Output_Clusters_Asigned_To_Countries/')+str(method)+str('_')+str(number_of_clusters_wind)+str('_')+str(data)+str('_')+str(resize)+str('_df_wind_offshore.xlsx')
