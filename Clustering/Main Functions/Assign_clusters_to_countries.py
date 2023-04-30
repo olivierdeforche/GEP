@@ -4,16 +4,36 @@ import numpy as np
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point, Polygon
+import matplotlib.pyplot as plt
 
 
-def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_clusters_wind, regions_solar, regions_off_shore_solar, number_of_clusters_solar, coordinates, method, data, resize, documentation, plot, user):
+def Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_clusters_wind, regions_solar, regions_off_shore_solar, number_of_clusters_solar, coordinates, method, data, resize, documentation, plot, user, lon, lat):
     
     # Load data of Exclusive Economic Zones 
     if user =="Olivier":
         EEZ = geopandas.read_file('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/EEZ_Europe_land.geojson')
     else:
         EEZ = geopandas.read_file('"C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/EEZ_Europe_land.geojson')
+    # print(lon)
+    # print(len(lon))
+    # print(len(lat))
+    # print(regions_wind)
+    # lonlist = list()
+    # latlist = list()
+    # for point in regions_wind[2]:
+    #     lonlist.append(lon[point])
+    #     latlist.append(lat[point])
+    # print(lonlist)
+    # print(latlist)
+    # df = pd.DataFrame({'Latitude': latlist,
+    #     'Longitude': lonlist})
 
+    # gdf = gpd.GeoDataFrame(
+    #     df, geometry=gpd.points_from_xy(df.Longitude, df.Latitude))
+    # ax = gdf.plot(color='red')
+    # EEZ.plot(ax=ax,edgecolor='k', facecolor=None, alpha=0.5)
+    # plot.show()
+    
     # Create dictionaries for each file we want to create 
     dict_wind = dict()
     dict_wind_offshore = dict()

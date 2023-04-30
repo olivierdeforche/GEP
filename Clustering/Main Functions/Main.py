@@ -114,7 +114,7 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
         print("Start asigning clusters to countries")
         start_asigning_cluster = time.time()
 
-    Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_clusters_wind, regions_solar, regions_off_shore_solar, number_of_clusters_solar, coordinates, method, data, resize, documentation, plot, user)
+    Asign_clusters_to_countries(regions_wind, regions_off_shore_wind, number_of_clusters_wind, regions_solar, regions_off_shore_solar, number_of_clusters_solar, coordinates, method, data, resize, documentation, plot, user, lon, lat)
     
     if documentation:
         stop_asigning_cluster = time.time()
@@ -136,214 +136,217 @@ def Clustering(method= "kmeans", data="af",  resize=1, number_of_clusters=None, 
 
     return()
 
-### Benchmark = political
-Clustering(method="political_regions", plot=False)
 
-### Kmeans++
-## full resolution
-Clustering(method="kmeans", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="kmeans", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
+Clustering(method="kmeans", data="af", resize=4, number_of_clusters=10, plot=False)
 
-Clustering(method="kmeans", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="kmeans", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis')
+# ### Benchmark = political
+# Clustering(method="political_regions", plot=False)
 
-Clustering(method="kmeans", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="kmeans", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis')
+# ### Kmeans++
+# ## full resolution
+# Clustering(method="kmeans", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="kmeans", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
 
-## 1/4 resolution
-Clustering(method="kmeans", data="weather", resize=2, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="kmeans", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="kmeans", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="kmeans", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis')
 
-Clustering(method="kmeans", data="weather", resize=2, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="kmeans", data="af", resize=2, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="kmeans", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="kmeans", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis')
 
-Clustering(method="kmeans", data="weather", resize=2, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="kmeans", data="af", resize=2, number_of_clusters=30, plot=False, user='Louis')
+# ## 1/4 resolution
+# Clustering(method="kmeans", data="weather", resize=2, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="kmeans", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
 
-## 1/9 resolution
-Clustering(method="kmeans", data="weather", resize=3, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="kmeans", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="kmeans", data="weather", resize=2, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="kmeans", data="af", resize=2, number_of_clusters=20, plot=False, user='Louis')
 
-Clustering(method="kmeans", data="weather", resize=3, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="kmeans", data="af", resize=3, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="kmeans", data="weather", resize=2, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="kmeans", data="af", resize=2, number_of_clusters=30, plot=False, user='Louis')
 
-Clustering(method="kmeans", data="weather", resize=3, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="kmeans", data="af", resize=3, number_of_clusters=30, plot=False, user='Louis')
+# ## 1/9 resolution
+# Clustering(method="kmeans", data="weather", resize=3, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="kmeans", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
 
+# Clustering(method="kmeans", data="weather", resize=3, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="kmeans", data="af", resize=3, number_of_clusters=20, plot=False, user='Louis')
 
-### Kmedoids
-## full resolution
-Clustering(method="kmedoids", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="kmedoids", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
-
-Clustering(method="kmedoids", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="kmedoids", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis')
-
-Clustering(method="kmedoids", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="kmedoids", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis')
-
-## 1/4 resolution
-Clustering(method="kmedoids", data="weather", resize=2, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="kmedoids", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
-
-Clustering(method="kmedoids", data="weather", resize=2, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="kmedoids", data="af", resize=2, number_of_clusters=20, plot=False, user='Louis')
-
-Clustering(method="kmedoids", data="weather", resize=2, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="kmedoids", data="af", resize=2, number_of_clusters=30, plot=False, user='Louis')
-
-## 1/9 resolution
-Clustering(method="kmedoids", data="weather", resize=3, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="kmedoids", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
-
-Clustering(method="kmedoids", data="weather", resize=3, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="kmedoids", data="af", resize=3, number_of_clusters=20, plot=False, user='Louis')
-
-Clustering(method="kmedoids", data="weather", resize=3, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="kmedoids", data="af", resize=3, number_of_clusters=30, plot=False, user='Louis')
-
-### Ward
-## full resolution
-Clustering(method="ward", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="ward", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
-
-Clustering(method="ward", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="ward", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis')
-
-Clustering(method="ward", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="ward", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis')
-
-## 1/4 resolution
-Clustering(method="ward", data="weather", resize=2, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="ward", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
-
-Clustering(method="ward", data="weather", resize=2, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="ward", data="af", resize=2, number_of_clusters=20, plot=False, user='Louis')
-
-Clustering(method="ward", data="weather", resize=2, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="ward", data="af", resize=2, number_of_clusters=30, plot=False, user='Louis')
-
-## 1/9 resolution
-Clustering(method="ward", data="weather", resize=3, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="ward", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
-
-Clustering(method="ward", data="weather", resize=3, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="ward", data="af", resize=3, number_of_clusters=20, plot=False, user='Louis')
-
-Clustering(method="ward", data="weather", resize=3, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="ward", data="af", resize=3, number_of_clusters=30, plot=False, user='Louis')
-
-### Regional Kmeans
-## full resolution
-Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
-
-Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis')
-
-Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis')
-
-## 1/4 resolution
-Clustering(method="regional_kmeans", data="weather", resize=2, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="regional_kmeans", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
-
-Clustering(method="regional_kmeans", data="weather", resize=2, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="regional_kmeans", data="af", resize=2, number_of_clusters=20, plot=False, user='Louis')
-
-Clustering(method="regional_kmeans", data="weather", resize=2, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="regional_kmeans", data="af", resize=2, number_of_clusters=30, plot=False, user='Louis')
-
-## 1/9 resolution
-Clustering(method="regional_kmeans", data="weather", resize=3, number_of_clusters=10, plot=False, user='Louis')
-Clustering(method="regional_kmeans", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
-
-Clustering(method="regional_kmeans", data="weather", resize=3, number_of_clusters=20, plot=False, user='Louis')
-Clustering(method="regional_kmeans", data="af", resize=3, number_of_clusters=20, plot=False, user='Louis')
-
-Clustering(method="regional_kmeans", data="weather", resize=3, number_of_clusters=30, plot=False, user='Louis')
-Clustering(method="regional_kmeans", data="af", resize=3, number_of_clusters=30, plot=False, user='Louis')
-
-### MaxP
-
-## Full resolution
-
-# Threshold 2700 for AF
-# safety margin for unnecessary computations
-Clustering(method="maxp", data="af", resize=1, threshold=2690, plot=False, user= 'Louis')
-Clustering(method="maxp", data="weather", resize=1, threshold=2690, plot=False, user='Louis')
-
-# Threshold 1330 for 20 clusters
-Clustering(method="maxp", data="af", resize=1, threshold=1327, plot=False, user= 'Louis')
-Clustering(method="maxp", data="weather", resize=1, threshold=1327, plot=False, user='Louis')
-
-# Threshold 865 for 30 clusters, 1 partition
-Clustering(method="maxp", data="af", resize=1, threshold=862, plot=False, user= 'Louis')
-Clustering(method="maxp", data="weather", resize=1, threshold=862, plot=False, user='Louis')
-
-# 1/4 resolution
-Clustering(method="maxp", data="af", resize=2, threshold=2690/4, plot=False, user= 'Louis')
-Clustering(method="maxp", data="weather", resize=2, threshold=2690/4, plot=False, user='Louis')
-
-Clustering(method="maxp", data="af", resize=2, threshold=1327/4, plot=False, user= 'Louis')
-Clustering(method="maxp", data="weather", resize=2, threshold=1327/4, plot=False, user='Louis')
-
-Clustering(method="maxp", data="af", resize=2, threshold=862/4, plot=False, user= 'Louis')
-Clustering(method="maxp", data="weather", resize=2, threshold=862/4, plot=False, user='Louis')
-
-## 1/9 resolution
-Clustering(method="maxp", data="af", resize=3, threshold=2690/9, plot=False, user= 'Louis')
-Clustering(method="maxp", data="weather", resize=3, threshold=2690/9, plot=False, user='Louis')
-
-Clustering(method="maxp", data="af", resize=3, threshold=1327/9, plot=False, user= 'Louis')
-Clustering(method="maxp", data="weather", resize=3, threshold=1327/9, plot=False, user='Louis')
-
-Clustering(method="maxp", data="af", resize=3, threshold=862/9, plot=False, user= 'Louis')
-Clustering(method="maxp", data="weather", resize=3, threshold=862/9, plot=False, user='Louis')
-
-### Variabiliteitscheck voor beste methode (full resolution)
-
-## Regional K means
-##2
-Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis', iteration=2)
-Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis', iteration=2)
-
-Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis', iteration=2)
-Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis', iteration=2)
-
-Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis', iteration=2)
-Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis', iteration=2)
-
-##3
-Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis', iteration=3)
-Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis', iteration=3)
-
-Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis', iteration=3)
-Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis', iteration=3)
-
-Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis', iteration=3)
-Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis', iteration=3)
+# Clustering(method="kmeans", data="weather", resize=3, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="kmeans", data="af", resize=3, number_of_clusters=30, plot=False, user='Louis')
 
 
-## MaxP
-##2
-Clustering(method="maxp", data="af", resize=1, threshold=2690, plot=False, user= 'Louis', iteration=2)
-Clustering(method="maxp", data="weather", resize=1, threshold=2690, plot=False, user='Louis', iteration=2)
+# ### Kmedoids
+# ## full resolution
+# Clustering(method="kmedoids", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="kmedoids", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
 
-Clustering(method="maxp", data="af", resize=1, threshold=1327, plot=False, user= 'Louis', iteration=2)
-Clustering(method="maxp", data="weather", resize=1, threshold=1327, plot=False, user='Louis', iteration=2)
+# Clustering(method="kmedoids", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="kmedoids", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis')
 
-Clustering(method="maxp", data="af", resize=1, threshold=862, plot=False, user= 'Louis', iteration=2)
-Clustering(method="maxp", data="weather", resize=1, threshold=862, plot=False, user='Louis', iteration=2)
+# Clustering(method="kmedoids", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="kmedoids", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis')
 
-##3
-Clustering(method="maxp", data="af", resize=1, threshold=2690, plot=False, user= 'Louis', iteration=3)
-Clustering(method="maxp", data="weather", resize=1, threshold=2690, plot=False, user='Louis', iteration=3)
+# ## 1/4 resolution
+# Clustering(method="kmedoids", data="weather", resize=2, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="kmedoids", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
 
-Clustering(method="maxp", data="af", resize=1, threshold=1327, plot=False, user= 'Louis', iteration=3)
-Clustering(method="maxp", data="weather", resize=1, threshold=1327, plot=False, user='Louis', iteration=3)
+# Clustering(method="kmedoids", data="weather", resize=2, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="kmedoids", data="af", resize=2, number_of_clusters=20, plot=False, user='Louis')
 
-Clustering(method="maxp", data="af", resize=1, threshold=862, plot=False, user= 'Louis', iteration=3)
-Clustering(method="maxp", data="weather", resize=1, threshold=862, plot=False, user='Louis', iteration=3)
+# Clustering(method="kmedoids", data="weather", resize=2, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="kmedoids", data="af", resize=2, number_of_clusters=30, plot=False, user='Louis')
+
+# ## 1/9 resolution
+# Clustering(method="kmedoids", data="weather", resize=3, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="kmedoids", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
+
+# Clustering(method="kmedoids", data="weather", resize=3, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="kmedoids", data="af", resize=3, number_of_clusters=20, plot=False, user='Louis')
+
+# Clustering(method="kmedoids", data="weather", resize=3, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="kmedoids", data="af", resize=3, number_of_clusters=30, plot=False, user='Louis')
+
+# ### Ward
+# ## full resolution
+# Clustering(method="ward", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="ward", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
+
+# Clustering(method="ward", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="ward", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis')
+
+# Clustering(method="ward", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="ward", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis')
+
+# ## 1/4 resolution
+# Clustering(method="ward", data="weather", resize=2, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="ward", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
+
+# Clustering(method="ward", data="weather", resize=2, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="ward", data="af", resize=2, number_of_clusters=20, plot=False, user='Louis')
+
+# Clustering(method="ward", data="weather", resize=2, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="ward", data="af", resize=2, number_of_clusters=30, plot=False, user='Louis')
+
+# ## 1/9 resolution
+# Clustering(method="ward", data="weather", resize=3, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="ward", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
+
+# Clustering(method="ward", data="weather", resize=3, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="ward", data="af", resize=3, number_of_clusters=20, plot=False, user='Louis')
+
+# Clustering(method="ward", data="weather", resize=3, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="ward", data="af", resize=3, number_of_clusters=30, plot=False, user='Louis')
+
+# ### Regional Kmeans
+# ## full resolution
+# Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
+
+# Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis')
+
+# Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis')
+
+# ## 1/4 resolution
+# Clustering(method="regional_kmeans", data="weather", resize=2, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="regional_kmeans", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
+
+# Clustering(method="regional_kmeans", data="weather", resize=2, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="regional_kmeans", data="af", resize=2, number_of_clusters=20, plot=False, user='Louis')
+
+# Clustering(method="regional_kmeans", data="weather", resize=2, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="regional_kmeans", data="af", resize=2, number_of_clusters=30, plot=False, user='Louis')
+
+# ## 1/9 resolution
+# Clustering(method="regional_kmeans", data="weather", resize=3, number_of_clusters=10, plot=False, user='Louis')
+# Clustering(method="regional_kmeans", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
+
+# Clustering(method="regional_kmeans", data="weather", resize=3, number_of_clusters=20, plot=False, user='Louis')
+# Clustering(method="regional_kmeans", data="af", resize=3, number_of_clusters=20, plot=False, user='Louis')
+
+# Clustering(method="regional_kmeans", data="weather", resize=3, number_of_clusters=30, plot=False, user='Louis')
+# Clustering(method="regional_kmeans", data="af", resize=3, number_of_clusters=30, plot=False, user='Louis')
+
+# ### MaxP
+
+# ## Full resolution
+
+# # Threshold 2700 for AF
+# # safety margin for unnecessary computations
+# Clustering(method="maxp", data="af", resize=1, threshold=2690, plot=False, user= 'Louis')
+# Clustering(method="maxp", data="weather", resize=1, threshold=2690, plot=False, user='Louis')
+
+# # Threshold 1330 for 20 clusters
+# Clustering(method="maxp", data="af", resize=1, threshold=1327, plot=False, user= 'Louis')
+# Clustering(method="maxp", data="weather", resize=1, threshold=1327, plot=False, user='Louis')
+
+# # Threshold 865 for 30 clusters, 1 partition
+# Clustering(method="maxp", data="af", resize=1, threshold=862, plot=False, user= 'Louis')
+# Clustering(method="maxp", data="weather", resize=1, threshold=862, plot=False, user='Louis')
+
+# # 1/4 resolution
+# Clustering(method="maxp", data="af", resize=2, threshold=2690/4, plot=False, user= 'Louis')
+# Clustering(method="maxp", data="weather", resize=2, threshold=2690/4, plot=False, user='Louis')
+
+# Clustering(method="maxp", data="af", resize=2, threshold=1327/4, plot=False, user= 'Louis')
+# Clustering(method="maxp", data="weather", resize=2, threshold=1327/4, plot=False, user='Louis')
+
+# Clustering(method="maxp", data="af", resize=2, threshold=862/4, plot=False, user= 'Louis')
+# Clustering(method="maxp", data="weather", resize=2, threshold=862/4, plot=False, user='Louis')
+
+# ## 1/9 resolution
+# Clustering(method="maxp", data="af", resize=3, threshold=2690/9, plot=False, user= 'Louis')
+# Clustering(method="maxp", data="weather", resize=3, threshold=2690/9, plot=False, user='Louis')
+
+# Clustering(method="maxp", data="af", resize=3, threshold=1327/9, plot=False, user= 'Louis')
+# Clustering(method="maxp", data="weather", resize=3, threshold=1327/9, plot=False, user='Louis')
+
+# Clustering(method="maxp", data="af", resize=3, threshold=862/9, plot=False, user= 'Louis')
+# Clustering(method="maxp", data="weather", resize=3, threshold=862/9, plot=False, user='Louis')
+
+# ### Variabiliteitscheck voor beste methode (full resolution)
+
+# ## Regional K means
+# ##2
+# Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis', iteration=2)
+# Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis', iteration=2)
+
+# Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis', iteration=2)
+# Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis', iteration=2)
+
+# Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis', iteration=2)
+# Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis', iteration=2)
+
+# ##3
+# Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis', iteration=3)
+# Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis', iteration=3)
+
+# Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=20, plot=False, user='Louis', iteration=3)
+# Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=20, plot=False, user='Louis', iteration=3)
+
+# Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis', iteration=3)
+# Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=30, plot=False, user='Louis', iteration=3)
+
+
+# ## MaxP
+# ##2
+# Clustering(method="maxp", data="af", resize=1, threshold=2690, plot=False, user= 'Louis', iteration=2)
+# Clustering(method="maxp", data="weather", resize=1, threshold=2690, plot=False, user='Louis', iteration=2)
+
+# Clustering(method="maxp", data="af", resize=1, threshold=1327, plot=False, user= 'Louis', iteration=2)
+# Clustering(method="maxp", data="weather", resize=1, threshold=1327, plot=False, user='Louis', iteration=2)
+
+# Clustering(method="maxp", data="af", resize=1, threshold=862, plot=False, user= 'Louis', iteration=2)
+# Clustering(method="maxp", data="weather", resize=1, threshold=862, plot=False, user='Louis', iteration=2)
+
+# ##3
+# Clustering(method="maxp", data="af", resize=1, threshold=2690, plot=False, user= 'Louis', iteration=3)
+# Clustering(method="maxp", data="weather", resize=1, threshold=2690, plot=False, user='Louis', iteration=3)
+
+# Clustering(method="maxp", data="af", resize=1, threshold=1327, plot=False, user= 'Louis', iteration=3)
+# Clustering(method="maxp", data="weather", resize=1, threshold=1327, plot=False, user='Louis', iteration=3)
+
+# Clustering(method="maxp", data="af", resize=1, threshold=862, plot=False, user= 'Louis', iteration=3)
+# Clustering(method="maxp", data="weather", resize=1, threshold=862, plot=False, user='Louis', iteration=3)
 
 

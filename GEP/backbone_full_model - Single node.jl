@@ -33,8 +33,7 @@ Time_series_solar = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Cl
 ## Step 2: create model & pass data to model
 using JuMP
 using Gurobi
-# m = Model(optimizer_with_attributes(Gurobi.Optimizer))
-m = Model(optimizer_with_attributes(Gurobi.Optimizer, "NodefileStart" => 0.5))
+m = Model(optimizer_with_attributes(Gurobi.Optimizer))
 
 # JuMP.set_optimizer_attribute(m, "NodefileStart", 0.1)
 
@@ -320,7 +319,7 @@ push!(capvec,cap_res_sonvec)
 
 # Select day for which you'd like to plotting
 
-jd = 140
+jd = 12
 # Electricity price 
 p1 = plot(JH,λvec[:,jd], xlabel="Timesteps [-]", ylabel="λ [EUR/MWh]", label="λ [EUR/MWh]", legend=:outertopright );
 # Dispatch

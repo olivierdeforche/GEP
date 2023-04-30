@@ -171,22 +171,6 @@ function process_parameters!(m::Model, data::Dict)
         end
     end
 
-    m.ext[:parameters][:perc][IV[1]] = Dict()
-    for country in C
-        m.ext[:parameters][:perc][IV[1]][country] = Dict()
-        for cluster in CWof
-            m.ext[:parameters][:perc][IV[1]][country][cluster] = Clusters_to_countries_wind_offshore[!,country][cluster]
-        end
-    end
-
-    m.ext[:parameters][:perc][IV[3]] = Dict()
-    for country in C
-        m.ext[:parameters][:perc][IV[3]][country] = Dict()
-        for cluster in CSon
-            m.ext[:parameters][:perc][IV[3]][country][cluster] = Clusters_to_countries_solar[!,country][cluster]
-        end
-    end
-
     return m
 end
 
@@ -224,9 +208,9 @@ function build_greenfield_1Y_GEP_model!(m::Model)
 
     # Create variables
     cap_conv = m.ext[:variables][:capc] = @variable(m, [c=C,i=ID], lower_bound=0, base_name="capacity conventional") # Capacity must be per cluster, but also need a capacity per country
-    cap_ren_Won = m.ext[:variables][:cap_r_won] = @variable(m, [c=C,z=CWon], lower_bound=0, base_name="capacity renewables wind onshore")
-    cap_ren_Wof = m.ext[:variables][:cap_r_wof] = @variable(m, [c=C,z=CWof], lower_bound=0, base_name="capacity renewables wind offshore")
-    cap_ren_Son = m.ext[:variables][:cap_r_son] = @variable(m, [c=C,z=CSon], lower_bound=0, base_name="capacity renewables solar onshore")
+    cap_ren_Won = m.ext[:variables][:cap_r_won] = @variable(m, [z=CWon], lower_bound=0, base_name="capacity renewables wind onshore")
+    cap_ren_Wof = m.ext[:variables][:cap_r_wof] = @variable(m, [z=CWof], lower_bound=0, base_name="capacity renewables wind offshore")
+    cap_ren_Son = m.ext[:variables][:cap_r_son] = @variable(m, [z=CSon], lower_bound=0, base_name="capacity renewables solar onshore")
     g = m.ext[:variables][:g] = @variable(m, [c=C,i=I,jh=JH,jd=JD], lower_bound=0, base_name="generation") # Generation per country
     ens = m.ext[:variables][:ens] = @variable(m, [c=C,jh=JH,jd=JD], lower_bound=0, base_name="load_shedding")
 
@@ -238,9 +222,9 @@ function build_greenfield_1Y_GEP_model!(m::Model)
     # Formulate objective 1a
     m.ext[:objective] = @objective(m, Min,
         + sum(IC[i]*cap_conv[c,i] for c in C, i in ID)
-        + sum(IC["On-Wind"]*cap_ren_Won[c,z]/total["On-Wind"][z] for c in C, z in CWon)
-        + sum(IC["Off-Wind"]*cap_ren_Wof[c,z]/total["Off-Wind"][z] for c in C, z in CWof)
-        + sum(IC["Solar"]*cap_ren_Son[c,z]/total["Solar"][z] for c in C, z in CSon)
+        + sum(IC["On-Wind"]*cap_ren_Won[z]/total["On-Wind"][z] for z in CWon)
+        + sum(IC["Off-Wind"]*cap_ren_Wof[z]/total["Off-Wind"][z] for z in CWof)
+        + sum(IC["Solar"]*cap_ren_Son[z]/total["Solar"][z] for z in CSon)
         + sum(VC[i]*g[c,i,jh,jd] for c in C, i in I, jh in JH, jd in JD)
         + sum(ens[c,jh,jd]*VOLL for c in C, jh in JH, jd in JD)
     )
@@ -262,17 +246,17 @@ function build_greenfield_1Y_GEP_model!(m::Model)
     # 3a - renewables
     # 3a1 - Onshore wind 
     m.ext[:constraints][:con3a1] = @constraint(m, [c=C,jh=JH,jd=JD],
-    g[c,"On-Wind",jh,jd] <= sum(AF["On-Wind"][z][jh,jd]*cap_ren_Won[c,z] for z in CWon)
+    g[c,"On-Wind",jh,jd] <= sum(AF["On-Wind"][z][jh,jd]*cap_ren_Won[z] for z in CWon)
     )
 
     # 3a2 - Offshore wind 
     m.ext[:constraints][:con3a2] = @constraint(m, [c=C,jh=JH,jd=JD],
-    g[c,"Off-Wind",jh,jd] <= sum(AF["Off-Wind"][z][jh,jd]*cap_ren_Wof[c,z] for z in CWof)
+    g[c,"Off-Wind",jh,jd] <= sum(AF["Off-Wind"][z][jh,jd]*cap_ren_Wof[z] for z in CWof)
     )
 
     # 3a3 - Onshore solar 
     m.ext[:constraints][:con3a3] = @constraint(m, [c=C,jh=JH,jd=JD],
-    g[c,"Solar",jh,jd] <= sum(AF["Solar"][z][jh,jd]*cap_ren_Son[c,z] for z in CSon)
+    g[c,"Solar",jh,jd] <= sum(AF["Solar"][z][jh,jd]*cap_ren_Son[z] for z in CSon)
     )
 
     # 3b - conventional
@@ -322,7 +306,8 @@ JD = m.ext[:sets][:JD]
 CWon = m.ext[:sets][:CWon]
 CWof = m.ext[:sets][:CWof]
 CSon = m.ext[:sets][:CSon]
-copuntries = m.ext[:sets][:C]
+C = m.ext[:sets][:C]
+K = m.ext[:sets][:K]
 
 # parameters
 D = m.ext[:timeseries][:D]
@@ -342,18 +327,19 @@ ens = value.(m.ext[:variables][:ens][:,:,:])
 
 # # create arrays for plotting
 λvec = [λ[c,jh,jd] for c in C, jh in JH, jd in JD]
-λvec = sum(λvec[c,jh,jd] for c in C)
+λvec = sum(λvec[c,:,:] for c in K)
 gvec = [g[c,i,jh,jd] for c in C, i in I, jh in JH, jd in JD]
-gvec = sum(gvec[c,jh,jd] for c in C)
+gvec = sum(gvec[c,:,:,:] for c in K)
 cap_res_wonvec = sum(cap_res_won[c,z] for c in C, z in CWon)
 cap_res_wofvec = sum(cap_res_wof[c,z] for c in C, z in CWof)
 cap_res_sonvec = sum(cap_res_son[c,z] for c in C, z in CSon) 
 cap_convvec = [cap_conv[c,i] for  c in C, i in ID]
-cap_convvec = sum(cap_convvec[c,i] for c in C)
+cap_convvec = sum(cap_convvec[c,:] for c in K)
 capvec = cap_convvec
 push!(capvec,cap_res_wonvec)
 push!(capvec,cap_res_wofvec)
 push!(capvec,cap_res_sonvec)
+demand = sum(D[c][:,:] for c in C)
 
 # Select day for which you'd like to plotting
 jd = 12
@@ -361,7 +347,7 @@ jd = 12
 p1 = plot(JH,λvec[:,jd], xlabel="Timesteps [-]", ylabel="λ [EUR/MWh]", label="λ [EUR/MWh]", legend=:outertopright );
 # Dispatch
 p2 = groupedbar(transpose(gvec[:,:,jd]), label=["CCGT" "Nuclear" "OCGT" "Off-Wind" "On-Wind" "Solar"], bar_position = :stack,legend=:outertopright);
-plot!(p2, JH, D["Albania"][:,jd], label ="Demand", xlabel="Timesteps [-]", ylabel="Generation [MWh]", legend=:outertopright, lindewidth=3, lc=:black);# Capacity
+plot!(p2, JH, demand[:,jd], label ="Demand", xlabel="Timesteps [-]", ylabel="Generation [MWh]", legend=:outertopright, lindewidth=3, lc=:black);# Capacity
 p3 = bar(capvec, label="", xticks=(1:length(capvec), ["CCGT" "Nuclear" "OCGT" "On-Wind" "Off-Wind" "Solar"]), xlabel="Technology [-]", ylabel="New capacity [MW]", legend=:outertopright);
 # combine
 plot(p1, p2, p3, layout = (3,1))
@@ -399,7 +385,7 @@ p1 = plot(JH,λvec_alb[:,jd], xlabel="Timesteps [-]", ylabel="λ [EUR/MWh]", lab
 # Dispatch
 p2 = groupedbar(transpose(gvec_alb[:,:,jd]), label=["CCGT" "Nuclear" "OCGT" "Off-Wind" "On-Wind" "Solar"], bar_position = :stack,legend=:outertopright);
 plot!(p2, JH, D["Albania"][:,jd], label ="Demand", xlabel="Timesteps [-]", ylabel="Generation [MWh]", legend=:outertopright, lindewidth=3, lc=:black);# Capacity
-p3 = bar(capvec_alb, label="", xticks=(1:length(capvec), ["CCGT" "Nuclear" "OCGT" "On-Wind" "Off-Wind" "Solar"]), xlabel="Technology [-]", ylabel="New capacity [MW]", legend=:outertopright);
+p3 = bar(capvec_alb, label="", xticks=(1:length(capvec_alb), ["CCGT" "Nuclear" "OCGT" "On-Wind" "Off-Wind" "Solar"]), xlabel="Technology [-]", ylabel="New capacity [MW]", legend=:outertopright);
 # combine
 plot(p1, p2, p3, layout = (3,1))
 plot!(size=(1000,800))
