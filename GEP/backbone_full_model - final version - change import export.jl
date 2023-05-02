@@ -23,7 +23,7 @@ data = YAML.load_file(joinpath(@__DIR__, "data_gep_update_2.yaml"))
 demand = DataFrame(XLSX.readtable(joinpath(@__DIR__,"Data/Data_GEP.xlsx"), "Demand"))
 countries = DataFrame(XLSX.readtable(joinpath(@__DIR__,"Data/Data_GEP.xlsx"),"Countries"))
 imp = DataFrame(XLSX.readtable(joinpath(@__DIR__,"Data/Data_GEP.xlsx"), "Import"))
-exp = DataFrame(XLSX.readtable(joinpath(@__DIR__,"Data/Data_GEP.xlsx"), "Export"))
+# exp = DataFrame(XLSX.readtable(joinpath(@__DIR__,"Data/Data_GEP.xlsx"), "Export"))
 
 Clusters_to_countries_wind = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Asigned_To_Countries/",method,"_",no_clusters,"_",data_used,"_df_wind.xlsx")),"Sheet1"))
 Clusters_to_countries_wind_offshore = DataFrame(XLSX.readtable(joinpath(@__DIR__,string("Output_Clusters_Asigned_To_Countries/",method,"_",no_clusters,"_",data_used,"_df_wind_offshore.xlsx")),"Sheet1"))
@@ -38,8 +38,10 @@ using JuMP
 using Gurobi
 m = Model(optimizer_with_attributes(Gurobi.Optimizer))
 set_optimizer_attribute(m, "Method", 2)
-set_optimizer_attribute(m, "Threads", 8)
-set_optimizer_attribute(m, "Nodefilestart", 0.1)
+set_optimizer_attribute(m, "BarHomogeneous", 1)
+set_optimizer_attribute(m, "Threads", 12)
+# set_optimizer_attribute(m, "NodefileDir", "C:\\Users\\defor\\Desktop\\Thesis\\GEP\\GEP")
+# set_optimizer_attribute(m, "NodefileStart", 0.5)
 
 # Step 2a: create sets
 function define_sets!(m::Model, data::Dict, Time_series_wind::DataFrame, Time_series_wind_offshore::DataFrame, Time_series_solar::DataFrame)
@@ -141,14 +143,13 @@ function process_parameters!(m::Model, data::Dict)
 
     # Import
     m.ext[:parameters][:max_import] = [imp[!,country][k] for country in C, k in K]
-    
+    m.ext[:parameters][:max_export] = transpose(m.ext[:parameters][:max_import])
     # Export    
-    m.ext[:parameters][:max_export] = [exp[!,country][k] for country in C, k in K]
+    # m.ext[:parameters][:max_export] = [exp[!,country][k] for country in C, k in K]
     return m
 end
 
 process_parameters!(m, data)
-
 
 
 ## Step 3: construct your model
@@ -194,7 +195,7 @@ function build_greenfield_1Y_GEP_model!(m::Model)
     g = m.ext[:variables][:g] = @variable(m, [c=K,i=I,jh=JH,jd=JD], lower_bound=0, base_name="generation") # Generation per country
     ens = m.ext[:variables][:ens] = @variable(m, [c=K,jh=JH,jd=JD], lower_bound=0, base_name="load_shedding")
     display("starting import and export now")
-    impexp = m.ext[:variables][:imp] = @variable(m,[c=K,k=K,jh=JH,jd=JD], lower_bound=0, base_name="Import")
+    impexp = m.ext[:variables][:imp] = @variable(m,[c=K,k=K,jh=JH,jd=JD], base_name="Import")
 
 
     # # Create affine expressions (= linear combinations of variables)
@@ -251,7 +252,7 @@ function build_greenfield_1Y_GEP_model!(m::Model)
     display("Start import/export")
     # 4a - Max import
     m.ext[:constraints][:con4a] = @constraint(m, [c=K,k=K,jh=JH,jd=JD],
-    max_exp[c,k] <= impexp[c,k,jh,jd] <= max_imp[c,k]
+    -max_exp[c,k] <= impexp[c,k,jh,jd] <= max_imp[c,k]
     )
 
     # 4b - Import should equal Export other country
@@ -294,47 +295,46 @@ using StatsPlots
 # Warning: insufficient memory, speed may be affected.
 
 # sets
-I = m.ext[:sets][:I]
-ID = m.ext[:sets][:ID]
-IV = m.ext[:sets][:IV]
-JH = m.ext[:sets][:JH]
-JD = m.ext[:sets][:JD]
-CWon = m.ext[:sets][:CWon]
-CWof = m.ext[:sets][:CWof]
-CSon = m.ext[:sets][:CSon]
-C = m.ext[:sets][:C]
-K = m.ext[:sets][:K]
+I = m.ext[:sets][:I];
+ID = m.ext[:sets][:ID];
+IV = m.ext[:sets][:IV];
+JH = m.ext[:sets][:JH];
+JD = m.ext[:sets][:JD];
+CWon = m.ext[:sets][:CWon];
+CWof = m.ext[:sets][:CWof];
+CSon = m.ext[:sets][:CSon];
+K = m.ext[:sets][:K];
 
 # parameters
-D = m.ext[:timeseries][:D]
+D = m.ext[:timeseries][:D];
 VOLL = m.ext[:parameters][:VOLL] # VOLL | -
 VC = m.ext[:parameters][:VC] # variable cost | per technology
 IC = m.ext[:parameters][:IC] # investment cost | per technology
 
 # variables/expressions
-cap_conv = value.(m.ext[:variables][:capc][:,:])
-cap_res_won = value.(m.ext[:variables][:cap_r_won][:])
-cap_res_wof = value.(m.ext[:variables][:cap_r_wof][:])
-cap_res_son = value.(m.ext[:variables][:cap_r_son][:])
-g = value.(m.ext[:variables][:g][:,:,:,:])
-ens = value.(m.ext[:variables][:ens][:,:,:])
-λ = dual.(m.ext[:constraints][:con2a][:,:,:])
-impexp = value.(m.ext[:variables][:imp][:,:,:,:])
-
+cap_conv = value.(m.ext[:variables][:capc][:,:]);
+cap_res_won = value.(m.ext[:variables][:cap_r_won][:]);
+cap_res_wof = value.(m.ext[:variables][:cap_r_wof][:]);
+cap_res_son = value.(m.ext[:variables][:cap_r_son][:]);
+g = value.(m.ext[:variables][:g][:,:,:,:]);
+ens = value.(m.ext[:variables][:ens][:,:,:]);
+λ = dual.(m.ext[:constraints][:con2a][:,:,:]);
+impexp = value.(m.ext[:variables][:imp][:,:,:,:]);
 
 # # create arrays for plotting
-λvec = [λ[c,jh,jd] for c in K, jh in JH, jd in JD]
-λvec = sum(λvec[c,:,:] for c in K)
-gvec = [g[c,i,jh,jd] for c in K, i in I, jh in JH, jd in JD]
-gvec = sum(gvec[c,:,:,:] for c in K)
+λvec = [λ[c,jh,jd] for c in K, jh in JH, jd in JD];
+λvec = sum(λvec[c,:,:] for c in K);
+gvec = [g[c,i,jh,jd] for c in K, i in I, jh in JH, jd in JD];
+gvec = sum(gvec[c,:,:,:] for c in K);
 cap_res_wonvec = sum(cap_res_won[z] for z in CWon)
 cap_res_wofvec = sum(cap_res_wof[z] for z in CWof)
 cap_res_sonvec = sum(cap_res_son[z] for z in CSon) 
 cap_convvec = [cap_conv[c,i] for  c in K, i in ID]
 cap_convvec = sum(cap_convvec[c,:] for c in K)
-demand = sum(D[c,:,:] for c in K)
-impexpvec = [impexp[c,k,jh,jd] for c in K, k in K, jh in JH, jd in JD]
-impexpvec = sum(impexpvec[c,k,:,:] for c in K, k in K)
+demand = sum(D[c,:,:] for c in K);
+impexpvec = [impexp[c,k,jh,jd] for c in K, k in K, jh in JH, jd in JD];
+impexpvec = sum(impexpvec[:,:,jh,jd] for jh in JH, jd in JD)
+
 
 capvec = cap_convvec
 push!(capvec,cap_res_wonvec)
@@ -343,7 +343,7 @@ push!(capvec,cap_res_sonvec)
 
 
 # Select day for which you'd like to plotting
-jd = 12
+jd = 150
 # Electricity price 
 p1 = plot(JH,λvec[:,jd], xlabel="Timesteps [-]", ylabel="λ [EUR/MWh]", label="λ [EUR/MWh]", legend=:outertopright );
 # Dispatch
@@ -354,7 +354,6 @@ p4 = plot(JH,impexpvec[:,jd], xlabel="Timesteps [-]", ylabel="Import/Export [WAT
 # combine
 plot(p1, p2, p3, p4, layout = (4,1))
 plot!(size=(1000,800))
-
 
 
 # variables/expressions for Belgium

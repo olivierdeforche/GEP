@@ -2,7 +2,7 @@
 VOLL: 8700 # EUR / MWh (before 1000 €/MWh)
 CO2Price: 128 # EUR / ton (before 25 €/ton)
 nTimesteps: 24 # number of timesteps per representative day
-nDays: 365 # days
+nDays: 365 # days was 365
 discountrate: 0.07 # -
 
 # Generator parameters
