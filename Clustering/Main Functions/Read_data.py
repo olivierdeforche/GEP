@@ -12,7 +12,7 @@ def Read_data(data, resize, plot, user, documentation):
                 dataset_clusters = "../../Data/Capacity_factor_lonlat.nc"
                 dataset = dataset_clusters
             else: 
-                dataset = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_lonlat.nc"
+                dataset_clusters = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/Capacity_factor_lonlat.nc"
                 dataset = dataset_clusters
         elif data=="weather":
             if user == "Olivier":

@@ -36,22 +36,16 @@ RANDOM_SEED = 123456
 lon = ds["w"]["lon"][:]
 lat = ds["w"]["lat"][:]
 
-## Only select first res values of each for threshold=number of points you should take together
-res = 141
-# k_range = range(7, 50)
-
+## Transform the lists
 lenlon = len(lon)
 lenlat = len(lat)
-lon = lon[:-(lenlon-res)]
-lat = lat[:-(lenlat-res)]
 
-## Transform the lists
-lon = np.tile(lon, res)
-lat = np.repeat(lat, res)
+lon = np.tile(lon, lenlat)
+lat = np.repeat(lat, lenlon)
 
 ## Preperation for GeoDataFrame
 geo = gpd.GeoSeries.from_xy(lon, lat)
-w = libpysal.weights.lat2W(res, res)
+w = libpysal.weights.lat2W(lenlon, lenlat)
 
 ## Read EEZ file
 EEZ = gpd.read_file("C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/EEZ/Europe/EEZ_Europe_extended_3.geojson")

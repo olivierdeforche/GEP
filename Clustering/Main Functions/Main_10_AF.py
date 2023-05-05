@@ -209,18 +209,15 @@ def Clustering(method="kmeans", data="af", resize=1, number_of_clusters=None, th
 # ## 1/9 resolution
 # Clustering(method="ward", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
 #
-# ### Regional Kmeans
-# ## full resolution
-# Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
-#
-# ## 1/4 resolution
-# Clustering(method="regional_kmeans", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
-#
-# ## 1/9 resolution
-# Clustering(method="regional_kmeans", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
+### Regional Kmeans
+## full resolution
+Clustering(method="regional_kmeans", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
 
-## 1/16 resolution
-Clustering(method="regional_kmeans", data="af", resize=4, number_of_clusters=10, plot=False, user='Louis')
+## 1/4 resolution
+Clustering(method="regional_kmeans", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
+
+## 1/9 resolution
+Clustering(method="regional_kmeans", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
 
 ### MaxP
 
