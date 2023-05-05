@@ -1,4 +1,4 @@
-from sklearn.cluster import KMeans
+from sklearn.cluster import AgglomerativeClustering
 
 #from ..BaseClass import BaseSpOptHeuristicSolver
 import netCDF4 as nc
@@ -90,17 +90,28 @@ plt.scatter(lon, lat,
             c=afw)
 plt.title("Availability factors wind")
 
+## transform to GeoDataFrame
+frame = gpd.GeoDataFrame(afw, geometry=geo)
+
+#frame["count"] = 1
+frame.rename(columns={0:'Data'}, inplace=True )
+
+## Name data used by Ward method
+attrs_name = ["Data"]
+attrs_name = np.array(attrs_name)
+
+
 # Initialize an empty list to store the WCSS (within-cluster sum of squares) wind values for each k
 wcss_wind = []
 wcss_test = []
 
 for n_clusters in k_range:
     print("starting model")
-    model = KMeans(n_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(afw)
-    # model.solve()
+    model = WardSpatial(frame, w, attrs_name, n_clusters)
+    model.solve()
     print("Model Solved, starting calculations of cluster values")
-    print(model.inertia_)
-    wcss_wind.append(model.inertia_)
+    # print(model.inertia_)
+    # wcss_wind.append(model.inertia_)
 
     clusters_values_wind = {i: [] for i in range(1, n_clusters + 1)}# dictionary with cluster values per cluster
     for i in range(len(clusters_values_wind) + 1):
@@ -122,14 +133,14 @@ print((end_wind-start_wind)/3600)
 #     for i in range(len(k_range)):
 #         WCSS[key].append(df[key])
 
-plt.figure()
-plt.plot(k_range, wcss_wind)
+# plt.figure()
+# plt.plot(k_range, wcss_wind)
 # for key in WCSS:
 #         plt.plot(k_range, WCSS[key])
-plt.xlabel('Number of clusters')
-plt.ylabel('Within-cluster sum of squares')
-plt.title('Elbow method for optimal k wind')
-plt.show(block=False)
+# plt.xlabel('Number of clusters')
+# plt.ylabel('Within-cluster sum of squares')
+# plt.title('Elbow method for optimal k wind')
+# plt.show(block=False)
 
 percentile_5_list = list()
 average_wind_list = list()
@@ -143,7 +154,7 @@ plt.plot(k_range,percentile_5_list,color='red')
 plt.plot(k_range,average_wind_list,color='blue')
 plt.xlabel('Number of clusters')
 plt.ylabel('Within-cluster sum of squares')
-plt.title('Elbow method for optimal k wind, test')
+plt.title('Elbow method for optimal k wind, ward')
 plt.show(block=False)
 
 ### Sun
@@ -160,13 +171,33 @@ plt.scatter(lon, lat,
            c=afs)
 plt.title("Availability factors sun")
 
+## transform to GeoDataFrame
+frame = gpd.GeoDataFrame(afs, geometry=geo)
+
+#frame["count"] = 1
+frame.rename(columns={0:'Data'}, inplace=True )
+
+## Name data used by Ward method
+attrs_name = ["Data"]
+attrs_name = np.array(attrs_name)
+
 wcss_sun = []
 
 for n_clusters in k_range:
     print("starting model")
-    model = KMeans(n_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(afs)
+    model = WardSpatial(frame, w, attrs_name, n_clusters)
+    model.solve()
     print("Model Solved, starting calculations of cluster values")
-    wcss_sun.append(model.inertia_)
+
+    clusters_values_sun = {i: [] for i in range(1, n_clusters + 1)}# dictionary with cluster values per cluster
+    for i in range(len(clusters_values_sun) + 1):
+        clusters_values_sun[i + 1] = list()
+    for i in range(len(model.labels_)):
+        clusters_values_sun[model.labels_[i]+1].append(afw_copy[i])
+    wss = 0
+    for key, value in clusters_values_sun.items():
+        wss += (sum([(x - np.mean(value)) ** 2 for x in value]))
+    wcss_sun.append(wss)
 
 k = list()
 for i in k_range:
@@ -184,7 +215,7 @@ plt.plot(k_range,percentile_5_list,color='red')
 plt.plot(k_range,average_sun_list,color='blue')
 plt.xlabel('Number of clusters')
 plt.ylabel('Within-cluster sum of squares')
-plt.title('Elbow method for optimal k sun')
+plt.title('Elbow method for optimal k sun, ward')
 plt.show()
 
 end_sun = time.time()

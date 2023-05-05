@@ -88,8 +88,21 @@ for key, value in dict_country.items():
     wss[key] = sum([(x - np.mean(value)) ** 2 for x in value])
 print('within-cluster sum of squares', wss)
 
+# create a DataFrame from the dictionary
+df = pd.DataFrame(list(wss.items()), columns=['Countries', 'WSS'])
 
-## Sun
+# save the DataFrame to an Excel file
+df.to_excel('elbow_per_country_AF_wind.xlsx', index=False)
+
+## get max and min countries
+key_with_max_value = max(wss, key=wss.get)
+print('maximum wind', key_with_max_value, wss[key_with_max_value])
+
+key_with_min_value = min(wss, key=wss.get)
+print('minmum wind', key_with_min_value, wss[key_with_min_value])
+
+
+### Sun
 afs = np.loadtxt(AF_sun, delimiter=',')
 afs = afs[:-(lenlat-res),:-(lenlon-res)]
 afs = list(np.concatenate(afs).flat)
@@ -120,3 +133,16 @@ wss = dict()
 for key, value in dict_country.items():
     wss[key] = sum([(x - np.mean(value)) ** 2 for x in value])
 print('within-cluster sum of squares', wss)
+
+# create a DataFrame from the dictionary
+df = pd.DataFrame(list(wss.items()), columns=['Country', 'WSS'])
+
+# save the DataFrame to an Excel file
+df.to_excel('elbow_per_country_AF_sun.xlsx', index=False)
+
+## get max and min countries
+key_with_max_value = max(wss, key=wss.get)
+print('maximum sun', key_with_max_value, wss[key_with_max_value])
+
+key_with_min_value = min(wss, key=wss.get)
+print('minmum sun', key_with_min_value, wss[key_with_min_value])
