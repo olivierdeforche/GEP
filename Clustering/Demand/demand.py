@@ -67,4 +67,4 @@ df_demand.drop('UKNI', axis=1, inplace=True)
 
 
 # df_demand.to_csv(f"../Input Data/time_series_output/Demand_{year}_{scenario}_{CY}.csv")
-df_demand.to_csv(f"C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Demand/Demand_TimeSeries_output_{year}_{scenario}_{str(CY)}.csv")
+df_demand.to_csv(f"C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Demand/Demand_TimeSeries_output_{year}_{scenario}_{str(CY)}.newformat.csv")
