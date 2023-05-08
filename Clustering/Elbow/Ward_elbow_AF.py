@@ -30,24 +30,24 @@ AF_sun = "C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/cap_factors_sun.
 df = pd.read_excel('elbow_per_country_AF_wind.xlsx')
 print(df)
 
-percentile_5_wind = df['WSS'].quantile(0.5)
-average_wind = np.average(df['WSS'])
+percentile_wind = df['WSS'].quantile(0.5)*32 #summed percentile
+average_wind = np.average(df['WSS'])*32 #summed average
 print('average wind', average_wind)
 
 # print the result
-print('5th percentile value wind:', percentile_5_wind)
+print('5th percentile value wind:', percentile_wind)
 
 dw = pd.read_excel('elbow_per_country_AF_sun.xlsx')
 print(dw)
 
 # calculate the 95th percentile value of the data column
-percentile_5_sun = dw['WSS'].quantile(0.5)
-print('percentile sun', percentile_5_sun)
-average_sun = np.average(dw['WSS'])
+percentile_sun = dw['WSS'].quantile(0.5)*32 #summed percentile
+print('percentile sun', percentile_sun)
+average_sun = np.average(dw['WSS'])*32 #summed average
 print('average sun', average_sun)
 
 # print the result
-print('5th percentile value sun:', percentile_5_sun)
+print('5th percentile value sun:', percentile_sun)
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
@@ -60,27 +60,23 @@ wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each for threshold=number of points you should take together
-res = 141
 k_range = range(7, 30)
 
 lenlon = len(lon)
 lenlat = len(lat)
-lon = lon[:-(lenlon-res)]
-lat = lat[:-(lenlat-res)]
 
 ## Transform the lists
-lon = np.tile(lon, res)
-lat = np.repeat(lat, res)
+lon = np.tile(lon, lenlat)
+lat = np.repeat(lat, lenlon)
 
 ## Preperation for GeoDataFrame
 geo = gpd.GeoSeries.from_xy(lon, lat)
-w = libpysal.weights.lat2W(res, res)
+w = libpysal.weights.lat2W(lenlon, lenlat)
 
 ### Wind
 start_wind = time.time()
 
 afw = np.loadtxt(AF_wind, delimiter=',')
-afw = afw[:-(lenlat-res),:-(lenlon-res)]
 afw = np.reshape(afw,-1)
 afw_copy = afw
 afw = [[i] for i in afw]
@@ -142,15 +138,15 @@ print((end_wind-start_wind)/3600)
 # plt.title('Elbow method for optimal k wind')
 # plt.show(block=False)
 
-percentile_5_list = list()
+percentile_list = list()
 average_wind_list = list()
 for i in range(len(k_range)):
-    percentile_5_list.append(percentile_5_wind)
+    percentile_list.append(percentile_wind)
     average_wind_list.append(average_wind)
 
 plt.figure()
 plt.plot(k_range, wcss_test,color='black')
-plt.plot(k_range,percentile_5_list,color='red')
+plt.plot(k_range,percentile_list,color='red')
 plt.plot(k_range,average_wind_list,color='blue')
 plt.xlabel('Number of clusters')
 plt.ylabel('Within-cluster sum of squares')
@@ -161,7 +157,6 @@ plt.show(block=False)
 start_sun = time.time()
 
 afs = np.loadtxt(AF_sun, delimiter=',')
-afs = afs[:-(lenlat-res),:-(lenlon-res)]
 afs = list(np.concatenate(afs).flat)
 afs_copy = afs
 afs = [[i] for i in afs]
@@ -203,15 +198,15 @@ k = list()
 for i in k_range:
     k.append(i)
 
-percentile_5_list = list()
+percentile_list = list()
 average_sun_list = list()
 for i in range(len(k_range)):
-    percentile_5_list.append(percentile_5_sun)
+    percentile_list.append(percentile_sun)
     average_sun_list.append(average_sun)
 
 plt.figure()
 plt.plot(k, wcss_sun,color='black')
-plt.plot(k_range,percentile_5_list,color='red')
+plt.plot(k_range,percentile_list,color='red')
 plt.plot(k_range,average_sun_list,color='blue')
 plt.xlabel('Number of clusters')
 plt.ylabel('Within-cluster sum of squares')

@@ -45,7 +45,6 @@ lat = np.repeat(lat, lenlon)
 
 ## Preperation for GeoDataFrame
 geo = gpd.GeoSeries.from_xy(lon, lat)
-w = libpysal.weights.lat2W(lenlon, lenlat)
 
 ## Read EEZ file
 EEZ = gpd.read_file("C:/Users/Louis/Documents/Master/Thesis/GEP/GEP/EEZ/Europe/EEZ_Europe_extended_3.geojson")
