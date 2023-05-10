@@ -26,28 +26,16 @@ fn_era = "C:/Users/Louis/iCloudDrive/Documents/Master/Thesis/DATA/europe-2013-er
 AF_wind = "C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/cap_factors_wind.csv"
 AF_sun = "C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/cap_factors_sun.csv"
 
-## Read WSS data
+## Read WSS data wind
 df = pd.read_excel('elbow_per_country_AF_wind.xlsx')
 print(df)
 
-percentile_wind = df['WSS'].quantile(0.5)*32 #summed percentile
-average_wind = np.average(df['WSS'])*32 #summed average
+percentile_wind = df['WSS'].quantile(0.5)*32/0.75
+average_wind = np.average(df['WSS'])*32/0.75
 print('average wind', average_wind)
 
 # print the result
 print('5th percentile value wind:', percentile_wind)
-
-dw = pd.read_excel('elbow_per_country_AF_sun.xlsx')
-print(dw)
-
-# calculate the 95th percentile value of the data column
-percentile_sun = dw['WSS'].quantile(0.5)*32 #summed percentile
-print('percentile sun', percentile_sun)
-average_sun = np.average(dw['WSS'])*32 #summed average
-print('average sun', average_sun)
-
-# print the result
-print('5th percentile value sun:', percentile_sun)
 
 ds = dict()
 ds["w"] = nc.Dataset(fn_era)
@@ -60,7 +48,7 @@ wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each for threshold=number of points you should take together
-k_range = range(7, 30)
+k_range = range(10, 50)
 
 lenlon = len(lon)
 lenlat = len(lat)
@@ -91,11 +79,12 @@ frame = gpd.GeoDataFrame(afw, geometry=geo)
 
 #frame["count"] = 1
 frame.rename(columns={0:'Data'}, inplace=True )
+print(frame)
 
 ## Name data used by Ward method
 attrs_name = ["Data"]
 attrs_name = np.array(attrs_name)
-
+print(attrs_name)
 
 # Initialize an empty list to store the WCSS (within-cluster sum of squares) wind values for each k
 wcss_wind = []
@@ -154,6 +143,20 @@ plt.title('Elbow method for optimal k wind, ward')
 plt.show(block=False)
 
 ### Sun
+
+## Read WSS data sun
+dw = pd.read_excel('elbow_per_country_AF_sun.xlsx')
+print(dw)
+
+# calculate the 95th percentile value of the data column
+percentile_sun = dw['WSS'].quantile(0.5)
+print('percentile sun', percentile_sun)
+average_sun = np.average(dw['WSS'])*32/0.75
+print('average sun', average_sun)
+
+# print the result
+print('5th percentile value sun:', percentile_sun)
+
 start_sun = time.time()
 
 afs = np.loadtxt(AF_sun, delimiter=',')
@@ -191,7 +194,7 @@ for n_clusters in k_range:
         clusters_values_sun[model.labels_[i]+1].append(afw_copy[i])
     wss = 0
     for key, value in clusters_values_sun.items():
-        wss += (sum([(x - np.mean(value)) ** 2 for x in value]))
+        wss += sum([(x - np.mean(value)) ** 2 for x in value])
     wcss_sun.append(wss)
 
 k = list()
@@ -206,8 +209,8 @@ for i in range(len(k_range)):
 
 plt.figure()
 plt.plot(k, wcss_sun,color='black')
-plt.plot(k_range,percentile_list,color='red')
-plt.plot(k_range,average_sun_list,color='blue')
+plt.plot(k_range,percentile_list, color='red')
+plt.plot(k_range,average_sun_list, color='blue')
 plt.xlabel('Number of clusters')
 plt.ylabel('Within-cluster sum of squares')
 plt.title('Elbow method for optimal k sun, ward')

@@ -14,27 +14,32 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     ### Wind
     # Start timer wind
     start_wind = time.time()
-    
+
     ## transform to GeoDataFrame
     frame = gpd.GeoDataFrame(wind, geometry=geo)
-    frame["count"] = wind_copy 
+    frame["count"] = wind_copy
     threshold_wind = threshold*np.average(wind_copy)
     threshold_wind = int(threshold_wind)
     frame.rename(columns={0:'Data'}, inplace=True )
-    
+
     ## Name data used by MaxP method
     attrs_name = "Data"
     threshold_name = "count"
-    
+
     # Solve clustering wind
     print("starting model")
     model = MaxP(frame, w, attrs_name, threshold_name, threshold_wind, verbose=True)
     model.solve()
     print("Model Solved, starting calculations of cluster values")
-    
-    labels_wind = model.labels_ 
+
+    nr_of_clusters = np.ceil(res_resized*res_resized/threshold)
+    nr_of_clusters = int(nr_of_clusters)
+    clusters = dict.fromkeys(range(1,nr_of_clusters))
+    clusters_values = dict.fromkeys(range(1,nr_of_clusters))
+
+    labels_wind = model.labels_
     areas = np.arange((142//resize) * (191//resize))
-    regions_wind = [areas[model.labels_ == region] for region in range(clusters)]
+    regions_wind = [areas[model.labels_ == region] for region in range(nr_of_clusters)]
     number_of_clusters_wind = len(regions_wind)
 
     # Plot results wind if specified
@@ -51,37 +56,32 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
         plt.savefig(string_wind, format='eps') # @Louis TBD
 
 
-    nr_of_clusters = np.ceil(res_resized*res_resized/threshold)
-    nr_of_clusters = int(nr_of_clusters)
-    clusters = dict.fromkeys(range(1,nr_of_clusters))
-    clusters_values = dict.fromkeys(range(1,nr_of_clusters))
-    
     for i in range(len(clusters) + 1):
         clusters[i + 1] = list()
         clusters_values[i + 1] = list()
-    
+
     for i in range(len(model.labels_)):
         clusters[model.labels_[i]].insert(i, i)
         clusters_values[model.labels_[i]].insert(i, wind_copy[i])
-    
+
     for key in clusters:
         average = np.average(clusters_values[key])
         for i in range(len(clusters[key])):
             wind_copy[clusters[key][i]] = average
-    
+
     print("values relating to specific clusters calculated and ready")
-    
+
     fig3 = plt.figure(figsize=(6, 6))
     plt.scatter(lon, lat,
             c=wind_copy)
-    plt.title("Wind clusters, ranked with color, max-p")    
+    plt.title("Wind clusters, ranked with color, max-p")
     if user=="Olivier":
         string_wind = str("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_wind.eps')
         plt.savefig(string_wind, format='eps')
     else:
         string_wind = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_wind.eps')
         plt.savefig(string_wind, format='eps') # @Louis TBD
-    
+
     # Stop timer wind
     end_wind = time.time()
     print("Computation time (h):")
@@ -91,7 +91,7 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     start_sun = time.time()
 
     ## transform to GeoDataFrame
-    frame = gpd.GeoDataFrame(id, geometry=geo)
+    frame = gpd.GeoDataFrame(solar, geometry=geo)
     frame["count"] = solar_copy
     threshold_sun = threshold*np.average(solar_copy)
     threshold_sun = int(threshold_sun)
@@ -107,8 +107,14 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
     model.solve()
     print("Model Solved, starting calculations of cluster values")
 
+    nr_of_clusters = np.ceil(res_resized*res_resized/threshold)
+    nr_of_clusters = int(nr_of_clusters)
+    clusters = dict.fromkeys(range(1,nr_of_clusters))
+    clusters_values = dict.fromkeys(range(1,nr_of_clusters))
+
     labels_solar = model.labels_
-    regions_solar = [areas[model.labels_ == region] for region in range(clusters)]
+    areas = np.arange((142 // resize) * (191 // resize))
+    regions_solar = [areas[model.labels_ == region] for region in range(nr_of_clusters)]
     number_of_clusters_solar = len(regions_solar)
     # Plot results wind if specified
  
@@ -124,11 +130,6 @@ def Maxp(wind, wind_copy, solar, solar_copy, lon, lat, threshold, res_resized, p
         string_solar = str("C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/Figures/MaxP/")+str("MaxP")+str('_')+str(threshold)+str('_')+str(data)+str('_')+str(resize)+str('_solar_random.eps')
         plt.savefig(string_solar, format='eps') # @Louis TBD
 
-
-    nr_of_clusters = np.ceil(res_resized*res_resized/threshold)
-    nr_of_clusters = int(nr_of_clusters)
-    clusters = dict.fromkeys(range(1,nr_of_clusters))
-    clusters_values = dict.fromkeys(range(1,nr_of_clusters))
 
     for i in range(len(clusters) + 1):
         clusters[i + 1] = list()

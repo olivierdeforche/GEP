@@ -30,8 +30,8 @@ AF_sun = "C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/cap_factors_sun.
 df = pd.read_excel('elbow_per_country_AF_wind.xlsx')
 print(df)
 
-percentile_50_wind = df['WSS'].quantile(0.5)*32 #summed percentile
-average_wind = np.average(df['WSS'])*32 #summed average
+percentile_50_wind = df['WSS'].quantile(0.5) #summed percentile
+average_wind = np.average(df['WSS'])*32/0.75 #summed average
 print('average wind', average_wind)
 
 # print the result
@@ -41,9 +41,9 @@ dw = pd.read_excel('elbow_per_country_AF_sun.xlsx')
 print(dw)
 
 # calculate the 95th percentile value of the data column
-percentile_50_sun = dw['WSS'].quantile(0.5)*32 #summed percentile
+percentile_50_sun = dw['WSS'].quantile(0.5) #summed percentile
 print('percentile sun', percentile_50_sun)
-average_sun = np.average(dw['WSS'])*32 #summed average
+average_sun = np.average(dw['WSS'])*32/0.75 #summed average
 print('average sun', average_sun)
 
 # print the result
@@ -60,7 +60,7 @@ wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each for threshold=number of points you should take together
-k_range = range(2, 30)
+k_range = range(1, 30)
 
 lenlon = len(lon)
 lenlat = len(lat)
@@ -106,7 +106,7 @@ for n_clusters in k_range:
     wss = 0
     for key, value in clusters_values_wind.items():
         wss += (sum([(x - np.mean(value)) ** 2 for x in value]))
-    wcss_test.append(wss)
+    wcss_test.append(wss/n_clusters)
 
 end_wind = time.time()
 print("Computation time (h):")
@@ -135,7 +135,7 @@ for i in range(len(k_range)):
 
 plt.figure()
 plt.plot(k_range, wcss_test,color='black')
-plt.plot(k_range,percentile_50_list,color='red')
+# plt.plot(k_range,percentile_50_list,color='red')
 plt.plot(k_range,average_wind_list,color='blue')
 plt.xlabel('Number of clusters')
 plt.ylabel('Within-cluster sum of squares')
@@ -161,7 +161,7 @@ for n_clusters in k_range:
     print("starting model")
     model = KMeans(n_clusters, init = 'k-means++', max_iter =300, n_init = 10, random_state = 0).fit(afs)
     print("Model Solved, starting calculations of cluster values")
-    wcss_sun.append(model.inertia_)
+    wcss_sun.append(model.inertia_/n_clusters)
 
 k = list()
 for i in k_range:
@@ -175,7 +175,7 @@ for i in range(len(k_range)):
 
 plt.figure()
 plt.plot(k, wcss_sun,color='black')
-plt.plot(k_range,percentile_50_list,color='red')
+# plt.plot(k_range,percentile_50_list,color='red')
 plt.plot(k_range,average_sun_list,color='blue')
 plt.xlabel('Number of clusters')
 plt.ylabel('Within-cluster sum of squares')
