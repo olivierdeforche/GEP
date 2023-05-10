@@ -1,4 +1,5 @@
 # general parameters
+TRANSFER: 30 # EUR / MWh 
 VOLL: 8700 # EUR / MWh (before 1000 €/MWh)
 CO2Price: 128 # EUR / ton (before 25 €/ton)
 nTimesteps: 24 # number of timesteps per representative day
@@ -9,7 +10,7 @@ discountrate: 0.07 # -
 dispatchableGenerators:
   Nuclear:
     OC: 5000000 # EUR/MW
-    fuelCosts: 21.3 # EUR/MWh 9.3 fuel & 12 O&M = 21.3 USD/MWh
+    fuelCosts: 14.12 # EUR/MWh 9.3 fuel & 12 O&M = 21.3 USD/MWh
     emissions: 0.013 # ton/MWh
     lifetime: 60 # years
     legcap:  # MW

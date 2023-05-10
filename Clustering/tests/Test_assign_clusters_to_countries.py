@@ -15,11 +15,10 @@ EEZ = gpd.read_file('C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions
 # print(type(EEZ))
 EEZ.plot(edgecolor='k', facecolor='lightgrey')
 # print(EEZ)
-plt.show()
+# plt.show()
 
 EEZ["UNION"][33] = "The former Yugoslav Republic of Macedonia"
 EEZ["UNION"][34] = "Luxembourg"
-EEZ["UNION"][35] = "Ukraine"
 
 for polygon in EEZ["UNION"]:
     print(polygon)
@@ -30,7 +29,7 @@ for name in EEZ["NAME"]:
     i += 1
     print(name)
 
-EEZ.to_file("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/EEZ_Europe_land.geojson", driver='GeoJSON')
+# EEZ.to_file("C:/Users/defor/Desktop/Thesis/GEP/Clustering/Main Functions/EEZ_Europe_land.geojson", driver='GeoJSON')
 
 # print(EZZ["geometry"][0])
 # print(EEZ["MRGID_EEZ"][0])

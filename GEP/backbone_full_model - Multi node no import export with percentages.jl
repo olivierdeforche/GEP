@@ -192,9 +192,9 @@ function build_greenfield_1Y_GEP_model!(m::Model)
     # Formulate objective 1a
     m.ext[:objective] = @objective(m, Min,
         + sum(IC[i]*cap_conv[c,i] for c in K, i in ID)
-        + sum(IC["On-Wind"]*cap_ren_Won[z]/total["On-Wind"][z] for z in CWon)
-        + sum(IC["Off-Wind"]*cap_ren_Wof[z]/total["Off-Wind"][z] for z in CWof)
-        + sum(IC["Solar"]*cap_ren_Son[z]/total["Solar"][z] for z in CSon)
+        + sum(IC["On-Wind"]*cap_ren_Won[z]*total["On-Wind"][z] for z in CWon)
+        + sum(IC["Off-Wind"]*cap_ren_Wof[z]*total["Off-Wind"][z] for z in CWof)
+        + sum(IC["Solar"]*cap_ren_Son[z]*total["Solar"][z] for z in CSon)
         + sum(VC[i]*g[c,i,jh,jd] for c in K, i in I, jh in JH, jd in JD)
         + sum(ens[c,jh,jd]*VOLL for c in K, jh in JH, jd in JD)
     )
