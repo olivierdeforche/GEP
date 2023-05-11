@@ -4,8 +4,8 @@ from Kmedoids import Kmedoids
 from Maxp import Maxp
 from RegionalKmeans import RegionalKmeans
 from Ward import Ward
-# from Political_regions import PoliticalRegions
-# from Split_offshore_onshore import Split_offshore_onshore
+from Political_regions import PoliticalRegions
+from Split_offshore_onshore import Split_offshore_onshore
 from Convert_to_timeseries import Convert_to_timeseries
 from Assign_clusters_to_countries import Asign_clusters_to_countries
 import matplotlib.pyplot as plt
@@ -176,55 +176,17 @@ def Clustering(method="kmeans", data="af", resize=1, number_of_clusters=None, th
 
     return ()
 
-### Benchmark = political
-Clustering(method="political_regions", plot=False)
-
-# ### Kmeans++
-# ## full resolution
-# Clustering(method="kmeans", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
-#
-# ## 1/4 resolution
-# Clustering(method="kmeans", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
-#
-# ## 1/9 resolution
-# Clustering(method="kmeans", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
-#
-# ### Kmedoids
-# ## full resolution
-# Clustering(method="kmedoids", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
-#
-# ## 1/4 resolution
-# Clustering(method="kmedoids", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
-#
-# ## 1/9 resolution
-# Clustering(method="kmedoids", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
-
-# ### Ward
-# ## full resolution
-# Clustering(method="ward", data="af", resize=1, number_of_clusters=10, plot=False, user='Louis')
-#
-# ## 1/4 resolution
-# Clustering(method="ward", data="af", resize=2, number_of_clusters=10, plot=False, user='Louis')
-#
-# ## 1/9 resolution
-# Clustering(method="ward", data="af", resize=3, number_of_clusters=10, plot=False, user='Louis')
-
-
 ### MaxP
 
-## 1/16 resolution
-Clustering(method="maxp", data="af", resize=4, threshold=2600 / 16, plot=False, user='Louis')
 
 ## 1/9 resolution
-Clustering(method="maxp", data="af", resize=3, threshold=2650 / 9, plot=False, user='Louis')
+Clustering(method="maxp", data="af", resize=3, threshold= 630 / 9, plot=False, user='Louis')
 
 # 1/4 resolution
-Clustering(method="maxp", data="af", resize=2, threshold=2690 / 4, plot=False, user='Louis')
+Clustering(method="maxp", data="af", resize=2, threshold= 640 / 4, plot=False, user='Louis')
 
 ## Full resolution
 # Threshold 2700 for 10 clusters AF
-Clustering(method="maxp", data="af", resize=1, threshold=2695, plot=False, user='Louis')
-
-
+Clustering(method="maxp", data="af", resize=1, threshold= 650, plot=False, user='Louis')
 
 

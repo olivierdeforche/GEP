@@ -30,8 +30,8 @@ AF_sun = "C:/Users/Louis/Documents/Master/Thesis/GEP/Clustering/cap_factors_sun.
 df = pd.read_excel('elbow_per_country_AF_wind.xlsx')
 print(df)
 
-percentile_wind = df['WSS'].quantile(0.5)*32/0.75
-average_wind = np.average(df['WSS'])*32/0.75
+percentile_wind = df['WSS'].quantile(0.5)*32/0.52 #14352 of 27122 points assigned
+average_wind = np.average(df['WSS'])*32/0.52
 print('average wind', average_wind)
 
 # print the result
@@ -48,7 +48,7 @@ wm = ds["w"]["wnd100m"][:,:,:]
 id = ds["w"]["influx_direct"][:,:,:]
 
 ## Only select first res values of each for threshold=number of points you should take together
-k_range = range(10, 50)
+k_range = range(2, 50)
 
 lenlon = len(lon)
 lenlat = len(lat)
@@ -61,17 +61,109 @@ lat = np.repeat(lat, lenlon)
 geo = gpd.GeoSeries.from_xy(lon, lat)
 w = libpysal.weights.lat2W(lenlon, lenlat)
 
+# ### Wind
+# start_wind = time.time()
+#
+# afw = np.loadtxt(AF_wind, delimiter=',')
+# afw = np.reshape(afw,-1)
+# afw_copy = afw
+# afw = [[i] for i in afw]
+#
+# fig1 = plt.figure(figsize=(6, 6))
+# plt.scatter(lon, lat,
+#             c=afw)
+# plt.title("Availability factors wind")
+#
+# ## transform to GeoDataFrame
+# frame = gpd.GeoDataFrame(afw, geometry=geo)
+#
+# #frame["count"] = 1
+# frame.rename(columns={0:'Data'}, inplace=True )
+# print(frame)
+#
+# ## Name data used by Ward method
+# attrs_name = ["Data"]
+# attrs_name = np.array(attrs_name)
+# print(attrs_name)
+#
+# # Initialize an empty list to store the WCSS (within-cluster sum of squares) wind values for each k
+# wcss_wind = []
+#
+# for n_clusters in k_range:
+#     print("starting model")
+#     model = WardSpatial(frame, w, attrs_name, n_clusters)
+#     model.solve()
+#     print("Model Solved, starting calculations of cluster values")
+#     # print(model.inertia_)
+#     # wcss_wind.append(model.inertia_)
+#
+#     clusters_values_wind = {i: [] for i in range(1, n_clusters + 1)}# dictionary with cluster values per cluster
+#     for i in range(len(clusters_values_wind)):
+#         clusters_values_wind[i + 1] = list()
+#     for i in range(len(model.labels_)):
+#         clusters_values_wind[model.labels_[i]+1].append(afw_copy[i])
+#
+#     wss = 0
+#     for key in clusters_values_wind:
+#         mean = np.average(clusters_values_wind[key])
+#         for value in clusters_values_wind[key]:
+#             wss += (value - mean) ** 2
+#     print(wss)
+#     wcss_wind.append(wss)
+#
+# end_wind = time.time()
+# print("Computation time (h):")
+# print((end_wind-start_wind)/3600)
+#
+# # WCSS = dict()
+# # for key in df:
+# #     WCSS[key] = list()
+# #     for i in range(len(k_range)):
+# #         WCSS[key].append(df[key])
+#
+# # plt.figure()
+# # plt.plot(k_range, wcss_wind)
+# # for key in WCSS:
+# #         plt.plot(k_range, WCSS[key])
+# # plt.xlabel('Number of clusters')
+# # plt.ylabel('Within-cluster sum of squares')
+# # plt.title('Elbow method for optimal k wind')
+# # plt.show(block=False)
+#
+# percentile_list = list()
+# average_wind_list = list()
+# for i in range(len(k_range)):
+#     percentile_list.append(percentile_wind)
+#     average_wind_list.append(average_wind)
+#
+# plt.figure()
+# plt.plot(k_range, wcss_wind,color='black')
+# plt.plot(k_range,percentile_list,color='red')
+# plt.plot(k_range,average_wind_list,color='blue')
+# plt.xlabel('Number of clusters')
+# plt.ylabel('Within-cluster sum of squares')
+# plt.title('Elbow method for optimal k wind, ward')
+# plt.show(block=False)
+
 ### Wind
+
+## Read WSS data sun
+dw = pd.read_excel('elbow_per_country_AF_wind.xlsx')
+print(dw)
+
+average_wind = np.average(dw['WSS'])*32/0.52
+print('average sun', average_wind)
+
 start_wind = time.time()
 
 afw = np.loadtxt(AF_wind, delimiter=',')
-afw = np.reshape(afw,-1)
+afw = list(np.concatenate(afw).flat)
 afw_copy = afw
 afw = [[i] for i in afw]
 
-fig1 = plt.figure(figsize=(6, 6))
+fig4 = plt.figure(figsize=(6, 6))
 plt.scatter(lon, lat,
-            c=afw)
+           c=afw)
 plt.title("Availability factors wind")
 
 ## transform to GeoDataFrame
@@ -79,24 +171,18 @@ frame = gpd.GeoDataFrame(afw, geometry=geo)
 
 #frame["count"] = 1
 frame.rename(columns={0:'Data'}, inplace=True )
-print(frame)
 
 ## Name data used by Ward method
 attrs_name = ["Data"]
 attrs_name = np.array(attrs_name)
-print(attrs_name)
 
-# Initialize an empty list to store the WCSS (within-cluster sum of squares) wind values for each k
 wcss_wind = []
-wcss_test = []
 
 for n_clusters in k_range:
     print("starting model")
     model = WardSpatial(frame, w, attrs_name, n_clusters)
     model.solve()
     print("Model Solved, starting calculations of cluster values")
-    # print(model.inertia_)
-    # wcss_wind.append(model.inertia_)
 
     clusters_values_wind = {i: [] for i in range(1, n_clusters + 1)}# dictionary with cluster values per cluster
     for i in range(len(clusters_values_wind) + 1):
@@ -104,43 +190,28 @@ for n_clusters in k_range:
     for i in range(len(model.labels_)):
         clusters_values_wind[model.labels_[i]+1].append(afw_copy[i])
     wss = 0
-    for key, value in clusters_values_wind.items():
-        wss += (sum([(x - np.mean(value)) ** 2 for x in value]))
-    wcss_test.append(wss)
+    for key in clusters_values_wind:
+        mean = np.average(clusters_values_wind[key])
+        print(mean)
+        for value in clusters_values_wind[key]:
+            wss += (value - mean) ** 2
+    print(wss)
+    wcss_wind.append(wss)
 
-end_wind = time.time()
-print("Computation time (h):")
-print((end_wind-start_wind)/3600)
+k = list()
+for i in k_range:
+    k.append(i)
 
-# WCSS = dict()
-# for key in df:
-#     WCSS[key] = list()
-#     for i in range(len(k_range)):
-#         WCSS[key].append(df[key])
-
-# plt.figure()
-# plt.plot(k_range, wcss_wind)
-# for key in WCSS:
-#         plt.plot(k_range, WCSS[key])
-# plt.xlabel('Number of clusters')
-# plt.ylabel('Within-cluster sum of squares')
-# plt.title('Elbow method for optimal k wind')
-# plt.show(block=False)
-
-percentile_list = list()
 average_wind_list = list()
 for i in range(len(k_range)):
-    percentile_list.append(percentile_wind)
     average_wind_list.append(average_wind)
 
 plt.figure()
-plt.plot(k_range, wcss_test,color='black')
-plt.plot(k_range,percentile_list,color='red')
-plt.plot(k_range,average_wind_list,color='blue')
+plt.plot(k, wcss_wind,color='black')
+plt.plot(k_range,average_wind_list, color='blue')
 plt.xlabel('Number of clusters')
 plt.ylabel('Within-cluster sum of squares')
 plt.title('Elbow method for optimal k wind, ward')
-plt.show(block=False)
 
 ### Sun
 
@@ -151,7 +222,7 @@ print(dw)
 # calculate the 95th percentile value of the data column
 percentile_sun = dw['WSS'].quantile(0.5)
 print('percentile sun', percentile_sun)
-average_sun = np.average(dw['WSS'])*32/0.75
+average_sun = np.average(dw['WSS'])*32/0.52
 print('average sun', average_sun)
 
 # print the result
@@ -171,6 +242,7 @@ plt.title("Availability factors sun")
 
 ## transform to GeoDataFrame
 frame = gpd.GeoDataFrame(afs, geometry=geo)
+print(frame)
 
 #frame["count"] = 1
 frame.rename(columns={0:'Data'}, inplace=True )
@@ -191,10 +263,14 @@ for n_clusters in k_range:
     for i in range(len(clusters_values_sun) + 1):
         clusters_values_sun[i + 1] = list()
     for i in range(len(model.labels_)):
-        clusters_values_sun[model.labels_[i]+1].append(afw_copy[i])
+        clusters_values_sun[model.labels_[i]+1].append(afs_copy[i])
     wss = 0
-    for key, value in clusters_values_sun.items():
-        wss += sum([(x - np.mean(value)) ** 2 for x in value])
+    for key in clusters_values_sun:
+        mean = np.average(clusters_values_sun[key])
+        print(mean)
+        for value in clusters_values_sun[key]:
+            wss += (value - mean) ** 2
+    print(wss)
     wcss_sun.append(wss)
 
 k = list()
@@ -209,7 +285,7 @@ for i in range(len(k_range)):
 
 plt.figure()
 plt.plot(k, wcss_sun,color='black')
-plt.plot(k_range,percentile_list, color='red')
+# plt.plot(k_range,percentile_list, color='red')
 plt.plot(k_range,average_sun_list, color='blue')
 plt.xlabel('Number of clusters')
 plt.ylabel('Within-cluster sum of squares')
