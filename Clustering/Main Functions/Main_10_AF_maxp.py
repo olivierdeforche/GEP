@@ -213,17 +213,17 @@ Clustering(method="political_regions", plot=False)
 ### MaxP
 
 ## 1/16 resolution
-Clustering(method="maxp", data="af", resize=4, threshold=2600 / 16, plot=False, user='Louis')
+Clustering(method="maxp", data="af", resize=4, threshold=2600 / 16, plot=False)
 
 ## 1/9 resolution
-Clustering(method="maxp", data="af", resize=3, threshold=2650 / 9, plot=False, user='Louis')
+Clustering(method="maxp", data="af", resize=3, threshold=2650 / 9, plot=False)
 
 # 1/4 resolution
-Clustering(method="maxp", data="af", resize=2, threshold=2690 / 4, plot=False, user='Louis')
+Clustering(method="maxp", data="af", resize=2, threshold=2690 / 4, plot=False)
 
 ## Full resolution
 # Threshold 2700 for 10 clusters AF
-Clustering(method="maxp", data="af", resize=1, threshold=2695, plot=False, user='Louis')
+Clustering(method="maxp", data="af", resize=1, threshold=2695, plot=False)
 
 
 

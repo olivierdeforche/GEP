@@ -179,12 +179,12 @@ def Clustering(method="kmeans", data="af", resize=1, number_of_clusters=None, th
 ### Regional Kmeans
 
 ## 1/9 resolution
-Clustering(method="regional_kmeans", data="weather", resize=3, number_of_clusters=10, plot=False, user='Louis')
+Clustering(method="regional_kmeans", data="weather", resize=3, number_of_clusters=10, plot=False)
 
 ## 1/4 resolution
-Clustering(method="regional_kmeans", data="weather", resize=2, number_of_clusters=10, plot=False, user='Louis')
+Clustering(method="regional_kmeans", data="weather", resize=2, number_of_clusters=10, plot=False)
 
 ## full resolution
-Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=10, plot=False, user='Louis')
+Clustering(method="regional_kmeans", data="weather", resize=1, number_of_clusters=10, plot=False)
 
 

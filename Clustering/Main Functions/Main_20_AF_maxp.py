@@ -179,14 +179,14 @@ def Clustering(method="kmeans", data="af", resize=1, number_of_clusters=None, th
 ### MaxP
 
 ## 1/16 resolution
-Clustering(method="maxp", data="af", resize=4, threshold=1280 / 16, plot=False, user='Louis')
+Clustering(method="maxp", data="af", resize=4, threshold=1280 / 16, plot=False)
 
 ## 1/9 resolution
-Clustering(method="maxp", data="af", resize=3, threshold=1300 / 9, plot=False, user='Louis')
+Clustering(method="maxp", data="af", resize=3, threshold=1300 / 9, plot=False)
 
 # 1/4 resolution
-Clustering(method="maxp", data="af", resize=2, threshold=1320 / 4, plot=False, user='Louis')
+Clustering(method="maxp", data="af", resize=2, threshold=1320 / 4, plot=False)
 
 ## Full resolution
 # Threshold 2700 for 10 clusters AF
-Clustering(method="maxp", data="af", resize=1, threshold=1327, plot=False, user='Louis')
+Clustering(method="maxp", data="af", resize=1, threshold=1327, plot=False)

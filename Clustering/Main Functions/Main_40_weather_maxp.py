@@ -179,14 +179,17 @@ def Clustering(method="kmeans", data="af", resize=1, number_of_clusters=None, th
 
 ### MaxP
 
+## 1/16 resolution
+Clustering(method="maxp", data="weather", resize=4, threshold= 610 / 16, plot=False)
+
 ## 1/9 resolution
-Clustering(method="maxp", data="weather", resize=3, threshold= 630 / 9, plot=False, user='Louis')
+Clustering(method="maxp", data="weather", resize=3, threshold= 630 / 9, plot=False)
 
 # 1/4 resolution
-Clustering(method="maxp", data="weather", resize=2, threshold= 640 / 4, plot=False, user='Louis')
+Clustering(method="maxp", data="weather", resize=2, threshold= 640 / 4, plot=False)
 
 ## Full resolution
-Clustering(method="maxp", data="weather", resize=1, threshold=650, plot=False, user='Louis')
+Clustering(method="maxp", data="weather", resize=1, threshold=650, plot=False)
 
 
 

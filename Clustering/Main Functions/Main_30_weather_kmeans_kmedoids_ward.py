@@ -176,19 +176,35 @@ def Clustering(method="kmeans", data="af", resize=1, number_of_clusters=None, th
 
     return ()
 
-### MaxP
+### Kmeans++
+## full resolution
+Clustering(method="kmeans", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis')
 
-## 1/16 resolution
-Clustering(method="maxp", data="weather", resize=4, threshold=2600 / 16, plot=False)
+## 1/4 resolution
+Clustering(method="kmeans", data="weather", resize=2, number_of_clusters=30, plot=False, user='Louis')
 
 ## 1/9 resolution
-Clustering(method="maxp", data="weather", resize=3, threshold=2690 / 9, plot=False)
+Clustering(method="kmeans", data="weather", resize=3, number_of_clusters=30, plot=False, user='Louis')
 
-# 1/4 resolution
-Clustering(method="maxp", data="weather", resize=2, threshold=2690 / 4, plot=False)
+### Kmedoids
+## full resolution
+Clustering(method="kmedoids", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis')
 
-# Full resolution
-Clustering(method="maxp", data="weather", resize=1, threshold=2695, plot=False)
+## 1/4 resolution
+Clustering(method="kmedoids", data="weather", resize=2, number_of_clusters=30, plot=False, user='Louis')
+
+## 1/9 resolution
+Clustering(method="kmedoids", data="weather", resize=3, number_of_clusters=30, plot=False, user='Louis')
+
+### Ward
+## full resolution
+Clustering(method="ward", data="weather", resize=1, number_of_clusters=30, plot=False, user='Louis')
+
+## 1/4 resolution
+Clustering(method="ward", data="weather", resize=2, number_of_clusters=30, plot=False, user='Louis')
+
+## 1/9 resolution
+Clustering(method="ward", data="weather", resize=3, number_of_clusters=30, plot=False, user='Louis')
 
 
 
